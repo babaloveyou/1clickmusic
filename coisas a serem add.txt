@@ -1,0 +1,13 @@
+BomGaroto : salvar lista de músicas
+kamikazze : last.fm
+Kintoun Rlz : diversas ideias sobre visual e negócio do msn
+freak_insane, blizzy ... : aparecer no now playing
+SnowHill : reportou bug da lista
+The_Terminator : Beta tester no win98
+Rafa De Danann : plugin last.fm
+Paperback Writer : botão apply
+jotaeme  : timeout nas rádio
+Mouse Pad : Autoupdate
+Mario Bros.: bugfix (salvar configs no ini)
+Lokinhow : deu dura na galera heuaheuheau
+phelen : botões multimidia do teclado
