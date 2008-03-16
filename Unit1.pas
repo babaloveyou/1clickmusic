@@ -101,12 +101,6 @@ begin
   lastfm_user := ini.ValueString('lastfm_user', '');
   lastfm_pass := Decrypt(ini.ValueString('lastfm_pass', ''), KEYCODE);
 
-  ini.Section := 'config';
-
-  ds_useprimary := ini.ValueBoolean('ds_useprimary', True);
-  ds_buffersize := ini.ValueInteger('ds_buffersize', 0);
-  ds_cooplevel := ini.ValueInteger('ds_cooplevel', 1);
-
   ini.Section := 'hotkeys';
   ini.Mode := ifmRead;
   for i := 1 to 12 do
@@ -138,11 +132,6 @@ begin
   ini.ValueString('lastfm_user', lastfm_user);
   ini.ValueString('lastfm_pass', Encrypt(lastfm_pass, KEYCODE));
 
-  ini.Section := 'config';
-  ini.ValueBoolean('ds_useprimary', ds_useprimary);
-  ini.ValueInteger('ds_buffersize', ds_buffersize);
-  ini.ValueInteger('ds_cooplevel', ds_cooplevel);
-
   ini.Section := 'hotkeys';
   for i := 1 to 12 do
     ini.ValueString(Int2Str(i), radiolist.getname(hotkeys[i]));
@@ -151,16 +140,13 @@ end;
 
 procedure TForm1.TimerTimer(Sender: PObj);
 begin
-  if Assigned(chn) then
-  begin
-    chn.GetPlayInfo(curTitle, curBitrate);
-    progress := chn.GetBufferPercentage;
-  end
-  else
+  if (not Assigned(chn)) or
+    (not Form.Visible) or
+    (chn.Status = rsStoped) then
     Exit;
 
-  // if bitrate is not seted we don't need run the rest of the procedure
-  if curBitrate = 0 then Exit;
+  chn.GetPlayInfo(curTitle, curBitrate);
+  progress := chn.GetBufferPercentage;
 
   case progress of
     1..45:
@@ -171,7 +157,14 @@ begin
     lblbuffer.Font.Color := clBlue;
   end;
 
-  lblbuffer.Caption := UInt2Str(curBitrate) + 'kbps @ buffer:. ' + UInt2Str(progress) + '%';
+  lblbuffer.Caption :=
+    UInt2Str(curBitrate) + 'kbps @ buffer:. ' + UInt2Str(progress) + '%';
+
+  case chn.Status of
+    rsPlaying: lblstatus.Caption := 'Connected';
+    rsPrebuffering: lblstatus.Caption := 'Prebufering..';
+    rsRecovering: lblstatus.Caption := 'Recovering buffer..';
+  end;
 
   Tray.Tooltip := curTitle;
   lbltrack.caption := curTitle;
@@ -224,9 +217,8 @@ begin
     end
     else
     begin
+      TimerTimer(nil);
       chn.Play();
-      // Maintain volume
-      lblstatus.Caption := 'Connected';
     end;
     channeltree.Enabled := True;
     Thread.Suspend;
@@ -237,9 +229,6 @@ procedure TForm1.PlayChannel;
 begin
   lblradio.Caption := channeltree.TVItemText[channeltree.TVSelected];
   Form.Caption := '1ClickMusic';
-  lblbuffer.Caption := '';
-  lblstatus.Caption := '';
-  lbltrack.Caption := '';
   Thread.Resume;
 end;
 
@@ -254,6 +243,7 @@ begin
   lblbuffer.Caption := '';
   lblstatus.Caption := '';
   lbltrack.Caption := '';
+  Tray.ToolTip := '';
   Form.Caption := '1ClickMusic';
 end;
 
@@ -269,7 +259,7 @@ begin
       1003, 3003:
         StopChannel;
       1004, 3004:
-        if chn = nil then
+        if not Assigned(chn) then
           PlayChannel;
       2001..2012:
         if hotkeys[Msg.wParam - 2000] > 0 then
@@ -278,7 +268,6 @@ begin
           PlayChannel;
         end;
     end;
-    Exit;
   end
   else
     if (Msg.Message = WM_SYSCOMMAND) and (Msg.wParam = SC_MINIMIZE) then
@@ -318,13 +307,13 @@ var
   i: Integer;
   loading, lbl: PControl;
 begin
-  
+
   loading := NewForm(Form, '');
   loading.HasBorder := False;
   loading.BoundsRect := form.BoundsRect;
   loading.Color := clBlack;
   loading.AlphaBlend := 220;
-  lbl := NewLabel(loading,'LOADING -> RADIO LIBRARY!');
+  lbl := NewLabel(loading, 'LOADING -> RADIO LIBRARY!');
   lbl.Align := caClient;
   lbl.TextAlign := taCenter;
   lbl.VerticalAlign := vaCenter;
@@ -333,7 +322,7 @@ begin
   lbl.Color := clBlack;
   loading.CreateWindow;
   lbl.Update;
-  
+
   Tray.Icon := form.Icon;
   Tray.AddIcon;
 
@@ -441,7 +430,6 @@ begin
 
   LoadConfig;
 
-  
   lbl.Caption := 'LOADING -> SOUND ENGINE!';
   lbl.Update;
   // Inicializa o SOM

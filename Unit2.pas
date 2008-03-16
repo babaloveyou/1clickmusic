@@ -43,11 +43,6 @@ type
     lblpass: TKOLLabel;
     btapply: TKOLButton;
     btupdate: TKOLButton;
-    tabcontrol: TKOLTabControl;
-    ckbxuseprimary: TKOLCheckBox;
-    ckbxpriority: TKOLCheckBox;
-    cmbxbuffersize: TKOLComboBox;
-    lblbuffersize: TKOLLabel;
     procedure ckbxlistenabledClick(Sender: PObj);
     procedure ckbxmsnenabledClick(Sender: PObj);
     procedure ckbxlastfmClick(Sender: PObj);
@@ -95,30 +90,17 @@ end;
 
 procedure TForm2.KOLForm1FormCreate(Sender: PObj);
 begin
-  tabcontrol.TC_Insert(0, 'Extras', 0);
-  tabcontrol.TC_Insert(1, 'Advanced', 0);
-  //
-  ckbxmsnenabled.Parent := tabcontrol.TC_Pages[0];
   ckbxmsnenabled.Checked := msn_enabled;
   cmbxmsnicon.CurIndex := msn_iconi;
-  cmbxmsnicon.Parent := tabcontrol.TC_Pages[0];
   //
   ckbxlistenabled.Checked := list_enabled;
-  ckbxlistenabled.Parent := tabcontrol.TC_Pages[0];
   edtlistname.Text := list_file;
-  edtlistname.Parent := tabcontrol.TC_Pages[0];
   //
   ckbxclipboard.Checked := clipboard_enabled;
-  ckbxclipboard.Parent := tabcontrol.TC_Pages[0];
   //
   ckbxlastfm.Checked := lastfm_enabled;
-  ckbxlastfm.Parent := tabcontrol.TC_Pages[0];
-  lbluser.Parent := tabcontrol.TC_Pages[0];
   edtuser.Text := lastfm_user;
-  edtuser.Parent := tabcontrol.TC_Pages[0];
-  lblpass.Parent := tabcontrol.TC_Pages[0];
   edtpass.Text := lastfm_pass;
-  edtpass.Parent := tabcontrol.TC_Pages[0];
 
   // configure controls acording to config
   edtlistname.Enabled := ckbxlistenabled.Checked;
@@ -126,15 +108,6 @@ begin
   edtuser.Enabled := ckbxlastfm.Checked;
   edtpass.Enabled := ckbxlastfm.Checked;
   //
-
-  ckbxuseprimary.Parent := tabcontrol.TC_Pages[1];
-  ckbxpriority.Parent := tabcontrol.TC_Pages[1];
-  cmbxbuffersize.Parent := tabcontrol.TC_Pages[1];
-  lblbuffersize.Parent := tabcontrol.TC_Pages[1];
-
-  ckbxuseprimary.Checked := ds_useprimary;
-  ckbxpriority.Checked := ds_cooplevel = 2;
-  cmbxbuffersize.CurIndex := ds_buffersize;
 end;
 
 procedure TForm2.btapplyClick(Sender: PObj);
@@ -154,13 +127,6 @@ begin
   lastfm_enabled := ckbxlastfm.Checked;
   lastfm_user := edtuser.Text;
   lastfm_pass := edtpass.Text;
-
-  ds_useprimary := ckbxuseprimary.Checked;
-  if ckbxpriority.Checked then
-    ds_cooplevel := 2
-  else
-    ds_cooplevel := 1;
-  ds_buffersize := cmbxbuffersize.CurIndex;
 end;
 
 procedure TForm2.btupdateClick(Sender: PObj);

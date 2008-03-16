@@ -14,7 +14,6 @@ type
     procedure updatebuffer; override;
     procedure initdecoder; override;
     procedure initbuffer; override;
-    procedure Execute; override;
   public
     procedure GetPlayInfo(var Atitle: string; var Aquality: Cardinal); override;
     function GetBufferPercentage: Integer; override;
@@ -25,6 +24,9 @@ type
 
 implementation
 
+uses
+  main;
+
 { TMP3 }
 
 destructor TMMS.Destroy;
@@ -34,20 +36,6 @@ begin
   inherited;
   if Assigned(Fhandle.reader) then
     lwma_async_reader_free(Fhandle);
-end;
-
-procedure TMMS.Execute;
-var
-  cs: TRTLCriticalSection;
-begin
-  InitializeCriticalSection(cs);
-  repeat
-    EnterCriticalSection(cs);
-    updatebuffer;
-    LeaveCriticalSection(cs);
-    sleep(50);
-  until Terminated;
-  DeleteCriticalSection(cs);
 end;
 
 procedure TMMS.initdecoder;
@@ -66,6 +54,7 @@ procedure TMMS.Play;
 begin
   initbuffer();
 
+  Status := rsPrebuffering;
   Flastsection := MaxInt;
   DS.SoundBuffer.SetCurrentPosition((Fbuffersize div 2) * 3);
   updatebuffer();
@@ -73,6 +62,7 @@ begin
 
   Resume;
   DS.Play;
+  Status := rsPlaying;
 end;
 
 procedure TMMS.updatebuffer;
@@ -82,7 +72,6 @@ var
   Size, TotalDecoded, tmpbuffersize: Cardinal;
   section: Cardinal;
 begin
-
   if DS.PlayCursorPos > Fbuffersize then
     section := 0
   else
@@ -126,7 +115,6 @@ end;
 
 procedure TMMS.GetPlayInfo(var Atitle: string; var Aquality: Cardinal);
 begin
-  Atitle := '';
   Aquality := Fhandle.Bitrate div 1000;
 end;
 

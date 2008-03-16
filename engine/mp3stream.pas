@@ -14,7 +14,6 @@ type
     procedure updatebuffer; override;
     procedure initdecoder; override;
     procedure initbuffer; override;
-    procedure Execute; override;
   public
     procedure GetPlayInfo(var Atitle: string; var Aquality: Cardinal); override;
     function GetBufferPercentage: Integer; override;
@@ -24,6 +23,9 @@ type
   end;
 
 implementation
+
+uses
+  main;
 
 { TMP3 }
 
@@ -35,7 +37,7 @@ end;
 
 function TMP3.GetBufferPercentage: Integer;
 begin
-  Result := Round(FStream.bufffilled / BUFFCOUNT * 100);
+  Result := Round((FStream.bufffilled / BUFFCOUNT) * 100);
 end;
 
 destructor TMP3.Destroy;
@@ -46,20 +48,6 @@ begin
   FStream.Free;
   mpg123_close(Fhandle);
   mpg123_exit;
-end;
-
-procedure TMP3.Execute;
-var
-  cs: TRTLCriticalSection;
-begin
-  InitializeCriticalSection(cs);
-  repeat
-    EnterCriticalSection(cs);
-    UpdateBuffer;
-    LeaveCriticalSection(cs);
-    sleep(50);
-  until Terminated;
-  DeleteCriticalSection(cs);
 end;
 
 procedure TMP3.initbuffer;
@@ -98,6 +86,11 @@ end;
 function TMP3.open(const url: string): Boolean;
 begin
   Result := FStream.open(url);
+  if Result then
+  begin
+    Status := rsPrebuffering;
+    FStream.PreBuffer();
+  end;
 end;
 
 procedure TMP3.Play;
@@ -105,13 +98,14 @@ begin
   initbuffer();
 
   Flastsection := MaxInt;
-  DS.SoundBuffer.SetCurrentPosition((Fbuffersize div 2) *3);
+  DS.SoundBuffer.SetCurrentPosition((Fbuffersize div 2) * 3);
   updatebuffer();
   DS.SoundBuffer.SetCurrentPosition(0);
 
   Resume;
   FStream.Resume;
   DS.Play;
+  Status := rsPlaying;
 end;
 
 procedure TMP3.updatebuffer;
@@ -136,8 +130,8 @@ begin
     TotalDecoded := 0;
     bufferPos := buffer;
 
-    r := -10;
-    while r = -10 do
+    r := MPG123_NEED_MORE;
+    while r = MPG123_NEED_MORE do
     begin
       r := mpg123_decode(Fhandle, @FStream.inbuffer[FStream.Cursor], BUFFSIZE, bufferPos, Size - TotalDecoded, @SizeDecoded);
       Inc(bufferPos, SizeDecoded);
@@ -147,7 +141,16 @@ begin
     end;
   end
   else
+  begin
+    Status := rsRecovering;
     FillChar(buffer^, Size, 0);
+    DS.Stop;
+    repeat
+      Sleep(50);
+    until GetBufferPercentage > BUFFRESTORE;
+    DS.Play;
+    Status := rsPlaying;
+  end;
 
   DS.SoundBuffer.Unlock(buffer, Size, nil, 0);
 

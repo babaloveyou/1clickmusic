@@ -24,7 +24,7 @@ type
     function getpos(const Name: string): Cardinal;
     function getname(const pos: Cardinal): string;
     function getpls(const Name: string): string;
-    procedure Automate(const radiolib: string; const Achanneltree: PControl);
+    //procedure Automate(const radiolib: string; const Achanneltree: PControl);
     constructor Create;
     destructor Destroy; virtual;
   end;
@@ -51,7 +51,7 @@ begin
   FList.Add(newitem);
 end;
 
-procedure SplitQuotedValues(var data: string; out field, value: string);
+{procedure SplitQuotedValues(var data: string; out field, value: string);
 const
   delimiter = ' "';
 var
@@ -123,7 +123,7 @@ begin
   finally
     Lines.Free;
   end;
-end;
+end;}
 
 constructor TRadioList.Create;
 begin

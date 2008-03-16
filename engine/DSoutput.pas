@@ -5,6 +5,8 @@ interface
 uses
   SysUtils, Classes, Windows, MMSystem, _DirectSound;
 
+{$MINENUMSIZE 4}
+
 type
   TDSoutput = class
   private
@@ -14,11 +16,8 @@ type
     function GetPlayCursorPos: Cardinal;
   public
     property PlayCursorPos: Cardinal read GetPlayCursorPos;
-
     property Device: IDirectSound read FDS;
-
     property SoundBuffer: IDirectSoundBuffer read FSecondary;
-
     function Play: Boolean;
     function Stop: Boolean;
     function InitializeBuffer(const Arate, Achannels: Cardinal): Cardinal;
@@ -27,6 +26,9 @@ type
   end;
 
   // ESQUELETO PARA OS PLAYERS
+
+type
+  TRadioStatus = (rsStoped, rsPrebuffering,rsPlaying, rsRecovering);
 
 type
   TRadioPlayer = class(TThread)
@@ -42,9 +44,11 @@ type
     procedure initbuffer; virtual; abstract;
     procedure initdecoder; virtual; abstract;
     property DS: TDSoutput read FDevice write FDevice;
+    procedure Execute; override;
   public
     StreamBitrate: Integer;
     StreamTitle: string;
+    Status: TRadioStatus;
     procedure Volume(const value: Integer);
     procedure GetPlayInfo(var Atitle: string; var Aquality: Cardinal); virtual; abstract;
     function GetBufferPercentage: Integer; virtual; abstract;
@@ -113,7 +117,7 @@ function TDSoutput.InitializeBuffer(const Arate, Achannels: Cardinal): Cardinal;
 var
   Fswfm: TWAVEFORMATEX;
   Fsdesc: TDSBUFFERDESC;
-  lastvolume : Integer;
+  lastvolume: Integer;
 begin
   lastvolume := 0;
   if FSecondary <> nil then
@@ -145,7 +149,6 @@ begin
 
   Result := Fsdesc.dwBufferBytes div 2;
 
-
   FSecondary.SetVolume(lastvolume);
 end;
 
@@ -172,12 +175,27 @@ begin
   inherited Create(True);
   Priority := tpTimeCritical;
   initdecoder();
+  Status := rsStoped;
 end;
 
 destructor TRadioPlayer.Destroy;
 begin
   // DESTROY THREAD
   inherited;
+end;
+
+procedure TRadioPlayer.Execute;
+var
+  cs: TRTLCriticalSection;
+begin
+  InitializeCriticalSection(cs);
+  repeat
+    EnterCriticalSection(cs);
+    UpdateBuffer;
+    LeaveCriticalSection(cs);
+    sleep(50);
+  until Terminated;
+  DeleteCriticalSection(cs);
 end;
 
 procedure TRadioPlayer.Volume(const value: Integer);

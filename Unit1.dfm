@@ -61,7 +61,7 @@ object Form1: TForm1
     EraseBackground = False
     Localizy = loForm
     Transparent = False
-    Options = [tvoLinesRoot]
+    Options = [tvoLinesRoot, tvoTrackSelect, tvoSingleExpand]
     CurIndex = 0
     TVRightClickSelect = False
     OnSelChange = channeltreeSelChange
@@ -407,8 +407,8 @@ object Form1: TForm1
     Localizy = False
     projectName = 'oneclick'
     projectDest = 'oneclick'
-    sourcePath = 'C:\Documents and Settings\arthur pires\Desktop\1clickEmusic\'
-    outdcuPath = 'C:\Documents and Settings\arthur pires\Desktop\1clickEmusic\'
+    sourcePath = 'C:\Documents and Settings\arthur pires\Desktop\1clickmusic\'
+    outdcuPath = 'C:\Documents and Settings\arthur pires\Desktop\1clickmusic\'
     dprResource = False
     protectFiles = True
     showReport = False
@@ -458,7 +458,7 @@ object Form1: TForm1
     AllBtnReturnClick = False
     Tabulate = False
     TabulateEx = False
-    UnitSourcePath = 'C:\Documents and Settings\arthur pires\Desktop\1clickEmusic\'
+    UnitSourcePath = 'C:\Documents and Settings\arthur pires\Desktop\1clickmusic\'
     Locked = False
     formUnit = 'Unit1'
     formMain = True

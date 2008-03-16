@@ -91,7 +91,7 @@ begin
    {$ENDIF UNICODE_CTRLS}
     Result.lbltrack.Font.FontStyle := [ fsBold ];
     // Result.channeltree.TabOrder = 0
-    Result.channeltree := NewTreeView( Result.Form, [ tvoLinesRoot ], nil, nil ).SetAlign ( caLeft ).SetSize( 223, 0 );
+    Result.channeltree := NewTreeView( Result.Form, [ tvoLinesRoot, tvoTrackSelect, tvoSingleExpand ], nil, nil ).SetAlign ( caLeft ).SetSize( 223, 0 );
    {$IFDEF USE_NAMES}
     Result.channeltree.SetName( Result.Form, 'channeltree' ); 
    {$ENDIF}
@@ -120,5 +120,4 @@ begin
     Result.KOLForm1FormCreate( Result );
 
 end;
-
 

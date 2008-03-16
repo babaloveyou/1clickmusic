@@ -94,7 +94,7 @@ OutputDir=
 UnitOutputDir=
 PackageDLLOutputDir=
 PackageDCPOutputDir=
-SearchPath=C:\Documents and Settings\arthur pires\Desktop\1clickEmusic\engine
+SearchPath=engine
 Packages=vcl;rtl;vclie;xmlrtl;inet;inetdbbde;inetdbxpress;vclx;dbrtl;soaprtl;dsnap;VclSmp;dbexpress;vcldb;dbxcds;adortl;ibxpress;vclactnband;bdertl;vclshlctrls;dclOfficeXP;IcsDel70;Python_d7;PythonVCL_d7
 Conditionals=KOL_MCK
 DebugSourceDirs=
@@ -137,5 +137,6 @@ Item0=KOL_MCK
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
-Count=1
-Item0=C:\Documents and Settings\arthur pires\Desktop\1clickEmusic\engine
+Count=2
+Item0=engine
+Item1=C:\Documents and Settings\arthur pires\Desktop\1clickEmusic\engine

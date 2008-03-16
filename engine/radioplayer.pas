@@ -8,6 +8,9 @@ function OpenRadio(const url: string; var APlayer: TRadioPlayer; ADevice: TDSout
 
 implementation
 
+uses
+  main;
+
 function OpenRadio(const url: string; var APlayer: TRadioPlayer; ADevice: TDSoutput): Boolean;
 var
   playlist: TPlaylist;
@@ -15,12 +18,11 @@ var
   i: Integer;
 begin
   Result := False;
-  if not Assigned(ADevice) then
-    Exit;
 
   playlist := TPlaylist.Create;
   try
     RadioType := playlist.openpls(url);
+
     for i := 0 to playlist.urls.Count - 1 do
     begin
       if RadioType = RTMMS then

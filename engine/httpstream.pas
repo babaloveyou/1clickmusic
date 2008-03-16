@@ -4,12 +4,14 @@ interface
 uses
   SysUtils, Classes, Windows, blcksock;
 
-const
+const // CONFIGURATION
   BUFFTOTALSIZE = 100000;
   BUFFSIZE = 1000;
   BUFFCOUNT = BUFFTOTALSIZE div BUFFSIZE;
 
-  BUFFMIN = 10;
+  BUFFMIN = 10; // PERCENT
+  BUFFRESTORE = 50; // PERCENT
+  BUFFPRE = (BUFFCOUNT div 3) * 2; // N. of BUFF = 75%
 
 type
   THTTPSTREAM = class(TThread)
@@ -17,7 +19,6 @@ type
     Fbytesread: Cardinal; // used to manage icy data
     FHTTP: TTCPBlockSocket;
     procedure UpdateBuffer;
-    procedure PreBuffer;
     procedure ParseMetaData(meta: string);
     function ParseMetaHeader(var meta: string): Integer;
   protected
@@ -29,6 +30,7 @@ type
     MetaInterval, MetaBitrate: Cardinal;
     MetaTitle: string;
   public
+    procedure PreBuffer;
     function open(const url: string): Boolean;
     procedure close;
     constructor Create;
@@ -216,18 +218,18 @@ begin
 end;
 
 procedure THTTPSTREAM.Execute;
-//var
-  //cs: TRTLCriticalSection;
+var
+  cs: TRTLCriticalSection;
 begin
-  //InitializeCriticalSection(cs);
+  InitializeCriticalSection(cs);
   repeat
-    //EnterCriticalSection(cs);
+    EnterCriticalSection(cs);
     if Cursor <> Feed then
       UpdateBuffer;
-    //LeaveCriticalSection(cs);
+    LeaveCriticalSection(cs);
     sleep(5);
   until Terminated;
-  //DeleteCriticalSection(cs);
+  DeleteCriticalSection(cs);
 end;
 
 function THTTPSTREAM.open(const url: string): Boolean;
@@ -235,6 +237,7 @@ var
   host, port, icyheader: string;
   icy: string;
 begin
+  Result := False;
   ParseURL(url, host, port, icyheader);
   FHTTP.CloseSocket;
   FHTTP.Connect(host, port);
@@ -248,10 +251,9 @@ begin
 
   icy := FHTTP.RecvTerminated(1000, #13#10#13#10);
 
-  Result := True;
   case ParseMetaHeader(icy) of
     1:
-      Prebuffer();
+      Result := True;
     0:
       Result := False;
     -1:
@@ -263,7 +265,7 @@ procedure THTTPSTREAM.PreBuffer;
 var
   i: Integer;
 begin
-  for i := 0 to (BUFFCOUNT div 4) * 3 do
+  for i := 0 to BUFFPRE do
     UpdateBuffer;
 end;
 
