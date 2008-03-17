@@ -25,7 +25,7 @@ const
     );
 
 const
-  chn_eletronic: array[0..65] of string = (
+  chn_eletronic: array[0..71] of string = (
     'Trance ( afterhours )',
     'Club ( blitz )',
     'Club ( playdio )',
@@ -36,19 +36,24 @@ const
     'Club ( frenchkiss )',
     'Club ( radioseven )',
     'Club ( rautemusik )',
+    'Lounge ( 1.fm )',
     'Club ( 1.fm )',
     'Dance ( 1.fm )',
     'Chillout ( 1.fm )',
     'Funky House ( rautemusik )',
     'Lounge ( rautemusik )',
-    'Progressive ( somafm )',
-    'Ambient ( somafm )',
+    'Progressive ( soma )',
+    'Ambient ( groove.soma )',
+    'Ambient ( space.soma )',
+    'Ambient ( drone.soma )',
+    'Ambient ( blender.soma )',
     'Psytrance ( philosomatika )',
     'Psytrance ( psyradio )',
     'Psyprog ( psyradio )',
     'Chillout ( psyradio )',
     'Minimal ( psyradio )',
     'Trance ( neradio )',
+    'Drum''and''Bass ( dnbradio )',
     'Drum''and''Bass ( bassdrive)',
     'Electro House ( DI )',
     'Tribal House ( DI )',
@@ -91,11 +96,12 @@ const
     'DarkPsybient ( triplag )',
 	  'Dance ( frisky )',
     'Club ( RaveTrax )',
-    'Dance ( FG Radio )'
+    'Dance ( FG Radio )',
+    'Dance ( ibizaglobal )'
     );
 
 const
-  pls_eletronic: array[0..65] of string = (
+  pls_eletronic: array[0..71] of string = (
     'http://stats.ah.fm/dynamicplaylist.m3u?quality=96',
     'http://blitz-stream.de/stream/stream.m3u',
     'http://www.playdio.se/bredband.pls',
@@ -106,6 +112,7 @@ const
     'http://88.191.35.197/listen.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=5438&file=filename.pls',
     'http://club-office.rautemusik.de/listen.pls',
+    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=402939&file=filename.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=6057&file=filename.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=6201&file=filename.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=6951&file=filename.pls',
@@ -113,13 +120,17 @@ const
     'http://lounge-office.rautemusik.de/listen.pls',
     'http://somafm.com/tagstrance.pls',
     'http://somafm.com/groovesalad.pls',
+    'http://somafm.com/spacestation.pls',
+    'http://somafm.com/dronezone.pls',
+    'http://somafm.com/beatblender.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=1712&file=filename.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=3644&file=filename.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=2006&file=filename.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=892&file=filename.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=5293&file=filename.pls',
     'http://www.neradio.se/listen.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=2916&file=filename.pls',
+    'http://www.dnbradio.com/hi.pls',
+    'http://www.bassdrive.com/v2/streams/BassDrive.pls',
     'http://www.di.fm/mp3/electro.pls',
     'http://www.di.fm/mp3/tribalhouse.pls',
     'http://www.di.fm/mp3/funkyhouse.pls',
@@ -161,11 +172,13 @@ const
     'http://www.triplag.com/webradio/chilltrip/triplag-chilltrip.php',
 	  'http://www.friskyradio.com/frisky.m3u',
     'http://ravetrax.com/mp3_hi.pls',
-    'http://fg.impek.tv/listen.pls'
+    'http://fg.impek.tv/listen.pls',
+    'http://s6.viastreaming.net:7010/listen.pls'
     );
 
 const
-  chn_rockmetal: array[0..20] of string = (
+  chn_rockmetal: array[0..21] of string = (
+    'Indie Rock ( soma )',
     'Punk Rock ( idobi )',
     'Classic Rock ( 977music )',
     'Alternative ( 977music )',
@@ -190,7 +203,8 @@ const
     );
 
 const
-  pls_rockmetal: array[0..20] of string = (
+  pls_rockmetal: array[0..21] of string = (
+  'http://somafm.com/indiepop.pls',
     'http://www.idobi.com/radio/iradio.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=8854&file=filename.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=4278&file=filename.pls',
@@ -314,10 +328,12 @@ const
 
 const
   chn_industrial: array[0..8] of string = (
+   // 'Post Industrial ( darksection )',
     'Post Industrial ( tormented )',
     'Post Industrial ( digitalgunfire )',
     'Post Industrial ( ultradark )',
     'Post Industrial ( ebmradio )',
+   // 'Post Industrial ( schwarze )',
     'Post Industrial ( r1live )',
     'Post Industrial ( rantradio )',
     'Post Industrial ( realindustrial )',
@@ -327,10 +343,12 @@ const
 
 const
   pls_industrial: array[0..8] of string = (
+   // 'http://dark-section.de/streams/winamp_128.pls',
     'http://playlist.tormentedradio.com/radioG.pls',
     'http://www.digitalgunfire.com/playlist.pls',
     'http://www.ultradarkradio.com/listen.pls',
     'http://www.ebm-radio.de/tunein/listen.pls',
+   // 'http://www.schwarze-welle.com/play.m3u',
     'http://www.r1live.de/player/winamp.pls',
     'http://www.rantmedia.ca/industrial/rr-industrial128.pls',
     'http://radio.realindustrialradio.com:8000/listen.pls',
@@ -339,7 +357,9 @@ const
     );
 
 const
-  chn_misc: array[0..33] of string = (
+  chn_misc: array[0..35] of string = (
+    'Nu Jazz ( sonic.soma )',
+    'Country ( boot.soma )',
     'Country ( 977music )',
     'Comedy ( 977music )',
     'Downtempo lounge ( swissgroove )',
@@ -366,7 +386,7 @@ const
     'Soundtracks ( sky )',
     'Gospel ( sky )',
     'Salsa ( sky )',
-    'Modern Jazz ( sky )',
+    'Nu Jazz ( sky )',
     'Japan/Anime ( kawaii )',
     'Japan/Anime ( armitage''s )',
     'Japan/Anime ( Anime Academy )',
@@ -377,7 +397,8 @@ const
     );
 
 const
-  pls_misc: array[0..33] of string = (
+  pls_misc: array[0..34] of string = (
+    'http://somafm.com/bootliquor.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=2338&file=filename.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=2135&file=filename.pls',
     'http://www.swissgroove.ch/listen.m3u',

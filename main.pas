@@ -17,7 +17,6 @@ var
   curBitrate: Cardinal;
   lastTitle, curTitle: string;
   undermouse: Cardinal;
-  pls: TPlaylist;
   genreid: array[0..7] of Cardinal;
   radiolist: PRadioList;
 
@@ -39,7 +38,6 @@ var
   lastfm_user, lastfm_pass: string;
 
 procedure fixTrackname;
-procedure writeFile(const FileName, Text: string);
 procedure updateMSN(write: Boolean);
 procedure LastFMexecute;
 procedure showaboutbox;
@@ -70,21 +68,6 @@ begin
   //
   StrReplace(curTitle, '&', ''); // avoid problems!
   //
-end;
-
-procedure writeFile(const FileName, Text: string);
-var
-  myfile: TextFile;
-  timeprefix: string;
-begin
-  AssignFile(myfile, FileName);
-  if FileExists(FileName) then
-    Append(myfile)
-  else
-    Rewrite(myfile);
-  DateTimeToString(timeprefix, '[dd/mm/yy hh:nn:ss] ', Now);
-  Writeln(myfile, timeprefix, Text);
-  CloseFile(myfile);
 end;
 
 procedure updateMSN(write: Boolean);
@@ -134,7 +117,7 @@ end;
 
 function AutoUpdate(const control: PControl): Boolean;
 const
-  appversion = 1.8;
+  appversion = 18;
   updateurl1 = 'http://www.freeshells.ch/~arthurpr/update.txt';
   updateurl2 = 'http://www.thehardwaresxtreme.com/nye/arthurprs/update.txt';
   updatefile1 = 'http://www.freeshells.ch/~arthurpr/oneclick.exe';

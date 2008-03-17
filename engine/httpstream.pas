@@ -39,6 +39,8 @@ type
 
 implementation
 
+uses utils;
+
 procedure SplitValue(const data: string; out field, value: string);
 const
   delimiter = ':';
@@ -192,7 +194,6 @@ begin
       Inc(byteswrited, bytestowrite);
     end;
   end;
-  //Writeln('FEED -> ', feed);
   if feed = BUFFCOUNT - 1 then feed := 0 else Inc(feed);
   Inc(bufffilled);
 end;
@@ -259,6 +260,8 @@ begin
     -1:
       Result := open(icy);
   end;
+
+  if not Result then writeFile('ERROR.txt',icy);
 end;
 
 procedure THTTPSTREAM.PreBuffer;

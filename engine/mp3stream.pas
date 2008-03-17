@@ -143,12 +143,12 @@ begin
   else
   begin
     Status := rsRecovering;
-    FillChar(buffer^, Size, 0);
     DS.Stop;
     repeat
       Sleep(50);
-    until GetBufferPercentage > BUFFRESTORE;
-    DS.Play;
+    until (GetBufferPercentage > BUFFRESTORE) or Terminated;
+    if not Terminated then
+      DS.Play;
     Status := rsPlaying;
   end;
 

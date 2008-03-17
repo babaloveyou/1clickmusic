@@ -95,13 +95,13 @@ begin
 
   if MultiPos(['.as', '.wma'], plsurl) then
   begin
-
     HttpGetText(plsurl, urls);
     ParseASX(urls);
     Exit;
   end;
 
-  if multipos(['.pls', '.m3u'], plsurl) then
+  //# php cuz of some dynamic generated playlists ex: triplag
+  if multipos(['.pls', '.m3u', '.php'], plsurl) then
   begin
     HttpGetText(plsurl, urls);
     ParsePLS(urls);

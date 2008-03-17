@@ -504,7 +504,7 @@ object Form1: TForm1
     MarginRight = 0
     MarginTop = 0
     MarginBottom = 0
-    MinimizeNormalAnimated = False
+    MinimizeNormalAnimated = True
     RestoreNormalMaximized = False
     zOrderChildren = False
     statusSizeGrip = True

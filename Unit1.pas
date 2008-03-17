@@ -5,8 +5,7 @@ unit Unit1;
 interface
 
 {$IFDEF KOL_MCK}
-uses Windows, Messages, KOL, KOLBAPTrayIcon{$IFNDEF KOL_MCK}, mirror, Classes, Controls, mckControls, mckObjs, Graphics, mckCtrls,
-  mckBAPTrayIcon{$ENDIF (place your units here->)};
+uses Windows, Messages, KOL, KOLBAPTrayIcon{$IFNDEF KOL_MCK}, mirror, Classes, Controls, mckControls, mckObjs, Graphics, mckCtrls, mckBAPTrayIcon{$ENDIF (place your units here->)}, SysUtils;
 {$ELSE}
 {$I uses.inc}
 Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
@@ -66,7 +65,7 @@ procedure NewForm1(var Result: PForm1; AParent: PControl);
 
 implementation
 
-uses SysUtils, Unit2, DSoutput, radioplayer, radios, obj_list, obj_playlist, main, EncryptIt;
+uses Unit2, DSoutput, radioplayer, radios, obj_list, main, utils, EncryptIt;
 
 var
   // Core
@@ -144,7 +143,6 @@ begin
     (chn.Status = rsStoped) then
     Exit;
 
-
   // # EVENTS & TRAY ICON CONTROL
   chn.GetPlayInfo(curTitle, curBitrate);
 
@@ -155,7 +153,7 @@ begin
   else
   begin
     Form.caption := curTitle;
-    // Trow events when track changes
+    //# Trow events when track changes
     if curTitle <> lastTitle then
     begin
       lastTitle := curTitle;
@@ -180,13 +178,13 @@ begin
 
   if not form.Visible then Exit;
   // # REFRESH GUI INFORMATION
-  
   lbltrack.caption := curTitle;
-  
+
   progress := chn.GetBufferPercentage;
-  
+
   case progress of
-    0..45:
+    //# skip 0 because of the mms streams
+    1..45:
       lblbuffer.Font.Color := clRed;
     46..70:
       lblbuffer.Font.Color := clGreen;
@@ -304,7 +302,6 @@ begin
   //
   SaveConfig;
   channeltree.Free;
-  pls.Free;
   radiolist.Free;
 end;
 
@@ -332,7 +329,7 @@ begin
   Tray.Icon := form.Icon;
   Tray.AddIcon;
 
-  //HOTKEYS
+  //# HOTKEYS
   RegisterHotKey(form.Handle, 1001, MOD_CONTROL, VK_UP);
   RegisterHotKey(form.Handle, 3001, MOD_CONTROL, $AF);
   RegisterHotKey(form.Handle, 1002, MOD_CONTROL, VK_DOWN);
@@ -354,24 +351,21 @@ begin
   RegisterHotKey(form.Handle, 2011, MOD_CONTROL, VK_F11);
   RegisterHotKey(form.Handle, 2012, MOD_CONTROL, VK_F12);
 
-  // Cria thread
+  //# Create the thread that open the radio
   Thread := NewThread;
   Thread.OnExecute := ThreadExecute;
 
-  // Cria playlist
-  pls := TPlaylist.Create;
-
-  // KOL puro jah que a mck nao que funfar
+  //# KOL puro jah que a mck nao que funfar
   PopupMenu := NewMenu(Form, 0, ['Ctrl+F1', 'Ctrl+F2', 'Ctrl+F3', 'Ctrl+F4', 'Ctrl+F5', 'Ctrl+F6', 'Ctrl+F7', 'Ctrl+F8', 'Ctrl+F9', 'Ctrl+F10', 'Ctrl+F11', 'Ctrl+F12', 'Clear Hotkeys'], nil);
   for i := 0 to 12 do
     PopupMenu.AssignEvents(i, [popupproc]);
-  // define o popup da channeltree
+  //# define o popup da channeltree
   channeltree.SetAutoPopupMenu(PopupMenu);
 
-  // Cria lista de radios
+  //# Cria lista de radios
   Radiolist := NewRadioList;
 
-  // inicializa os canais
+  //# inicializa os canais
   for i := 0 to High(genrelist) do
     genreid[i] := channeltree.TVInsert(0, 0, genrelist[i]);
 
@@ -438,7 +432,8 @@ begin
 
   lbl.Caption := 'LOADING -> SOUND ENGINE!';
   lbl.Update;
-  // Inicializa o SOM
+
+  //# Inicializa o SOM
   DS := TDSoutput.Create;
 
   loading.Free;
@@ -448,7 +443,7 @@ end;
 
 procedure TForm1.channeltreeSelChange(Sender: PObj);
 begin
-  if channeltree.TVItemChildCount[channeltree.TVSelected] = 0 then
+  if not channeltree.TVItemHasChildren[channeltree.TVSelected] then
     PlayChannel;
 end;
 
@@ -489,11 +484,11 @@ end;
 
 procedure TForm1.btoptionsClick(Sender: PObj);
 begin
-  // create and show
+  //# create and show
   Form.AlphaBlend := 180;
   NewForm2(Form2, Form);
   Form2.Form.ShowModal;
-  // get rid of it and set alpha back to 255
+  //# get rid of it and set alpha back to 255
   Form2.Form.Free;
   Form2 := nil;
   Form.AlphaBlend := 255;

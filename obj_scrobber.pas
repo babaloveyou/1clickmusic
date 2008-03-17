@@ -117,8 +117,8 @@ var
 begin
   Result := False;
   sl := TStringlist.Create;
-  // Format and Correct the GMT - 2 time
-  moment := FormatDateTime('YYYY-MM-DD hh:mm:ss', IncHour(Now, 2));
+  // Format and Correct the GMT - 3 time
+  moment := FormatDateTime('YYYY-MM-DD hh:mm:ss', IncHour(Now, 3));
   // md5 response
   md5response := StrMD5(passMD5 + sessioncode);
   // the finalurl encoded to UTF-8

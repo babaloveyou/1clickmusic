@@ -117,6 +117,7 @@ begin
     Result.Timer.Enabled := True;
       Result.btoptions.OnClick := Result.btoptionsClick;
     Result.Form.CenterOnParent.CanResize := False;
+    Result.Form.MinimizeNormalAnimated;
     Result.KOLForm1FormCreate( Result );
 
 end;

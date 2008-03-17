@@ -18,8 +18,8 @@ type
     property PlayCursorPos: Cardinal read GetPlayCursorPos;
     property Device: IDirectSound read FDS;
     property SoundBuffer: IDirectSoundBuffer read FSecondary;
-    function Play: Boolean;
-    function Stop: Boolean;
+    procedure Play;
+    procedure Stop;
     function InitializeBuffer(const Arate, Achannels: Cardinal): Cardinal;
     constructor Create;
     destructor Destroy; override;
@@ -28,7 +28,7 @@ type
   // ESQUELETO PARA OS PLAYERS
 
 type
-  TRadioStatus = (rsStoped, rsPrebuffering,rsPlaying, rsRecovering);
+  TRadioStatus = (rsStoped, rsPrebuffering, rsPlaying, rsRecovering);
 
 type
   TRadioPlayer = class(TThread)
@@ -65,17 +65,49 @@ uses
 
 { TDSoutput }
 
+{function DSEnumOutputCallback(lpGuid: PGUID; lpcstrDescription: PChar;
+  lpcstrModule: PChar; lpContext: Pointer): BOOL; stdcall;
+begin
+  Result := True;
+end;}
+
+
+procedure DSCHECK(const value : HResult;const Where : string);
+var
+  ErrorStr : string;
+begin
+  if value = DS_OK then Exit;
+  case value of
+    DSERR_ACCESSDENIED : ErrorStr := 'DSERR_ACCESSDENIED';
+    DSERR_BUFFERTOOSMALL : ErrorStr := 'DSERR_BUFFERTOOSMALL';
+    DSERR_ALLOCATED: ErrorStr := 'DSERR_ALLOCATED';
+    DSERR_INVALIDPARAM: ErrorStr := 'DSERR_INVALIDPARAM';
+    DSERR_INVALIDCALL: ErrorStr := 'DSERR_INVALIDCALL';
+    DSERR_GENERIC: ErrorStr := 'DSERR_GENERIC';
+    DSERR_BADFORMAT: ErrorStr := 'DSERR_BADFORMAT';
+    DSERR_UNSUPPORTED: ErrorStr := 'DSERR_UNSUPPORTED';
+    DSERR_NODRIVER: ErrorStr := 'DSERR_NODRIVER';
+    DSERR_ALREADYINITIALIZED: ErrorStr := 'DSERR_ALREADYINITIALIZED';
+    DSERR_NOINTERFACE : ErrorStr := 'DSERR_NOINTERFACE';
+  end;
+  raise Exception.CreateFmt('ERRO, [%s] : %s',[ErrorStr,Where]);
+end;
+
+
 constructor TDSoutput.Create;
 var
   Fpwfm: TWAVEFORMATEX;
   Fpdesc: TDSBUFFERDESC;
 begin
+  //DirectSoundEnumerate(DSEnumOutputCallback, Self);
   // CREATING DEVICE FOR DEFAULT SOUND DRIVER
-  if DirectSoundCreate(nil, FDS, nil) <> DS_OK then
-    raise Exception.Create('ERRO, criando o device do DirectSound');
+  //if DirectSoundCreate(nil, FDS, nil) <> DS_OK then
+  //  raise Exception.Create('ERRO, criando o device do DirectSound');
+  DSCHECK(DirectSoundCreate(nil, FDS, nil),'Creating DS device');
 
-  if FDS.SetCooperativeLevel(GetDesktopWindow, DSSCL_PRIORITY) <> DS_OK then
-    raise Exception.Create('ERRO, negociando o cooperative level');
+  //if FDS.SetCooperativeLevel(GetDesktopWindow, DSSCL_PRIORITY) <> DS_OK then
+  //  raise Exception.Create('ERRO, negociando o cooperative level');
+  DSCHECK(FDS.SetCooperativeLevel(GetDesktopWindow, DSSCL_PRIORITY),'Setting the cooperative level');
 
   FillChar(Fpdesc, SizeOf(TDSBUFFERDESC), 0);
   Fpdesc.dwSize := SizeOf(TDSBUFFERDESC);
@@ -83,8 +115,9 @@ begin
   Fpdesc.lpwfxFormat := nil;
   Fpdesc.dwBufferBytes := 0;
 
-  if FDS.CreateSoundBuffer(Fpdesc, Fprimary, nil) <> DS_OK then
-    raise Exception.Create('ERRO, criando o buffer primario');
+  //if FDS.CreateSoundBuffer(Fpdesc, Fprimary, nil) <> DS_OK then
+  //  raise Exception.Create('ERRO, criando o buffer primario');
+  DSCHECK(FDS.CreateSoundBuffer(Fpdesc, Fprimary, nil),'Creating Primary buffer');
 
   FillChar(Fpwfm, SizeOf(TWAVEFORMATEX), 0);
   Fpwfm.wFormatTag := WAVE_FORMAT_PCM;
@@ -95,8 +128,9 @@ begin
   Fpwfm.cbSize := 0;
   Fpwfm.nAvgBytesPerSec := 44100 * 4;
 
-  if FPrimary.SetFormat(@Fpwfm) <> DS_OK then
-    raise Exception.Create('ERRO, setando formato do buffer primario');
+  //if FPrimary.SetFormat(@Fpwfm) <> DS_OK then
+  //  raise Exception.Create('ERRO, setando formato do buffer primario');
+  DSCHECK(FPrimary.SetFormat(@Fpwfm),'Chaning Primary buffer format');
 end;
 
 destructor TDSoutput.Destroy;
@@ -152,17 +186,15 @@ begin
   FSecondary.SetVolume(lastvolume);
 end;
 
-function TDSoutput.Play: Boolean;
+procedure TDSoutput.Play;
 begin
-  Result := FSecondary <> nil;
-  if Result then
+  if Assigned(FSecondary) then
     FSecondary.Play(0, 0, DSBPLAY_LOOPING);
 end;
 
-function TDSoutput.Stop: Boolean;
+procedure TDSoutput.Stop;
 begin
-  Result := FSecondary <> nil;
-  if Result then
+  if Assigned(FSecondary) then
     FSecondary.Stop;
 end;
 
