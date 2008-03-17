@@ -4,11 +4,12 @@ interface
 
 uses
   Classes,
+  SysUtils,
   httpsend,
   KOL;
 
 type
-  TRadioType = (RTMP3, RTMMS);
+  TRadioType = (rtMP3, rtMMS);
 
 type
   TPlaylist = class
@@ -23,18 +24,7 @@ implementation
 
 { TPlaylist }
 
-uses StrUtils, SysUtils;
-
-function MultiPos(const SubStr: array of string; const str: string): Boolean;
-var
-  i: Integer;
-begin
-  Result := True;
-  for i := 0 to High(SubStr) do
-    if Pos(SubStr[i], str) > 0 then
-      Exit;
-  Result := False;
-end;
+uses StrUtils, utils;
 
 procedure ParseASX(Lines: TStrings);
 
@@ -99,7 +89,7 @@ end;
 
 function TPlaylist.openpls(const plsurl: string): TRadioType;
 begin
-  Result := RTMMS;
+  Result := rtMMS;
   if plsurl = '' then Exit;
   urls.Clear;
 
@@ -120,9 +110,9 @@ begin
     urls.Add(plsurl);
 
   if (Pos('mms://', urls.Text) > 0) then
-    Result := RTMMS
+    Result := rtMMS
   else
-    Result := RTMP3;
+    Result := rtMP3;
 end;
 
 end.

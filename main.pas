@@ -113,7 +113,7 @@ begin
   lastfmplugin := TScrobber.Create;
   try
     if not lastfmplugin.Execute(curtitle) then
-      MessageBox(0, 'Last.fm Scrobber ERROR!', PChar(lastfmplugin.Error), MB_ICONERROR);
+      MessageBox(0, PChar(lastfmplugin.Error), 'Last.fm Scrobber ERROR!', MB_ICONERROR);
   finally
     lastfmplugin.Free;
   end;

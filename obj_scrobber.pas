@@ -6,7 +6,8 @@ uses
   SysUtils,
   DateUtils,
   Classes,
-  IcsMD5,
+  synautil,
+  synacode,
   httpsend;
 
 type
@@ -26,9 +27,9 @@ type
 
 implementation
 
-{ TScrober }
+uses main, utils;
 
-uses main;
+{ TScrober }
 
 function HttpPostText(const URL, URLdata: string; Response: TStrings): Boolean;
 var
@@ -49,34 +50,34 @@ begin
   end;
 end;
 
-function LCStrMD5(const str: string): string;
+function StrMD5(const str: string): string;
 begin
-  Result := AnsiLowerCase(StrMD5(str));
+  Result := StrToHex(MD5(str));
 end;
 
 function TScrobber.HandShake(const UserName, password: string): Boolean;
 const
   handshakeurl = 'http://post.audioscrobbler.com/?hs=true&p=1.1&c=1cm&v=0.1&u=%s';
 var
-  sl: TStringlist;
+  lines: TStringlist;
 begin
   Result := False;
   user := UserName;
   pass := password;
-  passMD5 := LCStrMD5(pass);
-  sl := TStringlist.Create;
-  HttpGetText(Format(handshakeurl, [user]), sl);
+  passMD5 := StrMD5(pass);
+  lines := TStringlist.Create;
+  HttpGetText(Format(handshakeurl, [user]), lines);
   try
-    if sl[0] = 'UPTODATE' then
+    if lines[0] = 'UPTODATE' then
     begin
       Result := True;
-      sessioncode := sl[1]; // SESSION CODE
-      scroburl := sl[2]; // SCROB URL
+      sessioncode := lines[1]; // SESSION CODE
+      scroburl := lines[2]; // SCROB URL
     end
     else
-      Error := Format('Last.FM plugin handshake ERROR :' + #10#13 + '%s', [sl[0]]);
+      Error := Format('Last.FM plugin handshake ERROR :' + #10#13 + '%s', [lines[0]]);
   finally
-    sl.Free;
+    lines.Free;
   end;
 end;
 
@@ -93,9 +94,7 @@ begin
   p := Pos(' - ', title);
 
   if (p = 0) or
-    (Pos('.FM', UpperCase(title)) > 0) or
-    (Pos('http', title) > 0) or
-    (Pos('www', title) > 0) then
+    MultiPos(['www','http','.fm'],curTitle) then
     Exit;
 
   artist := Copy(title, 1, p - 1);
@@ -121,7 +120,7 @@ begin
   // Format and Correct the GMT - 2 time
   moment := FormatDateTime('YYYY-MM-DD hh:mm:ss', IncHour(Now, 2));
   // md5 response
-  md5response := LCStrMD5(passMD5 + sessioncode);
+  md5response := StrMD5(passMD5 + sessioncode);
   // the finalurl encoded to UTF-8
   urldata := AnsiToUtf8(Format(scroburlparam, [user, md5response, artist, track, '', 240, moment]));
   // submit the POST
