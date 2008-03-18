@@ -94,12 +94,9 @@ var
   lastfmplugin: TScrobber;
 begin
   lastfmplugin := TScrobber.Create;
-  try
-    if not lastfmplugin.Execute(curtitle) then
-      MessageBox(0, PChar(lastfmplugin.Error), 'Last.fm Scrobber ERROR!', MB_ICONERROR);
-  finally
-    lastfmplugin.Free;
-  end;
+  if not lastfmplugin.Execute(curtitle) then
+    MessageBox(0, PChar(lastfmplugin.Error), 'Last.fm Scrobber ERROR!', MB_ICONERROR);
+  lastfmplugin.Free;
 end;
 
 procedure showaboutbox;
@@ -129,57 +126,53 @@ var
 begin
   Result := True;
   Text := TStringlist.Create;
-  try
-    if not (HttpGetText(updateurl1, Text) or
-      HttpGetText(updateurl2, Text)) then
-    begin
+  if not (HttpGetText(updateurl1, Text) or
+    HttpGetText(updateurl2, Text)) then
+  begin
+    Result := False;
+    control.Caption := 'ERROR DOWNLOADING THE UPDATE!';
+    sleep(500);
+  end;
+
+  if Result and (Str2Double(Text[0]) > appversion) then
+  begin
+    control.Caption := 'DOWNLOADING THE UPDATE : ' + Text[0];
+
+    tempfilepath := GetTempDir + 'onemusic.exe';
+    newfile := TFileStream.Create(tempfilepath, fmCreate);
+    if not (HttpGetBinary(updatefile1, newfile) or
+      HttpGetBinary(updatefile2, newfile)) then
       Result := False;
-      control.Caption := 'ERROR DOWNLOADING THE UPDATE!';
-      sleep(500);
-    end;
+    newfile.Free;
 
-    if Result and (Str2Double(Text[0]) > appversion) then
+    if Result then
     begin
-      tempfilepath := GetTempDir + 'onemusic.exe';
-      newfile := TFileStream.Create(tempfilepath, fmCreate);
-      control.Caption := 'DOWNLOADING THE UPDATE : ' + Text[0];
-
-      if not (HttpGetBinary(updatefile1, newfile) or
-        HttpGetBinary(updatefile2, newfile)) then
-        Result := False;
-
-      newfile.Free;
-
-      if Result then
-      begin
-        batpath := GetTempDir + 'oneclickupdate.bat';
-        {$WARNINGS OFF}
-        FileSetAttr(ParamStr(0), 0);
-        {$WARNINGS ON}
-        Text.Clear;
-        Text.Add(':Label1');
-        Text.Add('del ' + AnsiQuotedStr(ParamStr(0), '"'));
-        Text.Add('if Exist ' + AnsiQuotedStr(ParamStr(0), '"') + ' goto Label1');
-        Text.Add('Move ' + AnsiQuotedStr(tempfilepath, '"') + ' ' + AnsiQuotedStr(ParamStr(0), '"'));
-        Text.Add('Call ' + AnsiQuotedStr(ParamStr(0), '"'));
-        Text.Add('del ' + AnsiQuotedStr(batpath, '"'));
-        Text.SaveToFile(batpath);
-        Result := WinExec(PChar(batpath), SW_HIDE) > 0;
-      end
-      else
-      begin
-        control.Caption := 'ERROR DOWNLOADING THE UPDATE!';
-        sleep(500);
-      end;
+      batpath := GetTempDir + 'oneclickupdate.bat';
+      {$WARNINGS OFF}
+      FileSetAttr(ParamStr(0), 0);
+      {$WARNINGS ON}
+      Text.Clear;
+      Text.Add(':Label1');
+      Text.Add('del ' + AnsiQuotedStr(ParamStr(0), '"'));
+      Text.Add('if Exist ' + AnsiQuotedStr(ParamStr(0), '"') + ' goto Label1');
+      Text.Add('Move ' + AnsiQuotedStr(tempfilepath, '"') + ' ' + AnsiQuotedStr(ParamStr(0), '"'));
+      Text.Add('Call ' + AnsiQuotedStr(ParamStr(0), '"'));
+      Text.Add('del ' + AnsiQuotedStr(batpath, '"'));
+      Text.SaveToFile(batpath);
+      Result := WinExec(PChar(batpath), SW_HIDE) > 0;
     end
     else
     begin
-      Result := False;
-      control.Caption := 'APP UP TO DATE!';
+      control.Caption := 'ERROR DOWNLOADING THE UPDATE!';
+      sleep(500);
     end;
-  finally
-    Text.Free;
+  end
+  else
+  begin
+    Result := False;
+    control.Caption := 'APP UP TO DATE!';
   end;
+  Text.Free;
 end;
 
 end.

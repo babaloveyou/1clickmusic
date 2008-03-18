@@ -143,9 +143,33 @@ begin
     (chn.Status = rsStoped) then
     Exit;
 
-  // # EVENTS & TRAY ICON CONTROL
+  // # GET INFO
+  progress := chn.GetBufferPercentage;
   chn.GetPlayInfo(curTitle, curBitrate);
 
+  // # REFRESH GUI INFORMATION
+  lbltrack.caption := curTitle;
+
+  case progress of
+    //# skip 0 because of the mms streams
+    1..45:
+      lblbuffer.Font.Color := clRed;
+    46..70:
+      lblbuffer.Font.Color := clGreen;
+  else
+    lblbuffer.Font.Color := clBlue;
+  end;
+
+  lblbuffer.Caption :=
+    UInt2Str(curBitrate) + 'kbps @ buffer:. ' + UInt2Str(progress) + '%';
+
+  case chn.Status of
+    rsPlaying: lblstatus.Caption := 'Connected';
+    rsPrebuffering: lblstatus.Caption := 'Prebufering..';
+    rsRecovering: lblstatus.Caption := 'Recovering buffer..';
+  end;
+
+  // # EVENTS & TRAY ICON CONTROL
   Tray.Tooltip := curTitle;
 
   if curTitle = '' then
@@ -174,31 +198,6 @@ begin
         else
           LastFMThread := NewThreadEx(LastFMThreadExecute);
     end;
-  end;
-
-  if not form.Visible then Exit;
-  // # REFRESH GUI INFORMATION
-  lbltrack.caption := curTitle;
-
-  progress := chn.GetBufferPercentage;
-
-  case progress of
-    //# skip 0 because of the mms streams
-    1..45:
-      lblbuffer.Font.Color := clRed;
-    46..70:
-      lblbuffer.Font.Color := clGreen;
-  else
-    lblbuffer.Font.Color := clBlue;
-  end;
-
-  lblbuffer.Caption :=
-    UInt2Str(curBitrate) + 'kbps @ buffer:. ' + UInt2Str(progress) + '%';
-
-  case chn.Status of
-    rsPlaying: lblstatus.Caption := 'Connected';
-    rsPrebuffering: lblstatus.Caption := 'Prebufering..';
-    rsRecovering: lblstatus.Caption := 'Recovering buffer..';
   end;
 end;
 

@@ -2,7 +2,7 @@ unit obj_list;
 
 interface
 
-uses kol, KOLadd, SysUtils, StrUtils;
+uses kol, KOLadd, SysUtils;
 
 type
   PRadioItem = ^TRadioItem;
@@ -33,6 +33,8 @@ function NewRadioList: PRadioList;
 
 implementation
 
+uses StrUtils;
+
 function NewRadioList: PRadioList;
 begin
   New(Result, Create);
@@ -51,7 +53,7 @@ begin
   FList.Add(newitem);
 end;
 
-{procedure SplitQuotedValues(var data: string; out field, value: string);
+procedure SplitQuotedValues(var data: string; out field, value: string);
 const
   delimiter = ' "';
 var
@@ -66,7 +68,7 @@ begin
   end;
 end;
 
-procedure TRadioList.Automate(const radiolib: string;
+{procedure TRadioList.Automate(const radiolib: string;
   const Achanneltree: PControl);
 const
   quote = '"';

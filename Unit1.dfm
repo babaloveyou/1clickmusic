@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 228
-  Top = 289
+  Left = 226
+  Top = 334
   Width = 616
   Height = 318
   HorzScrollBar.Visible = False
@@ -504,7 +504,7 @@ object Form1: TForm1
     MarginRight = 0
     MarginTop = 0
     MarginBottom = 0
-    MinimizeNormalAnimated = True
+    MinimizeNormalAnimated = False
     RestoreNormalMaximized = False
     zOrderChildren = False
     statusSizeGrip = True

@@ -8,7 +8,7 @@ begin
   {$ELSE OBJECTS}
   New( Result, Create );
   {$ENDIF KOL CLASSES/OBJECTS}
-  Result.Form := NewForm( AParent, '1ClickMusic' ).SetPosition( 228, 289 );
+  Result.Form := NewForm( AParent, '1ClickMusic' ).SetPosition( 226, 334 );
   Applet :=  Result.Form;
   Result.Form.Add2AutoFree( Result );
 {$IFDEF UNICODE_CTRLS}
@@ -117,7 +117,6 @@ begin
     Result.Timer.Enabled := True;
       Result.btoptions.OnClick := Result.btoptionsClick;
     Result.Form.CenterOnParent.CanResize := False;
-    Result.Form.MinimizeNormalAnimated;
     Result.KOLForm1FormCreate( Result );
 
 end;

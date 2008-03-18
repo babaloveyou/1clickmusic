@@ -260,8 +260,6 @@ begin
     -1:
       Result := open(icy);
   end;
-
-  if not Result then writeFile('ERROR.txt',icy);
 end;
 
 procedure THTTPSTREAM.PreBuffer;

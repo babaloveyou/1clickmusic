@@ -32,7 +32,7 @@ pendingurls = []
 
 plsfile = open("radios.pas")
 for line in plsfile:
-    if "http://" in line or "mms://" in line:
+    if "http://" in line:
         url = line.split("'")[1]
         pendingurls.append( (url.split(".")[1],url) )
 plsfile.close()

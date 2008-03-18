@@ -83,7 +83,7 @@ const
     'Jumpstyle/Hardstyle ( fear )',
     'Hardstyle/Hardcore ( fear )',
     'BreakBeat ( chn1.breaksfm )',
-	  'BreakBeat ( chn2.breaksfm )',
+    'BreakBeat ( chn2.breaksfm )',
     'Chillout ( bluefm )',
     'Dance ( 181.fm )',
     'Chillout ( 181.fm )',
@@ -94,7 +94,7 @@ const
     'DarkPsy ( psychedelik )',
     'DarkPsy ( triplag )',
     'DarkPsybient ( triplag )',
-	  'Dance ( frisky )',
+    'Dance ( frisky )',
     'Club ( RaveTrax )',
     'Dance ( FG Radio )',
     'Dance ( ibizaglobal )'
@@ -159,7 +159,7 @@ const
     'http://internetradio.fearfm.nl/customplayer/fearfm_hard_high.pls',
     'http://internetradio.fearfm.nl/customplayer/fearfm_harder_high.pls',
     'http://www.breaksfm.com/breaksfm/hifi.m3u',
-  	'http://www.breaksfm.com/breaksfm/hifi2.m3u',
+    'http://www.breaksfm.com/breaksfm/hifi2.m3u',
     'http://bluefm.net/listen.pls',
     'http://www.181.fm/winamp.pls?station=181-energy98&bitrate=hi',
     'http://www.181.fm/winamp.pls?station=181-chilled&bitrate=hi',
@@ -170,7 +170,7 @@ const
     'http://88.191.38.140:8014/listen.pls',
     'http://www.triplag.com/webradio/darkpsy/triplag-darkpsy.php',
     'http://www.triplag.com/webradio/chilltrip/triplag-chilltrip.php',
-	  'http://www.friskyradio.com/frisky.m3u',
+    'http://www.friskyradio.com/frisky.m3u',
     'http://ravetrax.com/mp3_hi.pls',
     'http://fg.impek.tv/listen.pls',
     'http://s6.viastreaming.net:7010/listen.pls'
@@ -204,7 +204,7 @@ const
 
 const
   pls_rockmetal: array[0..21] of string = (
-  'http://somafm.com/indiepop.pls',
+    'http://somafm.com/indiepop.pls',
     'http://www.idobi.com/radio/iradio.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=8854&file=filename.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=4278&file=filename.pls',
@@ -302,7 +302,7 @@ const
     'Baroque ( 1.fm )',
     'Opera ( 1.fm )',
     'Classical ( 1.fm )',
-    '80''s ( asf )', // atlantic sound factory
+    '80''s ( asf )',
     '80''s ( chaos )'
     );
 
@@ -328,37 +328,37 @@ const
 
 const
   chn_industrial: array[0..8] of string = (
-   // 'Post Industrial ( darksection )',
+    // 'Post Industrial ( darksection )',
     'Post Industrial ( tormented )',
     'Post Industrial ( digitalgunfire )',
     'Post Industrial ( ultradark )',
     'Post Industrial ( ebmradio )',
-   // 'Post Industrial ( schwarze )',
+    // 'Post Industrial ( schwarze )',
     'Post Industrial ( r1live )',
     'Post Industrial ( rantradio )',
     'Post Industrial ( realindustrial )',
-	  'Post Industrial ( vampirefreaks )',
+    'Post Industrial ( vampirefreaks )',
     'Ambient Industrial ( somafm )'
     );
 
 const
   pls_industrial: array[0..8] of string = (
-   // 'http://dark-section.de/streams/winamp_128.pls',
+    // 'http://dark-section.de/streams/winamp_128.pls',
     'http://playlist.tormentedradio.com/radioG.pls',
     'http://www.digitalgunfire.com/playlist.pls',
     'http://www.ultradarkradio.com/listen.pls',
     'http://www.ebm-radio.de/tunein/listen.pls',
-   // 'http://www.schwarze-welle.com/play.m3u',
+    // 'http://www.schwarze-welle.com/play.m3u',
     'http://www.r1live.de/player/winamp.pls',
     'http://www.rantmedia.ca/industrial/rr-industrial128.pls',
     'http://radio.realindustrialradio.com:8000/listen.pls',
-	  'http://vfradio.com/listen/8000.m3u',
+    'http://vfradio.com/listen/8000.m3u',
     'http://somafm.com/doomed.pls'
     );
 
 const
   chn_misc: array[0..35] of string = (
-    'Nu Jazz ( sonic.soma )',
+    'Experimental Jazz ( sonic.soma )',
     'Country ( boot.soma )',
     'Country ( 977music )',
     'Comedy ( 977music )',
@@ -397,7 +397,8 @@ const
     );
 
 const
-  pls_misc: array[0..34] of string = (
+  pls_misc: array[0..35] of string = (
+    'http://somafm.com/sonicuniverse.pls',
     'http://somafm.com/bootliquor.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=2338&file=filename.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=2135&file=filename.pls',
@@ -467,10 +468,9 @@ const
     'mms://wmedia.telium.com.br/transsplight',
     'mms://transastream.dyndns.org/transapop',
     'mms://mixstr.ig.com.br/mixfm',
-    //
     'http://radio.2streaming.info:8014',
     // radios da globo
-    'http://wmsgr.globo.com/webmedia/ObterPathMidia?usuario=sgr01&tipo=live&path=/sgr_off_sportv_live.wma&midiaId=511317&ext=asx&output=ASX',
+    'http://wmsgr.globo.com/webmedia/ObterPathMidia?usuario=sgr01&tipo=live&path=/sgr_off_sportv_live.wma&midiaId=511317&ext=.asx&output=ASX',
     'http://wmsgr.globo.com/webmedia/ObterPathMidia?usuario=sgr01&tipo=live&path=/sgr_off_multishow_live.wma&midiaId=581681&ext.asx&output=ASX',
     'http://wmsgr.globo.com/webmedia/ObterPathMidia?usuario=sgr01&tipo=live&path=/sgr_off_gnt_live.wma&midiaId=510705&ext.asx&output=ASX'
     );
