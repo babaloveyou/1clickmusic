@@ -58,6 +58,8 @@ type
     destructor Destroy; override;
   end;
 
+procedure DSCHECK(const value : HResult;const Where : string);
+
 implementation
 
 uses

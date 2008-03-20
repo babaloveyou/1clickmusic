@@ -134,7 +134,7 @@ begin
     sleep(500);
   end;
 
-  if Result and (Str2Double(Text[0]) > appversion) then
+  if Result and (StrToFloat(Text[0]) > appversion) then
   begin
     control.Caption := 'DOWNLOADING THE UPDATE : ' + Text[0];
 

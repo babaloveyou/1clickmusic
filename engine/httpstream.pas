@@ -134,9 +134,7 @@ begin
       Result := 0;
   end
   else
-    if (Pos('302', MetaData[0]) > 0) or
-      (Pos('301', MetaData[0]) > 0) or
-      (Pos('303', MetaData[0]) > 0) then
+    if MultiPos(['302','303','301'],MetaData[0]) then
     begin
       Result := -1;
       for i := 1 to MetaData.Count - 1 do

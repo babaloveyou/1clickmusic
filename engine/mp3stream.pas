@@ -65,7 +65,6 @@ begin
   end;
   mpg123_format_none(Fhandle);
   mpg123_format(Fhandle, Frate, Fchannels, Fencoding);
-
   Fbuffersize := DS.InitializeBuffer(Frate, Fchannels);
 end;
 
@@ -122,7 +121,7 @@ begin
 
   if section = Flastsection then Exit;
 
-  DS.SoundBuffer.Lock(section * Fbuffersize, Fbuffersize, @buffer, @Size, nil, nil, 0);
+  DSCHECK(DS.SoundBuffer.Lock(section * Fbuffersize, Fbuffersize, @buffer, @Size, nil, nil, 0),'LOCKING DS BUFFER');
 
   if (GetBufferPercentage > BUFFMIN) then
   begin
@@ -152,7 +151,7 @@ begin
     Status := rsPlaying;
   end;
 
-  DS.SoundBuffer.Unlock(buffer, Size, nil, 0);
+  DSCHECK(DS.SoundBuffer.Unlock(buffer, Size, nil, 0),'UNLOCKING DS BUFFER');
 
   Flastsection := section;
 end;

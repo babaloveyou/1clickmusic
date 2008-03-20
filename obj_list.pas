@@ -2,7 +2,7 @@ unit obj_list;
 
 interface
 
-uses kol, KOLadd, SysUtils;
+uses kol, SysUtils;
 
 type
   PRadioItem = ^TRadioItem;
@@ -17,9 +17,8 @@ type
   TRadioList = object(TObj)
   private
     FList: PList;
-    function Get(Index: Integer): PRadioItem;
+    function GetItem(Index: Integer): PRadioItem;
   public
-    property items[Index: Integer]: PRadioItem read Get; default;
     procedure Add(const pos: Cardinal; const Name, pls: string);
     function getpos(const Name: string): Cardinal;
     function getname(const pos: Cardinal): string;
@@ -53,7 +52,7 @@ begin
   FList.Add(newitem);
 end;
 
-procedure SplitQuotedValues(var data: string; out field, value: string);
+{procedure SplitQuotedValues(var data: string; out field, value: string);
 const
   delimiter = ' "';
 var
@@ -68,7 +67,7 @@ begin
   end;
 end;
 
-{procedure TRadioList.Automate(const radiolib: string;
+procedure TRadioList.Automate(const radiolib: string;
   const Achanneltree: PControl);
 const
   quote = '"';
@@ -137,13 +136,13 @@ destructor TRadioList.Destroy;
 begin
   while FList.Count > 0 do
   begin
-    Dispose(PRadioItem(FList.Items[0]));
-    FList.delete(0);
+    Dispose(GetItem(0));
+    FList.Delete(0);
   end;
   FList.Free;
 end;
 
-function TRadioList.Get(Index: Integer): PRadioItem;
+function TRadioList.GetItem(Index: Integer): PRadioItem;
 begin
   Result := FList.Items[Index];
 end;
@@ -153,9 +152,9 @@ var
   i: Integer;
 begin
   for i := 0 to FList.Count - 1 do
-    if items[i].pos = pos then
+    if GetItem(i).pos = pos then
     begin
-      Result := PRadioItem(FList.items[i]).Name;
+      Result := GetItem(i).Name;
       Exit;
     end;
   Result := '';
@@ -166,9 +165,9 @@ var
   i: Integer;
 begin
   for i := 0 to FList.Count - 1 do
-    if items[i].Name = Name then
+    if GetItem(i).Name = Name then
     begin
-      Result := PRadioItem(FList.items[i]).pls;
+      Result := GetItem(i).pls;
       Exit;
     end;
   Result := '';
@@ -179,9 +178,9 @@ var
   i: Integer;
 begin
   for i := 0 to FList.Count - 1 do
-    if items[i].Name = Name then
+    if GetItem(i).Name = Name then
     begin
-      Result := PRadioItem(FList.items[i]).pos;
+      Result := GetItem(i).pos;
       Exit;
     end;
   Result := 0;

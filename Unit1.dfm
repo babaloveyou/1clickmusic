@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 226
-  Top = 334
+  Left = 268
+  Top = 344
   Width = 616
   Height = 318
   HorzScrollBar.Visible = False
@@ -422,12 +422,12 @@ object Form1: TForm1
     ShowHint = False
     ReportDetailed = False
     GeneratePCode = False
-    NewIF = False
+    NewIF = True
     Left = 80
     Top = 16
   end
   object Timer: TKOLTimer
-    Interval = 250
+    Interval = 100
     Enabled = True
     OnTimer = TimerTimer
     Multimedia = False
@@ -436,20 +436,9 @@ object Form1: TForm1
     Left = 112
     Top = 16
   end
-  object PopupMenu: TKOLPopupMenu
-    showShortcuts = True
-    generateConstants = True
-    generateSeparatorConstants = False
-    OwnerDraw = False
-    Flags = []
-    Localizy = loForm
-    Left = 48
-    Top = 16
-    ItemCount = 0
-  end
   object KOLForm1: TKOLForm
     Tag = 0
-    Icon = 'ZFORM1_TRAYICON1'
+    Icon = 'TRAY'
     ForceIcon16x16 = False
     Caption = '1ClickMusic'
     Visible = True
@@ -514,12 +503,12 @@ object Form1: TForm1
     OnFormCreate = KOLForm1FormCreate
     EraseBackground = False
     supportMnemonics = False
-    Left = 16
+    Left = 48
     Top = 16
   end
   object Tray: TKOLBAPTrayIcon
     OnMouseUp = TrayMouseUp
-    Left = 144
+    Left = 16
     Top = 16
   end
 end

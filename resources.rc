@@ -1,0 +1,26 @@
+TRAY ICON "res/trayicon.ico"
+
+VER VERSIONINFO
+FILEVERSION 0,1,8,0
+PRODUCTVERSION 0,1,8,0
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "040904E4"
+    BEGIN
+      VALUE "FileVersion", "1.8.0\000"
+      VALUE "ProductVersion", "1.8.0\000"
+      VALUE "ProductName", "1ClickMusic\000"
+      //VALUE "CompanyName", "a\000"
+      VALUE "FileDescription", "por arthurprs\000"
+      //VALUE "InternalName", "a\000"
+      VALUE "LegalCopyright", "arthurprs@gmail.com\000"
+      VALUE "OriginalFilename", "onemusic.exe\000"
+    END
+  END
+  //BLOCK "VarFileInfo"
+  //BEGIN
+  //  VALUE "Translation", 0x409, 1200
+  //END
+END
+

@@ -15,7 +15,6 @@ var
   i: Integer;
 begin
   Result := False;
-
   playlist := TPlaylist.Create;
   RadioType := playlist.openpls(url);
   for i := 0 to playlist.urls.Count - 1 do
@@ -25,11 +24,9 @@ begin
     else
       APlayer := TMP3.Create(ADevice);
 
-    if APlayer.open(playlist.urls[i]) then
-    begin
-      Result := True;
-      break;
-    end
+    Result := APlayer.open(playlist.urls[i]);
+    if Result then
+      break
     else
       FreeAndNil(APlayer);
   end;

@@ -319,8 +319,8 @@ const
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=3306&file=filename.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=6422&file=filename.pls',
     'http://www.sky.fm/mp3/classical.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=2541&file=filename.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=416294&file=filename.pls',
+    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=4899&file=filename.pls',
+    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=285260&file=filename.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=7790&file=filename.pls',
     'http://www.atlanticsoundfactory.com/asfbb.pls',
     'http://www.chaos-radio.net/stream/listen.m3u'

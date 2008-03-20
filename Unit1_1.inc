@@ -8,7 +8,7 @@ begin
   {$ELSE OBJECTS}
   New( Result, Create );
   {$ENDIF KOL CLASSES/OBJECTS}
-  Result.Form := NewForm( AParent, '1ClickMusic' ).SetPosition( 226, 334 );
+  Result.Form := NewForm( AParent, '1ClickMusic' ).SetPosition( 268, 344 );
   Applet :=  Result.Form;
   Result.Form.Add2AutoFree( Result );
 {$IFDEF UNICODE_CTRLS}
@@ -19,11 +19,10 @@ begin
    {$ENDIF}
     Result.Form.Style := Result.Form.Style and not WS_MAXIMIZEBOX;
     Result.Form.SetClientSize( 608, 291 );
-    Result.Form.IconLoad( hInstance, 'ZFORM1_TRAYICON1' );
+    Result.Form.IconLoad( hInstance, 'TRAY' );
     Result.Form.Font.FontPitch := fpFixed;
       Result.Form.OnMessage := Result.KOLForm1Message;
       Result.Form.OnDestroy := Result.KOLForm1Destroy;
-    NewMenu( Result.Form, 0, [ '' ], nil );
 
     Result.Tray := NewBAPTrayIcon( Result.Form );
    {$IFDEF USE_NAMES}
@@ -32,16 +31,12 @@ begin
   Result.Form.Add2AutoFree( Result.Tray );
       Result.Tray.OnMouseUp := Result.TrayMouseUp;
 
-    Result.Timer := NewTimer( 250 );
+    Result.Timer := NewTimer( 100 );
    {$IFDEF USE_NAMES}
     Result.Timer.SetName( Result.Form, 'Timer' ); 
    {$ENDIF}
   Result.Form.Add2AutoFree( Result.Timer );
       Result.Timer.OnTimer := Result.TimerTimer;
-
-   {$IFDEF USE_NAMES}
-    Result.PopupMenu.SetName( Result.Form, 'PopupMenu' ); 
-   {$ENDIF}
     // Result.lblbuffer.TabOrder = -1
     Result.lblbuffer := NewLabel( Result.Form, '' ).SetPosition( 448, 61 ).SetSize( 157, 20 );
    {$IFDEF USE_NAMES}
@@ -114,10 +109,11 @@ begin
     {$IFDEF OVERRIDE_SCROLLBARS}
     OverrideScrollbars( Result.channeltree);
     {$ENDIF OVERRIDE_SCROLLBARS}
-    Result.Timer.Enabled := True;
       Result.btoptions.OnClick := Result.btoptionsClick;
+    Result.Timer.Enabled := True;
     Result.Form.CenterOnParent.CanResize := False;
     Result.KOLForm1FormCreate( Result );
 
 end;
+
 

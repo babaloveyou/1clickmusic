@@ -5,7 +5,7 @@ unit Unit1;
 interface
 
 {$IFDEF KOL_MCK}
-uses Windows, Messages, KOL, KOLBAPTrayIcon{$IFNDEF KOL_MCK}, mirror, Classes, Controls, mckControls, mckObjs, Graphics, mckCtrls, mckBAPTrayIcon{$ENDIF (place your units here->)}, SysUtils;
+uses Windows, Messages, KOL, KOLBAPTrayIcon{$IF Defined(KOL_MCK)}{$ELSE}, mirror, Classes, Controls, mckControls, mckObjs, Graphics, mckCtrls, mckBAPTrayIcon{$IFEND (place your units here->)}, SysUtils;
 {$ELSE}
 {$I uses.inc}
 Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
@@ -13,53 +13,53 @@ Dialogs;
 {$ENDIF}
 
 type
-  {$IFDEF KOL_MCK}
-  {$I MCKfakeClasses.inc}
+{$IF Defined(KOL_MCK)}
+{$I MCKfakeClasses.inc}
   {$IFDEF KOLCLASSES} {$I TForm1class.inc} {$ELSE OBJECTS} PForm1 = ^TForm1; {$ENDIF CLASSES/OBJECTS}
   {$IFDEF KOLCLASSES}{$I TForm1.inc}{$ELSE} TForm1 = object(TObj) {$ENDIF}
     Form: PControl;
-    {$ELSE not_KOL_MCK}
+{$ELSE not_KOL_MCK}
   TForm1 = class(TForm)
-    {$ENDIF KOL_MCK}
-    KOLProject1: TKOLProject;
-    Timer: TKOLTimer;
-    lbltrack: TKOLLabel;
-    lblbuffer: TKOLLabel;
-    lblstatus: TKOLLabel;
-    channeltree: TKOLTreeView;
-    lblhelp: TKOLLabel;
-    lblradio: TKOLLabel;
-    PopupMenu: TKOLPopupMenu;
-    btoptions: TKOLButton;
-    KOLForm1: TKOLForm;
-    Tray: TKOLBAPTrayIcon;
-    procedure TimerTimer(Sender: PObj);
-    procedure KOLForm1Destroy(Sender: PObj);
-    procedure KOLForm1FormCreate(Sender: PObj);
-    function KOLForm1Message(var Msg: tagMSG; var Rslt: Integer): Boolean;
-    procedure channeltreeSelChange(Sender: PObj);
-    procedure channeltreeMouseUp(Sender: PControl;
-      var Mouse: TMouseEventData);
-    procedure btoptionsClick(Sender: PObj);
-    procedure TrayMouseUp(Sender: PControl; var Mouse: TMouseEventData);
-  private
+{$IFEND KOL_MCK}
+      KOLProject1: TKOLProject;
+      Timer: TKOLTimer;
+      lbltrack: TKOLLabel;
+      lblbuffer: TKOLLabel;
+      lblstatus: TKOLLabel;
+      channeltree: TKOLTreeView;
+      lblhelp: TKOLLabel;
+      lblradio: TKOLLabel;
+      btoptions: TKOLButton;
+      KOLForm1: TKOLForm;
+      Tray: TKOLBAPTrayIcon;
+      procedure TimerTimer(Sender: PObj);
+      procedure KOLForm1Destroy(Sender: PObj);
+      procedure KOLForm1FormCreate(Sender: PObj);
+      function KOLForm1Message(var Msg: tagMSG; var Rslt: Integer): Boolean;
+      procedure channeltreeSelChange(Sender: PObj);
+      procedure channeltreeMouseUp(Sender: PControl;
+        var Mouse: TMouseEventData);
+      procedure btoptionsClick(Sender: PObj);
+      procedure TrayMouseUp(Sender: PControl; var Mouse: TMouseEventData);
+    private
     { Private declarations }
-  public
-    Thread: PThread;
-    LastFMThread: PThread;
-    function LastFMThreadExecute(Sender: PThread): Integer;
-    function ThreadExecute(Sender: PThread): Integer;
-    procedure PlayChannel;
-    procedure StopChannel;
-    procedure popupproc(Sender: PMenu; Item: Integer);
-    procedure LoadConfig;
-    procedure SaveConfig;
-  end;
+    public
+      popupmenu: PMenu;
+      Thread: PThread;
+      LastFMThread: PThread;
+      function LastFMThreadExecute(Sender: PThread): Integer;
+      function ThreadExecute(Sender: PThread): Integer;
+      procedure PlayChannel;
+      procedure StopChannel;
+      procedure popupproc(Sender: PMenu; Item: Integer);
+      procedure LoadConfig;
+      procedure SaveConfig;
+    end;
 
-var
-  Form1{$IFDEF KOL_MCK}: PForm1{$ELSE}: TForm1{$ENDIF};
+  var
+    Form1{$IFDEF KOL_MCK}: PForm1{$ELSE}: TForm1{$ENDIF};
 
-  {$IFDEF KOL_MCK}
+{$IFDEF KOL_MCK}
 procedure NewForm1(var Result: PForm1; AParent: PControl);
 {$ENDIF}
 
@@ -71,14 +71,13 @@ var
   // Core
   DS: TDSoutput;
   chn: TRadioPlayer;
-  vol: Cardinal = 100;
   progress: Cardinal;
 
-  {$IFNDEF KOL_MCK}{$R *.DFM}{$ENDIF}
+{$IF Defined(KOL_MCK)}{$ELSE}{$R *.DFM}{$IFEND}
 
-  {$IFDEF KOL_MCK}
-  {$I Unit1_1.inc}
-  {$ENDIF}
+{$IFDEF KOL_MCK}
+{$I Unit1_1.inc}
+{$ENDIF}
 
 procedure Tform1.LoadConfig;
 var
@@ -104,9 +103,9 @@ begin
   ini.Mode := ifmRead;
   for i := 1 to 12 do
   begin
-    hotkeys[i] := radiolist.getpos(ini.ValueString(Int2Str(i), ''));
-    PopupMenu.ItemText[i - 1] := 'Ctrl+F' + Int2Str(i) + ' :' + #9 + channeltree.TVItemText[hotkeys[i]];
-    //PopupMenu.ItemText[i - 1] := 'Ctrl+F' + Int2Str(i) + ' :' + #9 + radiolist.getname(hotkeys[i]);
+    hotkeys[i] := radiolist.getpos(ini.ValueString(IntToStr(i), ''));
+    PopupMenu.ItemText[i - 1] := 'Ctrl+F' + IntToStr(i) + ' :' + #9 + channeltree.TVItemText[hotkeys[i]];
+    //PopupMenu.ItemText[i - 1] := 'Ctrl+F' + IntToStr(i) + ' :' + #9 + radiolist.getname(hotkeys[i]);
   end;
   ini.Free;
 end;
@@ -133,9 +132,10 @@ begin
 
   ini.Section := 'hotkeys';
   for i := 1 to 12 do
-    ini.ValueString(Int2Str(i), radiolist.getname(hotkeys[i]));
+    ini.ValueString(IntToStr(i), radiolist.getname(hotkeys[i]));
   ini.Free;
 end;
+
 
 procedure TForm1.TimerTimer(Sender: PObj);
 begin
@@ -161,7 +161,7 @@ begin
   end;
 
   lblbuffer.Caption :=
-    UInt2Str(curBitrate) + 'kbps @ buffer:. ' + UInt2Str(progress) + '%';
+    IntToStr(curBitrate) + 'kbps @ buffer:. ' + IntToStr(progress) + '%';
 
   case chn.Status of
     rsPlaying: lblstatus.Caption := 'Connected';
@@ -220,7 +220,7 @@ begin
     end
     else
     begin
-      TimerTimer(nil);
+      TimerTimer(nil); //# Refresh GUI INFO
       chn.Play();
     end;
     channeltree.Enabled := True;
@@ -248,12 +248,14 @@ begin
   lbltrack.Caption := '';
   Tray.ToolTip := '';
   Form.Caption := '1ClickMusic';
+  TimerTimer(nil); //# Refresh GUI INFO
 end;
 
 function TForm1.KOLForm1Message(var Msg: tagMSG;
   var Rslt: Integer): Boolean;
 begin
   Result := False;
+
   if (Msg.Message = WM_HOTKEY) and (Thread.Suspended) then
   begin
     case Msg.wParam of
@@ -276,7 +278,6 @@ begin
     if (Msg.Message = WM_SYSCOMMAND) and (Msg.wParam = SC_MINIMIZE) then
     begin
       form.Hide;
-      timer.Interval := 1000;
       Result := True;
     end;
 end;
@@ -297,10 +298,10 @@ begin
 
   if Assigned(chn) then
     chn.Free;
+
   DS.Free;
   //
   SaveConfig;
-  channeltree.Free;
   radiolist.Free;
 end;
 
@@ -309,13 +310,12 @@ var
   i: Integer;
   loading, lbl: PControl;
 begin
-
   loading := NewForm(Form, '');
   loading.HasBorder := False;
   loading.BoundsRect := form.BoundsRect;
   loading.Color := clBlack;
   loading.AlphaBlend := 220;
-  lbl := NewLabel(loading, 'LOADING -> RADIO LIBRARY!');
+  lbl := NewLabel(loading, 'LOADING -> SOUND ENGINE!');
   lbl.Align := caClient;
   lbl.TextAlign := taCenter;
   lbl.VerticalAlign := vaCenter;
@@ -323,6 +323,12 @@ begin
   lbl.Font.Color := clWhite;
   lbl.Color := clBlack;
   loading.CreateWindow;
+  lbl.Update;
+
+  //# Inicializa o SOM
+  DS := TDSoutput.Create;
+
+  lbl.Caption := 'LOADING -> RADIO LIBRARY!';
   lbl.Update;
 
   Tray.Icon := form.Icon;
@@ -355,7 +361,7 @@ begin
   Thread.OnExecute := ThreadExecute;
 
   //# KOL puro jah que a mck nao que funfar
-  PopupMenu := NewMenu(Form, 0, ['Ctrl+F1', 'Ctrl+F2', 'Ctrl+F3', 'Ctrl+F4', 'Ctrl+F5', 'Ctrl+F6', 'Ctrl+F7', 'Ctrl+F8', 'Ctrl+F9', 'Ctrl+F10', 'Ctrl+F11', 'Ctrl+F12', 'Clear Hotkeys'], nil);
+  PopupMenu := NewMenu(channeltree, 0, ['Ctrl+F1', 'Ctrl+F2', 'Ctrl+F3', 'Ctrl+F4', 'Ctrl+F5', 'Ctrl+F6', 'Ctrl+F7', 'Ctrl+F8', 'Ctrl+F9', 'Ctrl+F10', 'Ctrl+F11', 'Ctrl+F12', 'Clear Hotkeys'], nil);
   for i := 0 to 12 do
     PopupMenu.AssignEvents(i, [popupproc]);
   //# define o popup da channeltree
@@ -429,12 +435,6 @@ begin
 
   LoadConfig;
 
-  lbl.Caption := 'LOADING -> SOUND ENGINE!';
-  lbl.Update;
-
-  //# Inicializa o SOM
-  DS := TDSoutput.Create;
-
   loading.Free;
 
   if firstrun_enabled then showaboutbox;
@@ -453,21 +453,21 @@ begin
     for Item := 0 to 11 do
     begin
       hotkeys[Item + 1] := 0;
-      PopupMenu.ItemText[Item] := 'Ctrl+F' + Int2Str(Item + 1);
+      PopupMenu.ItemText[Item] := 'Ctrl+F' + IntToStr(Item + 1);
     end;
   end
   else
-    if channeltree.TVItemChildCount[undermouse] = 0 then
+    if not channeltree.TVItemHasChildren[undermouse] then
     begin
       if hotkeys[Item + 1] = undermouse then
       begin
         hotkeys[Item + 1] := 0;
-        PopupMenu.ItemText[Item] := 'Ctrl+F' + Int2Str(Item + 1);
+        PopupMenu.ItemText[Item] := 'Ctrl+F' + IntToStr(Item + 1);
       end
       else
       begin
         hotkeys[Item + 1] := undermouse;
-        PopupMenu.ItemText[Item] := 'Ctrl+F' + Int2Str(Item + 1) + ' :' + #9 + channeltree.TVItemText[undermouse];
+        PopupMenu.ItemText[Item] := 'Ctrl+F' + IntToStr(Item + 1) + ' :' + #9 + channeltree.TVItemText[undermouse];
       end;
     end;
 end;
@@ -483,6 +483,7 @@ end;
 
 procedure TForm1.btoptionsClick(Sender: PObj);
 begin
+  //SetWindowRgn(Form.Handle,SkinIt(Form.Handle),True);
   //# create and show
   Form.AlphaBlend := 180;
   NewForm2(Form2, Form);
@@ -508,13 +509,9 @@ begin
   if (Mouse.Button = mbRight) or (Mouse.Button = mbLeft) then
   begin
     if Form.Visible then
-    begin
-      Form.Hide;
-      Timer.Interval := 1000;
-    end
+      Form.Hide
     else
     begin
-      Timer.Interval := 250;
       Form.Show;
       TimerTimer(nil); //# Refresh GUI INFO
       Form.Focused := True;
@@ -523,6 +520,9 @@ begin
   else
     showaboutbox;
 end;
+
+initialization
+  IsMultiThread := True;
 
 end.
 
