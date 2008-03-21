@@ -80,6 +80,7 @@ var
 begin
   if value = DS_OK then Exit;
   case value of
+    DSERR_BUFFERLOST : ErrorStr := 'DSERR_BUFFERLOST';
     DSERR_ACCESSDENIED : ErrorStr := 'DSERR_ACCESSDENIED';
     DSERR_BUFFERTOOSMALL : ErrorStr := 'DSERR_BUFFERTOOSMALL';
     DSERR_ALLOCATED: ErrorStr := 'DSERR_ALLOCATED';
@@ -91,8 +92,9 @@ begin
     DSERR_NODRIVER: ErrorStr := 'DSERR_NODRIVER';
     DSERR_ALREADYINITIALIZED: ErrorStr := 'DSERR_ALREADYINITIALIZED';
     DSERR_NOINTERFACE : ErrorStr := 'DSERR_NOINTERFACE';
+    else ErrorStr := 'Unknow';
   end;
-  raise Exception.CreateFmt('ERRO, [%s] : %s',[ErrorStr,Where]);
+  raise Exception.CreateFmt('DIRECTSOUND ERROR, [%s] : %s',[ErrorStr,Where]);
 end;
 
 
@@ -101,14 +103,8 @@ var
   Fpwfm: TWAVEFORMATEX;
   Fpdesc: TDSBUFFERDESC;
 begin
-  //DirectSoundEnumerate(DSEnumOutputCallback, Self);
-  // CREATING DEVICE FOR DEFAULT SOUND DRIVER
-  //if DirectSoundCreate(nil, FDS, nil) <> DS_OK then
-  //  raise Exception.Create('ERRO, criando o device do DirectSound');
   DSCHECK(DirectSoundCreate(nil, FDS, nil),'Creating DS device');
 
-  //if FDS.SetCooperativeLevel(GetDesktopWindow, DSSCL_PRIORITY) <> DS_OK then
-  //  raise Exception.Create('ERRO, negociando o cooperative level');
   DSCHECK(FDS.SetCooperativeLevel(GetDesktopWindow, DSSCL_PRIORITY),'Setting the cooperative level');
 
   FillChar(Fpdesc, SizeOf(TDSBUFFERDESC), 0);
@@ -117,8 +113,6 @@ begin
   Fpdesc.lpwfxFormat := nil;
   Fpdesc.dwBufferBytes := 0;
 
-  //if FDS.CreateSoundBuffer(Fpdesc, Fprimary, nil) <> DS_OK then
-  //  raise Exception.Create('ERRO, criando o buffer primario');
   DSCHECK(FDS.CreateSoundBuffer(Fpdesc, Fprimary, nil),'Creating Primary buffer');
 
   FillChar(Fpwfm, SizeOf(TWAVEFORMATEX), 0);
@@ -130,8 +124,6 @@ begin
   Fpwfm.cbSize := 0;
   Fpwfm.nAvgBytesPerSec := 44100 * 4;
 
-  //if FPrimary.SetFormat(@Fpwfm) <> DS_OK then
-  //  raise Exception.Create('ERRO, setando formato do buffer primario');
   DSCHECK(FPrimary.SetFormat(@Fpwfm),'Chaning Primary buffer format');
 end;
 

@@ -427,7 +427,7 @@ object Form1: TForm1
     Top = 16
   end
   object Timer: TKOLTimer
-    Interval = 100
+    Interval = 500
     Enabled = True
     OnTimer = TimerTimer
     Multimedia = False

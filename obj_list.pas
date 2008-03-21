@@ -32,7 +32,7 @@ function NewRadioList: PRadioList;
 
 implementation
 
-uses StrUtils;
+//uses StrUtils;
 
 function NewRadioList: PRadioList;
 begin
@@ -84,7 +84,7 @@ var
     curTree: Cardinal;
     field, value: string;
   begin
-    SplitQuotedValues(Line, field, value);
+    value := Copy(Line,2,Length(value)-2);
     curTree := channeltree.TVInsert(ownerTree, 0, value);
     Inc(i);
 

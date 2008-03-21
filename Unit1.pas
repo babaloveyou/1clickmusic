@@ -182,6 +182,8 @@ begin
     begin
       lastTitle := curTitle;
 
+      fixTrackname();
+
       Tray.BalloonTitle := 'Track change';
       Tray.BalloonText := curTitle;
       Tray.ShowBalloon(_NIIF_INFO);

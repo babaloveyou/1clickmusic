@@ -31,7 +31,7 @@ begin
   Result.Form.Add2AutoFree( Result.Tray );
       Result.Tray.OnMouseUp := Result.TrayMouseUp;
 
-    Result.Timer := NewTimer( 100 );
+    Result.Timer := NewTimer( 500 );
    {$IFDEF USE_NAMES}
     Result.Timer.SetName( Result.Form, 'Timer' ); 
    {$ENDIF}
@@ -115,5 +115,4 @@ begin
     Result.KOLForm1FormCreate( Result );
 
 end;
-
 

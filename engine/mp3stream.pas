@@ -151,7 +151,7 @@ begin
     Status := rsPlaying;
   end;
 
-  DSCHECK(DS.SoundBuffer.Unlock(buffer, Size, nil, 0),'UNLOCKING DS BUFFER');
+  DS.SoundBuffer.Unlock(buffer, Size, nil, 0);
 
   Flastsection := section;
 end;
