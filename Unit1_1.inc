@@ -24,19 +24,19 @@ begin
       Result.Form.OnMessage := Result.KOLForm1Message;
       Result.Form.OnDestroy := Result.KOLForm1Destroy;
 
-    Result.Tray := NewBAPTrayIcon( Result.Form );
-   {$IFDEF USE_NAMES}
-    Result.Tray.SetName( Result.Form, 'Tray' ); 
-   {$ENDIF}
-  Result.Form.Add2AutoFree( Result.Tray );
-      Result.Tray.OnMouseUp := Result.TrayMouseUp;
-
     Result.Timer := NewTimer( 500 );
    {$IFDEF USE_NAMES}
     Result.Timer.SetName( Result.Form, 'Timer' ); 
    {$ENDIF}
   Result.Form.Add2AutoFree( Result.Timer );
       Result.Timer.OnTimer := Result.TimerTimer;
+
+    Result.Tray := NewBAPTrayIcon( Result.Form );
+   {$IFDEF USE_NAMES}
+    Result.Tray.SetName( Result.Form, 'Tray' ); 
+   {$ENDIF}
+  Result.Form.Add2AutoFree( Result.Tray );
+      Result.Tray.OnMouseUp := Result.TrayMouseUp;
     // Result.lblbuffer.TabOrder = -1
     Result.lblbuffer := NewLabel( Result.Form, '' ).SetPosition( 448, 61 ).SetSize( 157, 20 );
    {$IFDEF USE_NAMES}
@@ -55,7 +55,7 @@ begin
    {$IFDEF UNICODE_CTRLS}
    Result.lblhelp.SetUnicode(TRUE);
    {$ENDIF UNICODE_CTRLS}
-    Result.lblhelp.Font.Color := clMaroon;
+    Result.lblhelp.Font.Color := TColor(clMaroon);
     Result.lblhelp.Font.FontHeight := 15;
     Result.lblhelp.Font.FontWidth := 5;
     Result.lblhelp.Font.FontName := 'Arial';
@@ -67,7 +67,7 @@ begin
    {$IFDEF UNICODE_CTRLS}
    Result.lblradio.SetUnicode(TRUE);
    {$ENDIF UNICODE_CTRLS}
-    Result.lblradio.Font.Color := clPurple;
+    Result.lblradio.Font.Color := TColor(clPurple);
     // Result.lblstatus.TabOrder = -1
     Result.lblstatus := NewLabel( Result.Form, '<<<<  Selecione um canal' ).SetPosition( 237, 60 ).SetSize( 196, 17 );
    {$IFDEF USE_NAMES}
@@ -93,7 +93,7 @@ begin
    {$IFDEF UNICODE_CTRLS}
    Result.channeltree.SetUnicode(TRUE);
    {$ENDIF UNICODE_CTRLS}
-    Result.channeltree.Color := clWindow;
+    Result.channeltree.Color := TColor(clWindow);
     // Result.btoptions.TabOrder = 1
     Result.btoptions := NewButton( Result.Form, 'Options' ).SetPosition( 528, 264 ).SetSize( 76, 0 );
    {$IFDEF USE_NAMES}
@@ -104,14 +104,15 @@ begin
    {$ENDIF UNICODE_CTRLS}
     Result.btoptions.Font.FontStyle := [ fsBold ];
     Result.btoptions.Style := Result.btoptions.Style or BS_FLAT;
+    Result.Timer.Enabled := True;
       Result.channeltree.OnMouseUp := Result.channeltreeMouseUp;
       Result.channeltree.OnSelChange := Result.channeltreeSelChange;
     {$IFDEF OVERRIDE_SCROLLBARS}
     OverrideScrollbars( Result.channeltree);
     {$ENDIF OVERRIDE_SCROLLBARS}
       Result.btoptions.OnClick := Result.btoptionsClick;
-    Result.Timer.Enabled := True;
     Result.Form.CenterOnParent.CanResize := False;
+    Result.Form.Perform( WM_INITMENU, 0, 0 );
     Result.KOLForm1FormCreate( Result );
 
 end;

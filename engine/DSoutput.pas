@@ -3,7 +3,11 @@ unit DSoutput;
 interface
 
 uses
-  SysUtils, Classes, Windows, MMSystem, _DirectSound;
+  SysUtils,
+  Classes,
+  Windows,
+  MMSystem,
+  _DirectSound;
 
 {$MINENUMSIZE 4}
 
@@ -43,12 +47,12 @@ type
     procedure updatebuffer; virtual; abstract;
     procedure initbuffer; virtual; abstract;
     procedure initdecoder; virtual; abstract;
-    property DS: TDSoutput read FDevice write FDevice;
     procedure Execute; override;
   public
     StreamBitrate: Integer;
     StreamTitle: string;
     Status: TRadioStatus;
+    property DS: TDSoutput read FDevice write FDevice;
     procedure Volume(const value: Integer);
     procedure GetPlayInfo(var Atitle: string; var Aquality: Cardinal); virtual; abstract;
     function GetBufferPercentage: Integer; virtual; abstract;
@@ -58,12 +62,13 @@ type
     destructor Destroy; override;
   end;
 
-procedure DSCHECK(const value : HResult;const Where : string);
+procedure DSERROR(const value: HResult; const Error: string);
 
 implementation
 
 uses
-  main;
+  main,
+  utils;
 
 { TDSoutput }
 
@@ -74,15 +79,14 @@ begin
 end;}
 
 
-procedure DSCHECK(const value : HResult;const Where : string);
+procedure DSERROR(const value: HResult; const Error: string);
 var
-  ErrorStr : string;
+  ErrorStr: string;
 begin
   if value = DS_OK then Exit;
   case value of
-    DSERR_BUFFERLOST : ErrorStr := 'DSERR_BUFFERLOST';
-    DSERR_ACCESSDENIED : ErrorStr := 'DSERR_ACCESSDENIED';
-    DSERR_BUFFERTOOSMALL : ErrorStr := 'DSERR_BUFFERTOOSMALL';
+    DSERR_ACCESSDENIED: ErrorStr := 'DSERR_ACCESSDENIED';
+    DSERR_BUFFERTOOSMALL: ErrorStr := 'DSERR_BUFFERTOOSMALL';
     DSERR_ALLOCATED: ErrorStr := 'DSERR_ALLOCATED';
     DSERR_INVALIDPARAM: ErrorStr := 'DSERR_INVALIDPARAM';
     DSERR_INVALIDCALL: ErrorStr := 'DSERR_INVALIDCALL';
@@ -91,10 +95,11 @@ begin
     DSERR_UNSUPPORTED: ErrorStr := 'DSERR_UNSUPPORTED';
     DSERR_NODRIVER: ErrorStr := 'DSERR_NODRIVER';
     DSERR_ALREADYINITIALIZED: ErrorStr := 'DSERR_ALREADYINITIALIZED';
-    DSERR_NOINTERFACE : ErrorStr := 'DSERR_NOINTERFACE';
-    else ErrorStr := 'Unknow';
+    DSERR_NOINTERFACE: ErrorStr := 'DSERR_NOINTERFACE';
+    DSERR_BUFFERLOST: ErrorStr := 'DSERR_BUFFERLOST';
+  else ErrorStr := 'UNKNOWERROR';
   end;
-  raise Exception.CreateFmt('DIRECTSOUND ERROR, [%s] : %s',[ErrorStr,Where]);
+  RaiseError('DIRECTSOUND ERROR, [' + ErrorStr + '] : ' + Error);
 end;
 
 
@@ -103,9 +108,9 @@ var
   Fpwfm: TWAVEFORMATEX;
   Fpdesc: TDSBUFFERDESC;
 begin
-  DSCHECK(DirectSoundCreate(nil, FDS, nil),'Creating DS device');
+  DSERROR(DirectSoundCreate(nil, FDS, nil), 'Creating DS device');
 
-  DSCHECK(FDS.SetCooperativeLevel(GetDesktopWindow, DSSCL_PRIORITY),'Setting the cooperative level');
+  DSERROR(FDS.SetCooperativeLevel(GetDesktopWindow, DSSCL_PRIORITY), 'Setting the cooperative level');
 
   FillChar(Fpdesc, SizeOf(TDSBUFFERDESC), 0);
   Fpdesc.dwSize := SizeOf(TDSBUFFERDESC);
@@ -113,7 +118,7 @@ begin
   Fpdesc.lpwfxFormat := nil;
   Fpdesc.dwBufferBytes := 0;
 
-  DSCHECK(FDS.CreateSoundBuffer(Fpdesc, Fprimary, nil),'Creating Primary buffer');
+  DSERROR(FDS.CreateSoundBuffer(Fpdesc, Fprimary, nil), 'Creating Primary buffer');
 
   FillChar(Fpwfm, SizeOf(TWAVEFORMATEX), 0);
   Fpwfm.wFormatTag := WAVE_FORMAT_PCM;
@@ -124,7 +129,7 @@ begin
   Fpwfm.cbSize := 0;
   Fpwfm.nAvgBytesPerSec := 44100 * 4;
 
-  DSCHECK(FPrimary.SetFormat(@Fpwfm),'Chaning Primary buffer format');
+  DSERROR(FPrimary.SetFormat(@Fpwfm), 'Chaning Primary buffer format');
 end;
 
 destructor TDSoutput.Destroy;
@@ -172,8 +177,7 @@ begin
   Fsdesc.lpwfxFormat := @Fswfm;
   Fsdesc.dwBufferBytes := 64 * 1024;
 
-  if FDS.CreateSoundBuffer(Fsdesc, Fsecondary, nil) <> DS_OK then
-    raise Exception.Create('ERRO, criando o buffer secundario');
+  DSERROR(FDS.CreateSoundBuffer(Fsdesc, Fsecondary, nil), 'ERRO, criando o buffer secundario');
 
   Result := Fsdesc.dwBufferBytes div 2;
 

@@ -1,8 +1,14 @@
-unit radioplayer;
+unit radioopener;
 
 interface
 
-uses SysUtils, Windows, Classes, DSoutput, mmsstream, mp3stream, obj_playlist;
+uses SysUtils,
+  Windows,
+  Classes,
+  DSoutput,
+  mmsstream,
+  mp3stream,
+  obj_playlist;
 
 function OpenRadio(const url: string; var APlayer: TRadioPlayer; const ADevice: TDSoutput): Boolean;
 

@@ -5,7 +5,12 @@ unit Unit1;
 interface
 
 {$IFDEF KOL_MCK}
-uses Windows, Messages, KOL, KOLBAPTrayIcon{$IF Defined(KOL_MCK)}{$ELSE}, mirror, Classes, Controls, mckControls, mckObjs, Graphics, mckCtrls, mckBAPTrayIcon{$IFEND (place your units here->)}, SysUtils;
+uses Windows,
+  Messages,
+  KOL,
+  KOLBAPTrayIcon
+{$IF Defined(KOL_MCK)}{$ELSE}, mirror, Classes, Controls, mckControls, mckObjs, Graphics, mckCtrls, mckBAPTrayIcon
+{$IFEND (place your units here->)}, SysUtils;
 {$ELSE}
 {$I uses.inc}
 Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
@@ -65,7 +70,16 @@ procedure NewForm1(var Result: PForm1; AParent: PControl);
 
 implementation
 
-uses Unit2, DSoutput, radioplayer, radios, obj_list, main, utils, EncryptIt;
+uses
+  themeengine,
+  Unit2,
+  DSoutput,
+  radioopener,
+  radios,
+  obj_list,
+  main,
+  utils,
+  EncryptIt;
 
 var
   // Core
@@ -86,7 +100,6 @@ var
 begin
   ini := OpenIniFile('oneclickmusic.ini');
   ini.Mode := ifmRead;
-
   ini.Section := 'options';
   firstrun_enabled := ini.ValueBoolean('firstrun_enabled', True);
   msn_enabled := ini.ValueBoolean('msn_enabled', False);
@@ -125,7 +138,7 @@ begin
   ini.ValueString('msn_icons', msn_icons);
   ini.ValueBoolean('list_enabled', list_enabled);
   ini.ValueString('list_file', list_file);
-  ini.ValueBoolean('clipboard_enabled', False);
+  ini.ValueBoolean('clipboard_enabled', clipboard_enabled);
   ini.ValueBoolean('lastfm_enabled', lastfm_enabled);
   ini.ValueString('lastfm_user', lastfm_user);
   ini.ValueString('lastfm_pass', Encrypt(lastfm_pass, KEYCODE));
@@ -270,10 +283,7 @@ begin
           PlayChannel;
       2001..2012:
         if hotkeys[Msg.wParam - 2000] > 0 then
-        begin
           channeltree.TVSelected := hotkeys[Msg.wParam - 2000];
-          PlayChannel;
-        end;
     end;
   end
   else
@@ -311,6 +321,7 @@ procedure TForm1.KOLForm1FormCreate(Sender: PObj);
 var
   i: Integer;
   loading, lbl: PControl;
+  t : PTheme;
 begin
   loading := NewForm(Form, '');
   loading.HasBorder := False;
@@ -335,6 +346,8 @@ begin
 
   Tray.Icon := form.Icon;
   Tray.AddIcon;
+
+  NewTheme(t,Form);
 
   //# HOTKEYS
   RegisterHotKey(form.Handle, 1001, MOD_CONTROL, VK_UP);
@@ -502,7 +515,7 @@ begin
   repeat
     sleep(35000);
     LastFMexecute;
-    LastFMThread.Suspend;
+    Sender.Suspend;
   until LastFMThread.Terminated;
 end;
 

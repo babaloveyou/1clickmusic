@@ -137,6 +137,7 @@ Item0=KOL_MCK
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
-Count=2
+Count=3
 Item0=engine
-Item1=C:\Documents and Settings\arthur pires\Desktop\1clickEmusic\engine
+Item1=C:\Documents and Settings\arthur pires\Desktop\Replacements;engine
+Item2=C:\Documents and Settings\arthur pires\Desktop\1clickEmusic\engine

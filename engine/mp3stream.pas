@@ -25,7 +25,7 @@ type
 implementation
 
 uses
-  main;
+  main, utils;
 
 { TMP3 }
 
@@ -61,7 +61,7 @@ begin
     mpg123_getformat(Fhandle, @Frate, @Fchannels, @Fencoding);
     FStream.Cursor := 2;
     if Fchannels = 0 then
-      raise Exception.Create('ERRO, tentando descobrir o formato do audio');
+      RaiseError('ERRO, tentando descobrir o formato do audio');
   end;
   mpg123_format_none(Fhandle);
   mpg123_format(Fhandle, Frate, Fchannels, Fencoding);
@@ -71,11 +71,11 @@ end;
 procedure TMP3.initdecoder;
 begin
   if mpg123_init <> 0 then
-    raise Exception.Create('ERRO, criando instancia do decodificador MPEG');
+    RaiseError('ERRO, criando instancia do decodificador MPEG');
 
   Fhandle := mpg123_new(nil, nil);
   if Fhandle = nil then
-    raise Exception.Create('ERRO, inicializando o decodificador MPEG');
+    RaiseError('ERRO, inicializando o decodificador MPEG');
 
   mpg123_open_feed(Fhandle);
 
@@ -121,7 +121,7 @@ begin
 
   if section = Flastsection then Exit;
 
-  DSCHECK(DS.SoundBuffer.Lock(section * Fbuffersize, Fbuffersize, @buffer, @Size, nil, nil, 0),'LOCKING DS BUFFER');
+  DSERROR(DS.SoundBuffer.Lock(section * Fbuffersize, Fbuffersize, @buffer, @Size,nil, nil, 0),'ERRO, Locking buffer');
 
   if (GetBufferPercentage > BUFFMIN) then
   begin

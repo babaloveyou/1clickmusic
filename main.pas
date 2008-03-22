@@ -48,6 +48,8 @@ const
 
 implementation
 
+uses utils;
+
 procedure fixTrackname;
 var
   p: Integer;
@@ -95,7 +97,7 @@ var
 begin
   lastfmplugin := TScrobber.Create;
   if not lastfmplugin.Execute(curtitle) then
-    MessageBox(0, PChar(lastfmplugin.Error), 'Last.fm Scrobber ERROR!', MB_ICONERROR);
+    RaiseError('Last.FM plugin error : ' + lastfmplugin.Error, False);
   lastfmplugin.Free;
 end;
 
@@ -148,9 +150,9 @@ begin
     if Result then
     begin
       batpath := GetTempDir + 'oneclickupdate.bat';
-      {$WARNINGS OFF}
+{$WARNINGS OFF}
       FileSetAttr(ParamStr(0), 0);
-      {$WARNINGS ON}
+{$WARNINGS ON}
       Text.Clear;
       Text.Add(':Label1');
       Text.Add('del ' + AnsiQuotedStr(ParamStr(0), '"'));

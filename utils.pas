@@ -3,10 +3,11 @@ unit utils;
 interface
 
 uses
-  sysutils;
+  sysutils, Windows;
 
 procedure writeFile(const FileName, Text: string);
 function MultiPos(const SubStr: array of string; const str: string): Boolean;
+procedure RaiseError(const Error: string; const Fatal : Boolean = True);
 
 implementation
 
@@ -34,6 +35,13 @@ begin
     if Pos(SubStr[i], str) > 0 then
       Exit;
   Result := False;
+end;
+
+procedure RaiseError(const Error: string; const Fatal : Boolean = True);
+begin
+  MessageBox(0, '1ClickMusic Exception', PChar(Error), MB_ICONERROR);
+  writeFile('ERROR',Error);
+  if Fatal then Halt;
 end;
 
 end.

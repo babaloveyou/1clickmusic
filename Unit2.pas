@@ -7,14 +7,14 @@ interface
 {$IFDEF KOL_MCK}
 uses Windows,
   Messages,
-  KOL{$IFNDEF KOL_MCK},
+  KOL{$IF Defined(KOL_MCK)}{$ELSE},
   mirror,
   Classes,
   Controls,
   mckCtrls,
   mckObjs,
   Graphics,
-  StdCtrls{$ENDIF (place your units here->)};
+  StdCtrls{$IFEND (place your units here->)};
 {$ELSE}
 {$I uses.inc}
 Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
@@ -22,14 +22,14 @@ Dialogs, mirror;
 {$ENDIF}
 
 type
-  {$IFDEF KOL_MCK}
+  {$IF Defined(KOL_MCK)}
   {$I MCKfakeClasses.inc}
   {$IFDEF KOLCLASSES} {$I TForm2class.inc} {$ELSE OBJECTS} PForm2 = ^TForm2; {$ENDIF CLASSES/OBJECTS}
   {$IFDEF KOLCLASSES}{$I TForm2.inc}{$ELSE} TForm2 = object(TObj) {$ENDIF}
     Form: PControl;
     {$ELSE not_KOL_MCK}
   TForm2 = class(TForm)
-    {$ENDIF KOL_MCK}
+  {$IFEND KOL_MCK}
     KOLForm1: TKOLForm;
     ckbxmsnenabled: TKOLCheckBox;
     cmbxmsnicon: TKOLComboBox;
@@ -66,7 +66,7 @@ implementation
 
 uses main, Unit1;
 
-{$IFNDEF KOL_MCK}{$R *.DFM}{$ENDIF}
+{$IF Defined(KOL_MCK)}{$ELSE}{$R *.DFM}{$IFEND}
 
 {$IFDEF KOL_MCK}
 {$I Unit2_1.inc}
@@ -135,13 +135,14 @@ begin
   if AutoUpdate(Form) then
   begin
     firstrun_enabled := True;
-    Form1.Form.Free;
-    Form2.Form.Free;
+    Form2.Free;
+    Form1.Free;
     Halt;
   end;
   btupdate.Enabled := True;
 end;
 
 end.
+
 
 
