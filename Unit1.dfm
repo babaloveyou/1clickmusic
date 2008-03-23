@@ -2,7 +2,7 @@ object Form1: TForm1
   Left = 230
   Top = 261
   Width = 646
-  Height = 332
+  Height = 312
   HorzScrollBar.Visible = False
   VertScrollBar.Visible = False
   Caption = '1ClickMusic'
@@ -18,10 +18,10 @@ object Form1: TForm1
   TextHeight = 13
   object channeltree: TKOLTreeView
     Tag = 0
-    Left = 25
-    Top = 29
-    Width = 217
-    Height = 249
+    Left = 2
+    Top = 2
+    Width = 231
+    Height = 281
     HelpContext = 0
     IgnoreDefault = False
     AnchorLeft = False
@@ -41,7 +41,7 @@ object Form1: TForm1
     Visible = True
     Enabled = True
     DoubleBuffered = False
-    Align = caNone
+    Align = caLeft
     CenterOnParent = False
     Ctl3D = True
     Color = clBtnFace
@@ -61,12 +61,12 @@ object Form1: TForm1
     EraseBackground = False
     Localizy = loForm
     Transparent = False
-    Options = [tvoTrackSelect, tvoSingleExpand]
+    Options = [tvoLinesRoot, tvoTrackSelect]
     CurIndex = 0
     TVRightClickSelect = False
     OnSelChange = channeltreeSelChange
     TVIndent = 0
-    HasBorder = False
+    HasBorder = True
     TabStop = True
     Brush.Color = clBtnFace
     Brush.BrushStyle = bsSolid
@@ -75,12 +75,12 @@ object Form1: TForm1
   end
   object lblstatus: TKOLLabel
     Tag = 0
-    Left = 527
-    Top = 136
+    Left = 528
+    Top = 75
     Width = 105
     Height = 17
     HelpContext = 0
-    IgnoreDefault = False
+    IgnoreDefault = True
     AnchorLeft = False
     AnchorTop = False
     AnchorRight = False
@@ -103,20 +103,20 @@ object Form1: TForm1
     Ctl3D = True
     Color = clBtnFace
     parentColor = True
-    Font.Color = clSkyBlue
+    Font.Color = clDefault
     Font.FontStyle = []
     Font.FontHeight = 0
     Font.FontWidth = 0
     Font.FontWeight = 0
     Font.FontName = 'MS Sans Serif'
     Font.FontOrientation = 0
-    Font.FontCharset = 1
+    Font.FontCharset = 0
     Font.FontPitch = fpFixed
-    Font.FontQuality = fqAntialiased
+    Font.FontQuality = fqDefault
     parentFont = False
     EraseBackground = False
     Localizy = loForm
-    Transparent = True
+    Transparent = False
     TextAlign = taRight
     VerticalAlign = vaTop
     wordWrap = False
@@ -128,9 +128,9 @@ object Form1: TForm1
   end
   object lblbuffer: TKOLLabel
     Tag = 0
-    Left = 475
-    Top = 109
-    Width = 157
+    Left = 457
+    Top = 96
+    Width = 176
     Height = 20
     HelpContext = 0
     IgnoreDefault = False
@@ -163,13 +163,13 @@ object Form1: TForm1
     Font.FontWeight = 0
     Font.FontName = 'MS Sans Serif'
     Font.FontOrientation = 0
-    Font.FontCharset = 1
+    Font.FontCharset = 0
     Font.FontPitch = fpFixed
     Font.FontQuality = fqDefault
     parentFont = False
     EraseBackground = False
     Localizy = loForm
-    Transparent = True
+    Transparent = False
     TextAlign = taRight
     VerticalAlign = vaCenter
     wordWrap = False
@@ -181,10 +181,10 @@ object Form1: TForm1
   end
   object lbltrack: TKOLLabel
     Tag = 0
-    Left = 272
-    Top = 40
-    Width = 364
-    Height = 38
+    Left = 248
+    Top = 8
+    Width = 369
+    Height = 49
     HelpContext = 0
     IgnoreDefault = False
     AnchorLeft = False
@@ -222,7 +222,7 @@ object Form1: TForm1
     parentFont = False
     EraseBackground = False
     Localizy = loForm
-    Transparent = True
+    Transparent = False
     TextAlign = taCenter
     VerticalAlign = vaCenter
     wordWrap = True
@@ -234,10 +234,10 @@ object Form1: TForm1
   end
   object lblhelp: TKOLLabel
     Tag = 0
-    Left = 257
+    Left = 241
     Top = 136
-    Width = 259
-    Height = 153
+    Width = 272
+    Height = 137
     HelpContext = 0
     IgnoreDefault = False
     AnchorLeft = False
@@ -268,8 +268,8 @@ object Form1: TForm1
     Ctl3D = True
     Color = clBtnFace
     parentColor = True
-    Font.Color = clSilver
-    Font.FontStyle = [fsBold]
+    Font.Color = clMaroon
+    Font.FontStyle = []
     Font.FontHeight = 15
     Font.FontWidth = 0
     Font.FontWeight = 0
@@ -293,9 +293,9 @@ object Form1: TForm1
   end
   object lblradio: TKOLLabel
     Tag = 0
-    Left = 261
-    Top = 106
-    Width = 233
+    Left = 245
+    Top = 74
+    Width = 196
     Height = 22
     HelpContext = 0
     IgnoreDefault = False
@@ -328,13 +328,13 @@ object Form1: TForm1
     Font.FontWeight = 0
     Font.FontName = 'MS Sans Serif'
     Font.FontOrientation = 0
-    Font.FontCharset = 1
+    Font.FontCharset = 0
     Font.FontPitch = fpFixed
     Font.FontQuality = fqDefault
     parentFont = False
     EraseBackground = False
     Localizy = loForm
-    Transparent = True
+    Transparent = False
     TextAlign = taLeft
     VerticalAlign = vaTop
     wordWrap = False
@@ -346,8 +346,8 @@ object Form1: TForm1
   end
   object btoptions: TKOLButton
     Tag = 0
-    Left = 528
-    Top = 264
+    Left = 536
+    Top = 256
     Width = 76
     Height = 22
     HelpContext = 0
@@ -366,7 +366,7 @@ object Form1: TForm1
     PlaceDown = False
     PlaceRight = False
     PlaceUnder = False
-    Visible = False
+    Visible = True
     Enabled = True
     DoubleBuffered = False
     Align = caNone
@@ -421,7 +421,7 @@ object Form1: TForm1
     ShowHint = False
     ReportDetailed = False
     GeneratePCode = False
-    NewIF = True
+    NewIF = False
     Left = 80
     Top = 16
   end
@@ -457,8 +457,8 @@ object Form1: TForm1
     MinHeight = 0
     MaxWidth = 0
     MaxHeight = 0
-    HasBorder = False
-    HasCaption = False
+    HasBorder = True
+    HasCaption = True
     StayOnTop = False
     CanResize = False
     CenterOnScreen = True
@@ -468,7 +468,7 @@ object Form1: TForm1
     maximizeIcon = False
     closeIcon = True
     helpContextIcon = False
-    borderStyle = fbsNone
+    borderStyle = fbsSingle
     HelpContext = 0
     Color = clBtnFace
     Font.Color = clWindowText
@@ -483,7 +483,7 @@ object Form1: TForm1
     Font.FontQuality = fqDefault
     Brush.Color = clBtnFace
     Brush.BrushStyle = bsSolid
-    DoubleBuffered = True
+    DoubleBuffered = False
     PreventResizeFlicks = False
     Transparent = False
     AlphaBlend = 255
@@ -499,12 +499,7 @@ object Form1: TForm1
     Localizy = False
     ShowHint = False
     KeyPreview = False
-    OnMouseDown = KOLForm1MouseDown
-    OnMouseMove = KOLForm1MouseMove
-    OnMouseUp = KOLForm1MouseUp
-    OnMouseLeave = KOLForm1MouseLeave
     OnFormCreate = KOLForm1FormCreate
-    OnPaint = KOLForm1Paint
     EraseBackground = False
     supportMnemonics = False
     Left = 48

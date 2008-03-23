@@ -8,14 +8,22 @@ uses
   Windows,
   Messages,
   KOL,
+  DSoutput,
+  radioopener,
   obj_scrobber,
   obj_list,
   obj_playlist,
   httpsend;
 
 var
+  // Core
+  DS: TDSoutput;
+  chn: TRadioPlayer;
+  progress: Cardinal;
+  //
   curBitrate: Cardinal;
   lastTitle, curTitle: string;
+  //
   undermouse: Cardinal;
   genreid: array[0..7] of Cardinal;
   radiolist: PRadioList;

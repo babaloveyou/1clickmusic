@@ -15,7 +15,7 @@ type
     procedure initdecoder; override;
     procedure initbuffer; override;
   public
-    procedure GetPlayInfo(var Atitle: string; var Aquality: Cardinal); override;
+    procedure GetPlayInfo(out Atitle: string; out Aquality: Cardinal); override;
     function GetBufferPercentage: Integer; override;
     function open(const url: string): Boolean; override;
     procedure Play; override;
@@ -29,7 +29,7 @@ uses
 
 { TMP3 }
 
-procedure TMP3.GetPlayInfo(var Atitle: string; var Aquality: Cardinal);
+procedure TMP3.GetPlayInfo(out Atitle: string; out Aquality: Cardinal);
 begin
   Atitle := FStream.MetaTitle;
   Aquality := FStream.MetaBitrate;

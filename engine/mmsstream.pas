@@ -15,7 +15,7 @@ type
     procedure initdecoder; override;
     procedure initbuffer; override;
   public
-    procedure GetPlayInfo(var Atitle: string; var Aquality: Cardinal); override;
+    procedure GetPlayInfo(out Atitle: string; out Aquality: Cardinal); override;
     function GetBufferPercentage: Integer; override;
     function open(const url: string): Boolean; override;
     procedure Play; override;
@@ -113,7 +113,7 @@ begin
   Result := 0;
 end;
 
-procedure TMMS.GetPlayInfo(var Atitle: string; var Aquality: Cardinal);
+procedure TMMS.GetPlayInfo(out Atitle: string; out Aquality: Cardinal);
 begin
   Aquality := Fhandle.Bitrate div 1000;
 end;

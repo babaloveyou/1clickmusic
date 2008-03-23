@@ -54,7 +54,7 @@ type
     Status: TRadioStatus;
     property DS: TDSoutput read FDevice write FDevice;
     procedure Volume(const value: Integer);
-    procedure GetPlayInfo(var Atitle: string; var Aquality: Cardinal); virtual; abstract;
+    procedure GetPlayInfo(out Atitle: string; out Aquality: Cardinal); virtual; abstract;
     function GetBufferPercentage: Integer; virtual; abstract;
     function open(const url: string): Boolean; virtual; abstract;
     procedure Play; virtual; abstract;
@@ -142,8 +142,8 @@ end;
 
 function TDSoutput.GetPlayCursorPos: Cardinal;
 begin
-  if not Assigned(FSecondary) then Exit;
-  FSecondary.GetCurrentPosition(@Result, nil);
+  if Assigned(FSecondary) then
+    FSecondary.GetCurrentPosition(@Result, nil);
 end;
 
 function TDSoutput.InitializeBuffer(const Arate, Achannels: Cardinal): Cardinal;
@@ -153,7 +153,7 @@ var
   lastvolume: Integer;
 begin
   lastvolume := 0;
-  if FSecondary <> nil then
+  if Assigned(FSecondary) then
     FSecondary.GetVolume(lastvolume);
   FSecondary := nil;
 
@@ -204,8 +204,8 @@ begin
   FDevice := ADevice;
   inherited Create(True);
   Priority := tpTimeCritical;
-  initdecoder();
   Status := rsStoped;
+  initdecoder();
 end;
 
 destructor TRadioPlayer.Destroy;

@@ -3,12 +3,15 @@ unit utils;
 interface
 
 uses
-  sysutils, Windows;
+  sysutils,
+  Windows;
 
 procedure writeFile(const FileName, Text: string);
 function MultiPos(const SubStr: array of string; const str: string): Boolean;
-procedure RaiseError(const Error: string; const Fatal : Boolean = True);
-
+procedure RaiseError(const Error: string; const Fatal: Boolean = True);
+{$IFDEF _LOG_}
+procedure Log();
+{$ENDIF}
 implementation
 
 procedure writeFile(const FileName, Text: string);
@@ -37,11 +40,26 @@ begin
   Result := False;
 end;
 
-procedure RaiseError(const Error: string; const Fatal : Boolean = True);
+procedure RaiseError(const Error: string; const Fatal: Boolean = True);
 begin
   MessageBox(0, '1ClickMusic Exception', PChar(Error), MB_ICONERROR);
-  writeFile('ERROR.txt',Error);
+  writeFile('ERROR.txt', Error);
   if Fatal then Halt;
 end;
 
+{$IFDEF _LOG_}
+var
+  step: Cardinal = 0;
+
+procedure Log();
+begin
+  writeFile('LOG.txt', IntToStr(step));
+  Inc(step);
+end;
+
+initialization
+  writeFile('LOG.txt','SESSION STARTING');
+{$ENDIF}
+
 end.
+

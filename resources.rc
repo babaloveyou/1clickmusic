@@ -1,10 +1,4 @@
 TRAY ICON "res/trayicon.ico"
-UP BITMAP "res/up.bmp"
-DOWN BITMAP "res/down.bmp"
-OVER BITMAP "res/over.bmp"
-RGN RCDATA "res/RGN.dat"
-RECTS RCDATA "res/RECTS.dat"
-
 
 VER VERSIONINFO
 FILEVERSION 0,1,8,0

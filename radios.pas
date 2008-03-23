@@ -472,7 +472,7 @@ const
     'mms://wmedia.telium.com.br/transsplight',
     'mms://transastream.dyndns.org/transapop',
     'mms://mixstr.ig.com.br/mixfm',
-    'http://radio.2streaming.info:8014',
+    'http://radio.2streaming.info/players/8014.pls',
     // radios da globo
     'http://wmsgr.globo.com/webmedia/ObterPathMidia?usuario=sgr01&tipo=live&path=/sgr_off_sportv_live.wma&midiaId=511317&ext=.asx&output=ASX',
     'http://wmsgr.globo.com/webmedia/ObterPathMidia?usuario=sgr01&tipo=live&path=/sgr_off_multishow_live.wma&midiaId=581681&ext.asx&output=ASX',

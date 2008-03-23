@@ -5,6 +5,10 @@ interface
 //{$DEFINE LOADFROMFILE}
 //{$DEFINE GENERATE}
 
+{  channeltree.Perform(TVM_SETLINECOLOR, 0, clRed);
+  channeltree.Perform(TVM_SETTEXTCOLOR, 0, clWhite);
+  channeltree.Perform(TVM_SETBKCOLOR, 0, clBlack);}
+
 uses
   Windows,
   KOL;
@@ -146,6 +150,9 @@ begin
   data.Free;
   FreeMem(resultRgnData);
 end;
+
+
+//http://www.delphi3000.com/articles/article_1009.asp
 
     {
 procedure SaveRegion;
