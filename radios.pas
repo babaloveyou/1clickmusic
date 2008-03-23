@@ -327,13 +327,15 @@ const
     );
 
 const
-  chn_industrial: array[0..8] of string = (
+  chn_industrial: array[0..9] of string = (
     // 'Post Industrial ( darksection )',
+    //'Post Industrial ( dunkle )',
+    //'Post Industrial ( darkness )',
     'Post Industrial ( tormented )',
     'Post Industrial ( digitalgunfire )',
     'Post Industrial ( ultradark )',
     'Post Industrial ( ebmradio )',
-    // 'Post Industrial ( schwarze )',
+    'Post Industrial ( schwarze )',
     'Post Industrial ( r1live )',
     'Post Industrial ( rantradio )',
     'Post Industrial ( realindustrial )',
@@ -342,13 +344,15 @@ const
     );
 
 const
-  pls_industrial: array[0..8] of string = (
+  pls_industrial: array[0..9] of string = (
     // 'http://dark-section.de/streams/winamp_128.pls',
+    //'http://www.dunklewelle.de/modules/mod_internetradio/makeplaylist.php?ip=87.106.67.16&port=10000&format=M3U',
+    //'http://radio.darkness.com/listen.pls',
     'http://playlist.tormentedradio.com/radioG.pls',
     'http://www.digitalgunfire.com/playlist.pls',
     'http://www.ultradarkradio.com/listen.pls',
     'http://www.ebm-radio.de/tunein/listen.pls',
-    // 'http://www.schwarze-welle.com/play.m3u',
+    'http://www.schwarze-welle.com/play.m3u',
     'http://www.r1live.de/player/winamp.pls',
     'http://www.rantmedia.ca/industrial/rr-industrial128.pls',
     'http://radio.realindustrialradio.com:8000/listen.pls',

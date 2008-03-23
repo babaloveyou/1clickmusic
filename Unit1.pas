@@ -20,11 +20,11 @@ Dialogs;
 type
 {$IF Defined(KOL_MCK)}
 {$I MCKfakeClasses.inc}
-  {$IFDEF KOLCLASSES} {$I TForm1class.inc} {$ELSE OBJECTS} PForm1 = ^TForm1; {$ENDIF CLASSES/OBJECTS}
-  {$IFDEF KOLCLASSES}{$I TForm1.inc}{$ELSE} TForm1 = object(TObj) {$ENDIF}
+{$IFDEF KOLCLASSES}{$I TForm1class.inc}{$ELSE OBJECTS}PForm1 = ^TForm1; {$ENDIF CLASSES/OBJECTS}
+{$IFDEF KOLCLASSES}{$I TForm1.inc}{$ELSE}TForm1 = object(TObj){$ENDIF}
     Form: PControl;
 {$ELSE not_KOL_MCK}
-  TForm1 = class(TForm)
+    TForm1 = class(TForm)
 {$IFEND KOL_MCK}
       KOLProject1: TKOLProject;
       Timer: TKOLTimer;
@@ -46,6 +46,14 @@ type
         var Mouse: TMouseEventData);
       procedure btoptionsClick(Sender: PObj);
       procedure TrayMouseUp(Sender: PControl; var Mouse: TMouseEventData);
+      procedure KOLForm1Paint(Sender: PControl; DC: HDC);
+      procedure KOLForm1MouseMove(Sender: PControl;
+        var Mouse: TMouseEventData);
+      procedure KOLForm1MouseDown(Sender: PControl;
+        var Mouse: TMouseEventData);
+      procedure KOLForm1MouseUp(Sender: PControl;
+        var Mouse: TMouseEventData);
+      procedure KOLForm1MouseLeave(Sender: PObj);
     private
     { Private declarations }
     public
@@ -82,6 +90,7 @@ uses
   EncryptIt;
 
 var
+  Theme: PTheme;
   // Core
   DS: TDSoutput;
   chn: TRadioPlayer;
@@ -221,8 +230,6 @@ begin
   Result := 1;
   repeat
     channeltree.Enabled := False;
-    progress := 0;
-    curTitle := '';
 
     StopChannel;
 
@@ -271,7 +278,7 @@ function TForm1.KOLForm1Message(var Msg: tagMSG;
 begin
   Result := False;
 
-  if (Msg.Message = WM_HOTKEY) and (Thread.Suspended) then
+  if (Msg.Message = WM_HOTKEY) and (channeltree.Enabled) then
   begin
     case Msg.wParam of
       1001, 3001: if Assigned(chn) then chn.Volume(100);
@@ -321,7 +328,6 @@ procedure TForm1.KOLForm1FormCreate(Sender: PObj);
 var
   i: Integer;
   loading, lbl: PControl;
-  t : PTheme;
 begin
   loading := NewForm(Form, '');
   loading.HasBorder := False;
@@ -347,17 +353,17 @@ begin
   Tray.Icon := form.Icon;
   Tray.AddIcon;
 
-  NewTheme(t,Form);
+  NewTheme(Theme, Form);
 
   //# HOTKEYS
   RegisterHotKey(form.Handle, 1001, MOD_CONTROL, VK_UP);
-  RegisterHotKey(form.Handle, 3001, MOD_CONTROL, $AF);
+  RegisterHotKey(form.Handle, 3001, 0, $AF);
   RegisterHotKey(form.Handle, 1002, MOD_CONTROL, VK_DOWN);
-  RegisterHotKey(form.Handle, 3002, MOD_CONTROL, $AE);
+  RegisterHotKey(form.Handle, 3002, 0, $AE);
   RegisterHotKey(form.Handle, 1003, MOD_CONTROL, VK_END);
-  RegisterHotKey(form.Handle, 3003, MOD_CONTROL, $B2);
+  RegisterHotKey(form.Handle, 3003, 0, $B2);
   RegisterHotKey(form.Handle, 1004, MOD_CONTROL, VK_HOME);
-  RegisterHotKey(form.Handle, 3004, MOD_CONTROL, $B3);
+  RegisterHotKey(form.Handle, 3004, 0, $B3);
   RegisterHotKey(form.Handle, 2001, MOD_CONTROL, VK_F1);
   RegisterHotKey(form.Handle, 2002, MOD_CONTROL, VK_F2);
   RegisterHotKey(form.Handle, 2003, MOD_CONTROL, VK_F3);
@@ -370,6 +376,7 @@ begin
   RegisterHotKey(form.Handle, 2010, MOD_CONTROL, VK_F10);
   RegisterHotKey(form.Handle, 2011, MOD_CONTROL, VK_F11);
   RegisterHotKey(form.Handle, 2012, MOD_CONTROL, VK_F12);
+
 
   //# Create the thread that open the radio
   Thread := NewThread;
@@ -395,6 +402,10 @@ begin
       chn_eletronic[i],
       pls_eletronic[i]
       );
+
+  channeltree.Perform(TVM_SETLINECOLOR, 0, clRed);
+  channeltree.Perform(TVM_SETTEXTCOLOR, 0, clWhite);
+  channeltree.Perform(TVM_SETBKCOLOR, 0, clBlack);
 
   for i := 0 to High(chn_rockmetal) do
     radiolist.Add(
@@ -498,7 +509,6 @@ end;
 
 procedure TForm1.btoptionsClick(Sender: PObj);
 begin
-  //SetWindowRgn(Form.Handle,SkinIt(Form.Handle),True);
   //# create and show
   Form.AlphaBlend := 180;
   NewForm2(Form2, Form);
@@ -536,9 +546,36 @@ begin
     showaboutbox;
 end;
 
+procedure TForm1.KOLForm1Paint(Sender: PControl; DC: HDC);
+begin
+  Theme.RePaint;
+end;
+
+procedure TForm1.KOLForm1MouseMove(Sender: PControl;
+  var Mouse: TMouseEventData);
+begin
+  Theme.MouseMove(Mouse);
+end;
+
+procedure TForm1.KOLForm1MouseDown(Sender: PControl;
+  var Mouse: TMouseEventData);
+begin
+  Theme.MouseDown(Mouse);
+end;
+
+procedure TForm1.KOLForm1MouseUp(Sender: PControl;
+  var Mouse: TMouseEventData);
+begin
+  Theme.MouseUP(Mouse);
+end;
+
+procedure TForm1.KOLForm1MouseLeave(Sender: PObj);
+begin
+  Theme.MouseLeave();
+end;
+
 initialization
   IsMultiThread := True;
 
 end.
-
 

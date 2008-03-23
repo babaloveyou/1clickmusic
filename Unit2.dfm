@@ -1,7 +1,7 @@
 object Form2: TForm2
   Left = 481
   Top = 245
-  Width = 247
+  Width = 275
   Height = 309
   HorzScrollBar.Visible = False
   VertScrollBar.Visible = False
@@ -20,7 +20,7 @@ object Form2: TForm2
     Tag = 0
     Left = 8
     Top = 8
-    Width = 185
+    Width = 257
     Height = 22
     HelpContext = 0
     IgnoreDefault = False
@@ -52,7 +52,7 @@ object Form2: TForm2
     Font.FontHeight = 0
     Font.FontWidth = 0
     Font.FontWeight = 0
-    Font.FontName = 'MS Sans Serif'
+    Font.FontName = 'Arial'
     Font.FontOrientation = 0
     Font.FontCharset = 1
     Font.FontPitch = fpFixed
@@ -75,7 +75,7 @@ object Form2: TForm2
   end
   object cmbxmsnicon: TKOLComboBox
     Tag = 0
-    Left = 8
+    Left = 16
     Top = 37
     Width = 161
     Height = 22
@@ -166,7 +166,7 @@ object Form2: TForm2
     Font.FontHeight = 0
     Font.FontWidth = 0
     Font.FontWeight = 0
-    Font.FontName = 'MS Sans Serif'
+    Font.FontName = 'Arial'
     Font.FontOrientation = 0
     Font.FontCharset = 1
     Font.FontPitch = fpFixed
@@ -189,7 +189,7 @@ object Form2: TForm2
   end
   object edtlistname: TKOLEditBox
     Tag = 0
-    Left = 8
+    Left = 16
     Top = 94
     Width = 161
     Height = 22
@@ -245,7 +245,7 @@ object Form2: TForm2
     Tag = 0
     Left = 8
     Top = 122
-    Width = 201
+    Width = 249
     Height = 22
     HelpContext = 0
     IgnoreDefault = False
@@ -277,7 +277,7 @@ object Form2: TForm2
     Font.FontHeight = 0
     Font.FontWidth = 0
     Font.FontWeight = 0
-    Font.FontName = 'MS Sans Serif'
+    Font.FontName = 'Arial'
     Font.FontOrientation = 0
     Font.FontCharset = 1
     Font.FontPitch = fpFixed
@@ -301,7 +301,7 @@ object Form2: TForm2
     Tag = 0
     Left = 8
     Top = 151
-    Width = 169
+    Width = 257
     Height = 22
     HelpContext = 0
     IgnoreDefault = False
@@ -333,7 +333,7 @@ object Form2: TForm2
     Font.FontHeight = 0
     Font.FontWidth = 0
     Font.FontWeight = 0
-    Font.FontName = 'MS Sans Serif'
+    Font.FontName = 'Arial'
     Font.FontOrientation = 0
     Font.FontCharset = 1
     Font.FontPitch = fpFixed
@@ -358,7 +358,7 @@ object Form2: TForm2
     Tag = 0
     Left = 56
     Top = 179
-    Width = 161
+    Width = 162
     Height = 22
     HelpContext = 0
     IgnoreDefault = False
@@ -412,7 +412,7 @@ object Form2: TForm2
     Tag = 0
     Left = 56
     Top = 208
-    Width = 161
+    Width = 162
     Height = 22
     HelpContext = 0
     IgnoreDefault = False
