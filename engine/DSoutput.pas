@@ -25,7 +25,7 @@ type
     procedure Play;
     procedure Stop;
     function InitializeBuffer(const Arate, Achannels: Cardinal): Cardinal;
-    constructor Create;
+    constructor Create(const wndHandle : HWND);
     destructor Destroy; override;
   end;
 
@@ -49,13 +49,10 @@ type
     procedure initdecoder; virtual; abstract;
     procedure Execute; override;
   public
-    StreamBitrate: Integer;
-    StreamTitle: string;
     Status: TRadioStatus;
     property DS: TDSoutput read FDevice write FDevice;
     procedure Volume(const value: Integer);
-    procedure GetPlayInfo(out Atitle: string; out Aquality: Cardinal); virtual; abstract;
-    function GetBufferPercentage: Integer; virtual; abstract;
+    procedure GetPlayInfo(out Atitle: string; out Aquality, ABuffPercentage: Cardinal); virtual; abstract;
     function open(const url: string): Boolean; virtual; abstract;
     procedure Play; virtual; abstract;
     constructor Create(ADevice: TDSoutput);
@@ -67,16 +64,9 @@ procedure DSERROR(const value: HResult; const Error: string);
 implementation
 
 uses
-  main,
   utils;
 
 { TDSoutput }
-
-{function DSEnumOutputCallback(lpGuid: PGUID; lpcstrDescription: PChar;
-  lpcstrModule: PChar; lpContext: Pointer): BOOL; stdcall;
-begin
-  Result := True;
-end;}
 
 
 procedure DSERROR(const value: HResult; const Error: string);
@@ -84,52 +74,89 @@ var
   ErrorStr: string;
 begin
   if value = DS_OK then Exit;
-  case value of
-    DSERR_ACCESSDENIED: ErrorStr := 'DSERR_ACCESSDENIED';
-    DSERR_BUFFERTOOSMALL: ErrorStr := 'DSERR_BUFFERTOOSMALL';
+  case Value of
     DSERR_ALLOCATED: ErrorStr := 'DSERR_ALLOCATED';
-    DSERR_INVALIDPARAM: ErrorStr := 'DSERR_INVALIDPARAM';
-    DSERR_INVALIDCALL: ErrorStr := 'DSERR_INVALIDCALL';
-    DSERR_GENERIC: ErrorStr := 'DSERR_GENERIC';
-    DSERR_BADFORMAT: ErrorStr := 'DSERR_BADFORMAT';
-    DSERR_UNSUPPORTED: ErrorStr := 'DSERR_UNSUPPORTED';
-    DSERR_NODRIVER: ErrorStr := 'DSERR_NODRIVER';
     DSERR_ALREADYINITIALIZED: ErrorStr := 'DSERR_ALREADYINITIALIZED';
-    DSERR_NOINTERFACE: ErrorStr := 'DSERR_NOINTERFACE';
+    DSERR_BADFORMAT: ErrorStr := 'DSERR_BADFORMAT';
     DSERR_BUFFERLOST: ErrorStr := 'DSERR_BUFFERLOST';
-  else ErrorStr := 'UNKNOWERROR';
+    DSERR_CONTROLUNAVAIL: ErrorStr := 'DSERR_CONTROLUNAVAIL';
+    DSERR_GENERIC: ErrorStr := 'DSERR_GENERIC';
+    DSERR_INVALIDCALL: ErrorStr := 'DSERR_INVALIDCALL';
+    DSERR_INVALIDPARAM: ErrorStr := 'DSERR_INVALIDPARAM';
+    DSERR_NOAGGREGATION: ErrorStr := 'DSERR_NOAGGREGATION';
+    DSERR_NODRIVER: ErrorStr := 'DSERR_NODRIVER';
+    DSERR_NOINTERFACE: ErrorStr := 'DSERR_NOINTERFACE';
+    DSERR_OTHERAPPHASPRIO: ErrorStr := 'DSERR_OTHERAPPHASPRIO';
+    DSERR_OUTOFMEMORY: ErrorStr := 'DSERR_OUTOFMEMORY';
+    DSERR_PRIOLEVELNEEDED: ErrorStr := 'DSERR_PRIOLEVELNEEDED';
+    DSERR_UNINITIALIZED: ErrorStr := 'DSERR_UNINITIALIZED';
+    DSERR_UNSUPPORTED: ErrorStr := 'DSERR_UNSUPPORTED';
+    else ErrorStr := 'Unrecognized DS Error';
   end;
   RaiseError('DIRECTSOUND ERROR, [' + ErrorStr + '] : ' + Error);
 end;
 
 
-constructor TDSoutput.Create;
+/// GET THE FIRST REAL DEVICE
+
+function DSEnumOutputCallback(lpGuid: PGUID; lpcstrDescription: PChar;
+  lpcstrModule: PChar; lpContext: Pointer): BOOL; stdcall;
+begin
+  if Assigned(lpGuid) then
+  begin
+    CopyMemory(lpContext, lpGuid, SizeOf(TGUID));
+    Result := False;
+  end
+  else
+    Result := True;
+end;
+
+constructor TDSoutput.Create(const wndHandle : HWND);
 var
   Fpwfm: TWAVEFORMATEX;
   Fpdesc: TDSBUFFERDESC;
+  DeviceGUID: PGUID;
 begin
-  DSERROR(DirectSoundCreate(nil, FDS, nil), 'Creating DS device');
-
-  DSERROR(FDS.SetCooperativeLevel(GetDesktopWindow, DSSCL_PRIORITY), 'Setting the cooperative level');
+  New(DeviceGUID);
+{$IFDEF _LOG_}Log('enumerating AUDIODEVICES'); {$ENDIF}
+  DirectSoundEnumerate(DSEnumOutputCallback, DeviceGUID);
+{$IFDEF _LOG_}Log('enumerated AUDIODEVICES'); {$ENDIF}
+{$IFDEF _LOG_}Log('creating DIRECTSOUND DEVICE'); {$ENDIF}
+  DSERROR(DirectSoundCreate(DeviceGUID, FDS, nil), 'Creating DS device');
+  Dispose(DeviceGUID);
+{$IFDEF _LOG_}Log('created DIRECTSOUND DEVICE'); {$ENDIF}
+{$IFDEF _LOG_}Log('seting DIRECTSOUND COOPLEVEL'); {$ENDIF}
+  DSERROR(FDS.SetCooperativeLevel(wndHandle, DSSCL_PRIORITY), 'Setting the cooperative level');
+{$IFDEF _LOG_}Log('seted DIRECTSOUND COOPLEVEL'); {$ENDIF}
 
   FillChar(Fpdesc, SizeOf(TDSBUFFERDESC), 0);
-  Fpdesc.dwSize := SizeOf(TDSBUFFERDESC);
-  Fpdesc.dwFlags := DSBCAPS_PRIMARYBUFFER;
-  Fpdesc.lpwfxFormat := nil;
-  Fpdesc.dwBufferBytes := 0;
+  with Fpdesc do
+  begin
+    dwSize := SizeOf(TDSBUFFERDESC);
+    dwFlags := DSBCAPS_PRIMARYBUFFER;
+    lpwfxFormat := nil;
+    dwBufferBytes := 0;
+  end;
 
+{$IFDEF _LOG_}Log('creating DIRECTSOUND PBUFFER'); {$ENDIF}
   DSERROR(FDS.CreateSoundBuffer(Fpdesc, Fprimary, nil), 'Creating Primary buffer');
+{$IFDEF _LOG_}Log('created DIRECTSOUND PBUFFER'); {$ENDIF}
 
   FillChar(Fpwfm, SizeOf(TWAVEFORMATEX), 0);
-  Fpwfm.wFormatTag := WAVE_FORMAT_PCM;
-  Fpwfm.nChannels := 2;
-  Fpwfm.nSamplesPerSec := 44100;
-  Fpwfm.nBlockAlign := 4;
-  Fpwfm.wBitsPerSample := 16;
-  Fpwfm.cbSize := 0;
-  Fpwfm.nAvgBytesPerSec := 44100 * 4;
+  with Fpwfm do
+  begin
+    wFormatTag := WAVE_FORMAT_PCM;
+    nChannels := 2;
+    nSamplesPerSec := 44100;
+    nBlockAlign := 4;
+    wBitsPerSample := 16;
+    cbSize := 0;
+    nAvgBytesPerSec := 44100 * 4;
+  end;
 
-  DSERROR(FPrimary.SetFormat(@Fpwfm), 'Chaning Primary buffer format');
+{$IFDEF _LOG_}Log('seting DIRECTSOUND PBUFFER FORMAT'); {$ENDIF}
+  DSERROR(FPrimary.SetFormat(@Fpwfm), 'Changing Primary buffer format');
+{$IFDEF _LOG_}Log('seted DIRECTSOUND PBUFFER FORMAT'); {$ENDIF}
 end;
 
 destructor TDSoutput.Destroy;
@@ -151,37 +178,53 @@ var
   Fswfm: TWAVEFORMATEX;
   Fsdesc: TDSBUFFERDESC;
   lastvolume: Integer;
+  Buffer : PByte;
+  Size : Cardinal;
 begin
+{$IFDEF _LOG_}Log(Format('initing DIRECTSOUND SBUFFER %d %d', [Arate, Achannels])); {$ENDIF}
   lastvolume := 0;
   if Assigned(FSecondary) then
     FSecondary.GetVolume(lastvolume);
   FSecondary := nil;
 
   FillChar(Fswfm, SizeOf(TWAVEFORMATEX), 0);
-  Fswfm.wFormatTag := WAVE_FORMAT_PCM;
-  Fswfm.nChannels := Achannels;
-  Fswfm.wBitsPerSample := 16;
-  Fswfm.nSamplesPerSec := Arate;
-  Fswfm.nBlockAlign := Achannels * 2;
-  Fswfm.nAvgBytesPerSec := Arate * Achannels * 2;
-  Fswfm.cbSize := 0;
+  with Fswfm do
+  begin
+    wFormatTag := WAVE_FORMAT_PCM;
+    nChannels := Achannels;
+    wBitsPerSample := 16;
+    nSamplesPerSec := Arate;
+    nBlockAlign := Achannels * 2;
+    nAvgBytesPerSec := Arate * nBlockAlign;
+    cbSize := 0;
+  end;
+
 
   // set up the buffer
   FillChar(Fsdesc, SizeOf(TDSBUFFERDESC), 0);
-  Fsdesc.dwSize := SizeOf(TDSBUFFERDESC);
-  Fsdesc.dwReserved := 0;
-  Fsdesc.dwFlags :=
-    DSBCAPS_GETCURRENTPOSITION2 or
-    DSBCAPS_CTRLVOLUME or
-    DSBCAPS_GLOBALFOCUS;
-  Fsdesc.lpwfxFormat := @Fswfm;
-  Fsdesc.dwBufferBytes := 64 * 1024;
+  with Fsdesc do
+  begin
+    dwSize := SizeOf(TDSBUFFERDESC);
+    dwReserved := 0;
+    dwFlags :=
+      DSBCAPS_GETCURRENTPOSITION2 or
+      DSBCAPS_CTRLVOLUME or
+      DSBCAPS_GLOBALFOCUS;
+    lpwfxFormat := @Fswfm;
+    dwBufferBytes := 64 * 1024;
+  end;
 
   DSERROR(FDS.CreateSoundBuffer(Fsdesc, Fsecondary, nil), 'ERRO, criando o buffer secundario');
 
   Result := Fsdesc.dwBufferBytes div 2;
 
   FSecondary.SetVolume(lastvolume);
+
+  FSecondary.Lock(0,Fsdesc.dwBufferBytes,@Buffer,@Size,nil,nil,DSBLOCK_ENTIREBUFFER);
+  FillChar(Buffer^,Size,0);
+  FSecondary.Unlock(Buffer,Size,nil,0);
+  
+{$IFDEF _LOG_}Log('inited DIRECTSOUND SBUFFER'); {$ENDIF}
 end;
 
 procedure TDSoutput.Play;
@@ -215,17 +258,11 @@ begin
 end;
 
 procedure TRadioPlayer.Execute;
-var
-  cs: TRTLCriticalSection;
 begin
-  InitializeCriticalSection(cs);
   repeat
-    EnterCriticalSection(cs);
-    UpdateBuffer;
-    LeaveCriticalSection(cs);
-    sleep(50);
+    UpdateBuffer();
+    Sleep(25);
   until Terminated;
-  DeleteCriticalSection(cs);
 end;
 
 procedure TRadioPlayer.Volume(const value: Integer);

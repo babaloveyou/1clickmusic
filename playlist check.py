@@ -1,8 +1,16 @@
-﻿import httplib , sys, threading
+﻿import httplib, urllib , sys, threading
 
 sons = []
+
+def ex(line):
+    if "http://" in line:
+        url = line.split("'")[1]
+        pendingurls.append( (url.split(".")[1],url) )
+
+
 class son(threading.Thread):
     def __init__(self,name,url):
+        self.fullurl = url
         url = url.split("://",1)[1]
 
         values = url.split("/",1)
@@ -21,6 +29,7 @@ class son(threading.Thread):
             if r1.status != 200:
                 print self.name, r1.status, r1.reason
                 print self.url
+
         except:
             print "error!", sys.exc_info()[0]
             print self.host , self.target
@@ -32,9 +41,7 @@ pendingurls = []
 
 plsfile = open("radios.pas")
 for line in plsfile:
-    if "http://" in line:
-        url = line.split("'")[1]
-        pendingurls.append( (url.split(".")[1],url) )
+    ex(line)
 plsfile.close()
 
 for item in pendingurls:

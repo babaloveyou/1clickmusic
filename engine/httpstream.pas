@@ -2,37 +2,48 @@ unit httpstream;
 
 interface
 uses
-  SysUtils, Classes, Windows, blcksock;
+  SysUtils,
+  Classes,
+  Windows,
+  blcksock,
+  _DirectSound;
 
 const // CONFIGURATION
-  BUFFTOTALSIZE = 100000;
-  BUFFSIZE = 1000;
+  BUFFTOTALSIZE = 102400 div 2;
+  BUFFSIZE = 1024;
   BUFFCOUNT = BUFFTOTALSIZE div BUFFSIZE;
 
-  BUFFMIN = 10; // PERCENT
+  BUFFMIN = 8; // PERCENT
   BUFFRESTORE = 50; // PERCENT
-  BUFFPRE = (BUFFCOUNT div 3) * 2; // N. of BUFF = 75%
+  BUFFPRE = (BUFFCOUNT div 10) * 8; // N. of BUFF = 80%
 
 type
   THTTPSTREAM = class(TThread)
   private
     Fbytesread: Cardinal; // used to manage icy data
     FHTTP: TTCPBlockSocket;
+    MetaInterval, MetaBitrate: Cardinal;
+    MetaTitle: string;
+    FCursor, FFeed: Cardinal;
+    BuffFilled: Cardinal;
+    inbuffer: array[0..BUFFCOUNT-1] of array[0..BUFFSIZE-1] of Byte;
     procedure UpdateBuffer;
     procedure ParseMetaData(meta: string);
-    function ParseMetaHeader(var meta: string): Integer;
+    class function ParseMetaHeader(var meta: string; out MetaInterval, MetaBitrate: Cardinal): Integer;
+    class procedure ParseURL(url: string; out host, port, icyheader: string);
   protected
     procedure Execute; override;
   public
-    bufffilled: Integer;
-    inbuffer: array[0..BUFFCOUNT] of array[1..BUFFSIZE] of Byte;
-    Cursor, Feed: Cardinal;
-    MetaInterval, MetaBitrate: Cardinal;
-    MetaTitle: string;
-  public
+    property Cursor: Cardinal read FCursor write FCursor;
+    //# Return % of buffer that is filled
+    function GetBuffPercentage: Cardinal;
+    //# Get ShoutCast info
+    procedure GetMetaInfo(out Atitle: string; out Aquality: Cardinal);
+    //# Read the Buffer
+    function ReadBuffer:Pointer;
+    //# Prebuffer, Open stream
     procedure PreBuffer;
-    function open(const url: string): Boolean;
-    procedure close;
+    function Open(const url: string): Boolean;
     constructor Create;
     destructor Destroy; override;
   end;
@@ -55,7 +66,7 @@ begin
   end;
 end;
 
-procedure ParseURL(url: string; out host, port, icyheader: string);
+class procedure THTTPSTREAM.ParseURL(url: string; out host, port, icyheader: string);
 const
   ICYHEADERSTUB =
     'GET %s HTTP/1.0' + #13#10 +
@@ -102,7 +113,7 @@ begin
   icyheader := Format(ICYHEADERSTUB, [url, host + ':' + port]);
 end;
 
-function THTTPSTREAM.ParseMetaHeader(var meta: string): Integer;
+class function THTTPSTREAM.ParseMetaHeader(var meta: string; out MetaInterval, MetaBitrate: Cardinal): Integer;
 var
   MetaData: TStringlist;
   field, value: string;
@@ -134,7 +145,7 @@ begin
       Result := 0;
   end
   else
-    if MultiPos(['302','303','301'],MetaData[0]) then
+    if MultiPos(['302', '303', '301'], MetaData[0]) then
     begin
       Result := -1;
       for i := 1 to MetaData.Count - 1 do
@@ -154,24 +165,18 @@ const
   fieldlen = Length(field);
 begin
   if meta = '' then Exit;
-
   Delete(meta, 1, fieldlen);
-
   MetaTitle := Copy(meta, 1, Pos('''', meta) - 1);
-
-  meta := MetaTitle;
-
 end;
 
 { THTTPSTREAM }
-
-// let's do magic =D
 
 procedure THTTPSTREAM.UpdateBuffer;
 var
   metalength: Byte;
   byteswrited, bytestowrite: Cardinal;
 begin
+{$IFDEF _LOG_}Log('feed. called'); {$ENDIF}
   byteswrited := 0;
   while byteswrited < BUFFSIZE do
   begin
@@ -187,51 +192,43 @@ begin
       bytestowrite := BUFFSIZE - byteswrited;
       if bytestowrite > MetaInterval - Fbytesread then
         bytestowrite := MetaInterval - Fbytesread;
-      FHTTP.RecvBufferEx(@inbuffer[Feed, byteswrited + 1], bytestowrite, MaxInt);
+      FHTTP.RecvBufferEx(@inbuffer[FFeed,byteswrited], bytestowrite, MaxInt);
       Inc(Fbytesread, bytestowrite);
       Inc(byteswrited, bytestowrite);
     end;
   end;
-  if feed = BUFFCOUNT - 1 then feed := 0 else Inc(feed);
-  Inc(bufffilled);
-end;
-
-procedure THTTPSTREAM.close;
-begin
-  FHTTP.CloseSocket;
+  if FFeed = BUFFCOUNT - 1 then FFeed := 0 else Inc(FFeed);
+  Inc(BuffFilled);
+{$IFDEF _LOG_}Log('feed. returned'); {$ENDIF}
 end;
 
 constructor THTTPSTREAM.Create;
 begin
+{$IFDEF _LOG_}Log('creating HTTPSTREAM FEEDER'); {$ENDIF}
   inherited Create(True);
   FHTTP := TTCPBlockSocket.Create;
   Priority := tpTimeCritical;
+{$IFDEF _LOG_}Log('created HTTPSTREAM FEEDER'); {$ENDIF}
 end;
 
 destructor THTTPSTREAM.Destroy;
 begin
-  close;
+  FHTTP.CloseSocket;
   Terminate;
   FHTTP.Free;
   inherited;
 end;
 
 procedure THTTPSTREAM.Execute;
-var
-  cs: TRTLCriticalSection;
 begin
-  InitializeCriticalSection(cs);
   repeat
-    EnterCriticalSection(cs);
-    if Cursor <> Feed then
-      UpdateBuffer;
-    LeaveCriticalSection(cs);
-    sleep(5);
+    if FCursor <> FFeed then
+      UpdateBuffer();
+    Sleep(5);
   until Terminated;
-  DeleteCriticalSection(cs);
 end;
 
-function THTTPSTREAM.open(const url: string): Boolean;
+function THTTPSTREAM.Open(const url: string): Boolean;
 var
   host, port, icyheader: string;
   icy: string;
@@ -242,15 +239,15 @@ begin
   FHTTP.Connect(host, port);
   FHTTP.SendString(icyheader);
 
-  Cursor := MaxInt; // para evitar que bloqueie
-  Feed := 0;
-  bufffilled := 0;
+  FCursor := MaxInt; // para evitar que bloqueie
+  FFeed := 0;
+  BuffFilled := 0;
   MetaInterval := 0;
   Fbytesread := 0;
 
   icy := FHTTP.RecvTerminated(1000, #13#10#13#10);
 
-  case ParseMetaHeader(icy) of
+  case ParseMetaHeader(icy, MetaInterval, MetaBitrate) of
     1:
       Result := True;
     0:
@@ -261,11 +258,45 @@ begin
 end;
 
 procedure THTTPSTREAM.PreBuffer;
-var
-  i: Integer;
 begin
-  for i := 0 to BUFFPRE do
+  while FFeed < BUFFPRE do
     UpdateBuffer;
+end;
+
+{procedure THTTPSTREAM.ReadBuffer(const Buffer: Pointer);
+begin
+  EnterCriticalSection(FCritical);
+  CopyMemory(Buffer, @inbuffer[FCursor], BUFFSIZE);
+  if FCursor = BUFFCOUNT - 1 then FCursor := 0 else Inc(FCursor);
+  Dec(BuffFilled);
+  LeaveCriticalSection(FCritical);
+end;
+
+procedure THTTPSTREAM.WriteBuffer(const Buffer: Pointer);
+begin
+  EnterCriticalSection(FCritical);
+  CopyMemory(@inbuffer[FFeed], Buffer, BUFFSIZE);
+  if FFeed = BUFFCOUNT - 1 then FFeed := 0 else Inc(FFeed);
+  Inc(BuffFilled);
+  LeaveCriticalSection(FCritical);
+end;}
+
+function THTTPSTREAM.GetBuffPercentage: Cardinal;
+begin
+  Result := Round((BuffFilled / BUFFCOUNT) * 100);
+end;
+
+procedure THTTPSTREAM.GetMetaInfo(out Atitle: string; out Aquality: Cardinal);
+begin
+  Atitle := MetaTitle;
+  Aquality := MetaBitrate;
+end;
+
+function THTTPSTREAM.ReadBuffer: Pointer;
+begin
+  Result := @inbuffer[FCursor];
+  if FCursor = BUFFCOUNT - 1 then FCursor := 0 else Inc(FCursor);
+  Dec(BuffFilled);
 end;
 
 end.

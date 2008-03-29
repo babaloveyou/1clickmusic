@@ -43,6 +43,7 @@ type
     lblpass: TKOLLabel;
     btapply: TKOLButton;
     btupdate: TKOLButton;
+    ckbxballons: TKOLCheckBox;
     procedure ckbxlistenabledClick(Sender: PObj);
     procedure ckbxmsnenabledClick(Sender: PObj);
     procedure ckbxlastfmClick(Sender: PObj);
@@ -90,6 +91,8 @@ end;
 
 procedure TForm2.KOLForm1FormCreate(Sender: PObj);
 begin
+  ckbxballons.Checked := traypopups_enabled;
+  //
   ckbxmsnenabled.Checked := msn_enabled;
   cmbxmsnicon.CurIndex := msn_iconi;
   //
@@ -113,6 +116,7 @@ end;
 procedure TForm2.btapplyClick(Sender: PObj);
 begin
   // submit changes
+  traypopups_enabled := ckbxballons.Checked;
   msn_enabled := ckbxmsnenabled.Checked;
   updateMSN(msn_enabled);
   msn_iconi := cmbxmsnicon.CurIndex;

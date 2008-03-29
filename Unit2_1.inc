@@ -17,9 +17,9 @@ begin
     Result.Form.SetName( Applet, 'Form2' );
    {$ENDIF}
     Result.Form.Style := Result.Form.Style and not WS_MAXIMIZEBOX;
-    Result.Form.SetClientSize( 267, 282 );
+    Result.Form.SetClientSize( 267, 305 );
     // Result.lblpass.TabOrder = -1
-    Result.lblpass := NewLabel( Result.Form, 'Pass :' ).SetPosition( 16, 212 ).SetSize( 41, 0 );
+    Result.lblpass := NewLabel( Result.Form, 'Pass :' ).SetPosition( 16, 244 ).SetSize( 41, 0 );
    {$IFDEF USE_NAMES}
     Result.lblpass.SetName( Result.Form, 'lblpass' ); 
    {$ENDIF}
@@ -28,7 +28,7 @@ begin
    {$ENDIF UNICODE_CTRLS}
     Result.lblpass.Font.FontPitch := fpFixed;
     // Result.lbluser.TabOrder = -1
-    Result.lbluser := NewLabel( Result.Form, 'User :' ).SetPosition( 16, 180 ).SetSize( 41, 0 );
+    Result.lbluser := NewLabel( Result.Form, 'User :' ).SetPosition( 16, 212 ).SetSize( 41, 0 );
    {$IFDEF USE_NAMES}
     Result.lbluser.SetName( Result.Form, 'lbluser' ); 
    {$ENDIF}
@@ -36,8 +36,18 @@ begin
    Result.lbluser.SetUnicode(TRUE);
    {$ENDIF UNICODE_CTRLS}
     Result.lbluser.Font.FontPitch := fpFixed;
+    // Result.ckbxballons.TabOrder = 0
+    Result.ckbxballons := NewCheckBox( Result.Form, 'Tray popups' ).SetPosition( 8, 8 ).SetSize( 249, 0 );
+   {$IFDEF USE_NAMES}
+    Result.ckbxballons.SetName( Result.Form, 'ckbxballons' ); 
+   {$ENDIF}
+   {$IFDEF UNICODE_CTRLS}
+   Result.ckbxballons.SetUnicode(TRUE);
+   {$ENDIF UNICODE_CTRLS}
+    Result.ckbxballons.Font.FontName := 'Arial';
+    Result.ckbxballons.Font.FontPitch := fpFixed;
     // Result.ckbxmsnenabled.TabOrder = 1
-    Result.ckbxmsnenabled := NewCheckBox( Result.Form, 'Messenger Now playing' ).SetPosition( 8, 8 ).SetSize( 257, 0 );
+    Result.ckbxmsnenabled := NewCheckBox( Result.Form, 'Messenger Now playing' ).SetPosition( 8, 40 ).SetSize( 257, 0 );
    {$IFDEF USE_NAMES}
     Result.ckbxmsnenabled.SetName( Result.Form, 'ckbxmsnenabled' ); 
    {$ENDIF}
@@ -47,7 +57,7 @@ begin
     Result.ckbxmsnenabled.Font.FontName := 'Arial';
     Result.ckbxmsnenabled.Font.FontPitch := fpFixed;
     // Result.cmbxmsnicon.TabOrder = 2
-    Result.cmbxmsnicon := NewComboBox( Result.Form, [ coReadOnly, coNoIntegralHeight ] ).SetPosition( 16, 37 ).SetSize( 161, 0 );
+    Result.cmbxmsnicon := NewComboBox( Result.Form, [ coReadOnly, coNoIntegralHeight ] ).SetPosition( 16, 69 ).SetSize( 161, 0 );
    {$IFDEF USE_NAMES}
     Result.cmbxmsnicon.SetName( Result.Form, 'cmbxmsnicon' ); 
    {$ENDIF}
@@ -61,7 +71,7 @@ begin
     Result.cmbxmsnicon.Items[ 2 ] := 'Office icon';
     Result.cmbxmsnicon.CurIndex := 0;
     // Result.ckbxlistenabled.TabOrder = 3
-    Result.ckbxlistenabled := NewCheckBox( Result.Form, 'Listened tracks list' ).SetPosition( 8, 65 ).SetSize( 153, 0 );
+    Result.ckbxlistenabled := NewCheckBox( Result.Form, 'Listened tracks list' ).SetPosition( 8, 97 ).SetSize( 153, 0 );
    {$IFDEF USE_NAMES}
     Result.ckbxlistenabled.SetName( Result.Form, 'ckbxlistenabled' ); 
    {$ENDIF}
@@ -71,14 +81,14 @@ begin
     Result.ckbxlistenabled.Font.FontName := 'Arial';
     Result.ckbxlistenabled.Font.FontPitch := fpFixed;
     // Result.edtlistname.TabOrder = 4
-    Result.edtlistname := NewEditBox( Result.Form, [  ] ).SetPosition( 16, 94 ).SetSize( 161, 0 );
+    Result.edtlistname := NewEditBox( Result.Form, [  ] ).SetPosition( 16, 126 ).SetSize( 161, 0 );
    {$IFDEF USE_NAMES}
     Result.edtlistname.SetName( Result.Form, 'edtlistname' ); 
    {$ENDIF}
     Result.edtlistname.Font.FontPitch := fpFixed;
     {$IFNDEF UNICODE_CTRLS}Result.edtlistname.SetUnicode( TRUE );{$ENDIF}
     // Result.ckbxclipboard.TabOrder = 5
-    Result.ckbxclipboard := NewCheckBox( Result.Form, 'Copy track name to Clipboard' ).SetPosition( 8, 122 ).SetSize( 249, 0 );
+    Result.ckbxclipboard := NewCheckBox( Result.Form, 'Copy track name to Clipboard' ).SetPosition( 8, 154 ).SetSize( 249, 0 );
    {$IFDEF USE_NAMES}
     Result.ckbxclipboard.SetName( Result.Form, 'ckbxclipboard' ); 
    {$ENDIF}
@@ -88,7 +98,7 @@ begin
     Result.ckbxclipboard.Font.FontName := 'Arial';
     Result.ckbxclipboard.Font.FontPitch := fpFixed;
     // Result.ckbxlastfm.TabOrder = 6
-    Result.ckbxlastfm := NewCheckBox( Result.Form, 'Last.fm Scrobber plugin' ).SetPosition( 8, 151 ).SetSize( 257, 0 );
+    Result.ckbxlastfm := NewCheckBox( Result.Form, 'Last.fm Scrobber plugin' ).SetPosition( 8, 183 ).SetSize( 257, 0 );
    {$IFDEF USE_NAMES}
     Result.ckbxlastfm.SetName( Result.Form, 'ckbxlastfm' ); 
    {$ENDIF}
@@ -98,21 +108,21 @@ begin
     Result.ckbxlastfm.Font.FontName := 'Arial';
     Result.ckbxlastfm.Font.FontPitch := fpFixed;
     // Result.edtuser.TabOrder = 7
-    Result.edtuser := NewEditBox( Result.Form, [  ] ).SetPosition( 56, 179 ).SetSize( 162, 0 );
+    Result.edtuser := NewEditBox( Result.Form, [  ] ).SetPosition( 56, 211 ).SetSize( 162, 0 );
    {$IFDEF USE_NAMES}
     Result.edtuser.SetName( Result.Form, 'edtuser' ); 
    {$ENDIF}
     Result.edtuser.Font.FontPitch := fpFixed;
     {$IFNDEF UNICODE_CTRLS}Result.edtuser.SetUnicode( TRUE );{$ENDIF}
     // Result.edtpass.TabOrder = 8
-    Result.edtpass := NewEditBox( Result.Form, [ eoPassword ] ).SetPosition( 56, 208 ).SetSize( 162, 0 );
+    Result.edtpass := NewEditBox( Result.Form, [ eoPassword ] ).SetPosition( 56, 240 ).SetSize( 162, 0 );
    {$IFDEF USE_NAMES}
     Result.edtpass.SetName( Result.Form, 'edtpass' ); 
    {$ENDIF}
     Result.edtpass.Font.FontPitch := fpFixed;
     {$IFNDEF UNICODE_CTRLS}Result.edtpass.SetUnicode( TRUE );{$ENDIF}
     // Result.btapply.TabOrder = 9
-    Result.btapply := NewButton( Result.Form, 'Apply' ).SetPosition( 59, 248 );
+    Result.btapply := NewButton( Result.Form, 'Apply' ).SetPosition( 59, 280 );
    {$IFDEF USE_NAMES}
     Result.btapply.SetName( Result.Form, 'btapply' ); 
    {$ENDIF}
@@ -121,7 +131,7 @@ begin
    {$ENDIF UNICODE_CTRLS}
     Result.btapply.Font.FontPitch := fpFixed;
     // Result.btupdate.TabOrder = 10
-    Result.btupdate := NewButton( Result.Form, 'Update!' ).SetPosition( 131, 248 );
+    Result.btupdate := NewButton( Result.Form, 'Update!' ).SetPosition( 131, 280 );
    {$IFDEF USE_NAMES}
     Result.btupdate.SetName( Result.Form, 'btupdate' ); 
    {$ENDIF}
@@ -129,15 +139,15 @@ begin
    Result.btupdate.SetUnicode(TRUE);
    {$ENDIF UNICODE_CTRLS}
     Result.btupdate.Font.FontPitch := fpFixed;
+      Result.ckbxmsnenabled.OnClick := Result.ckbxmsnenabledClick;
       Result.ckbxlistenabled.OnClick := Result.ckbxlistenabledClick;
     Result.edtlistname.Color := TColor(clWindow);
       Result.ckbxlastfm.OnClick := Result.ckbxlastfmClick;
-      Result.ckbxmsnenabled.OnClick := Result.ckbxmsnenabledClick;
+    Result.edtuser.Color := TColor(clWindow);
     Result.edtpass.Color := TColor(clWindow);
       Result.btapply.OnClick := Result.btapplyClick;
     Result.btapply.DefaultBtn := TRUE;
       Result.btupdate.OnClick := Result.btupdateClick;
-    Result.edtuser.Color := TColor(clWindow);
     Result.Form.CenterOnParent.CanResize := False;
     Result.Form.Perform( WM_INITMENU, 0, 0 );
     Result.KOLForm1FormCreate( Result );

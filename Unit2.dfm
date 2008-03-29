@@ -2,7 +2,7 @@ object Form2: TForm2
   Left = 481
   Top = 245
   Width = 275
-  Height = 309
+  Height = 332
   HorzScrollBar.Visible = False
   VertScrollBar.Visible = False
   Caption = 'Options'
@@ -19,7 +19,7 @@ object Form2: TForm2
   object ckbxmsnenabled: TKOLCheckBox
     Tag = 0
     Left = 8
-    Top = 8
+    Top = 40
     Width = 257
     Height = 22
     HelpContext = 0
@@ -76,7 +76,7 @@ object Form2: TForm2
   object cmbxmsnicon: TKOLComboBox
     Tag = 0
     Left = 16
-    Top = 37
+    Top = 69
     Width = 161
     Height = 22
     HelpContext = 0
@@ -133,7 +133,7 @@ object Form2: TForm2
   object ckbxlistenabled: TKOLCheckBox
     Tag = 0
     Left = 8
-    Top = 65
+    Top = 97
     Width = 153
     Height = 22
     HelpContext = 0
@@ -190,7 +190,7 @@ object Form2: TForm2
   object edtlistname: TKOLEditBox
     Tag = 0
     Left = 16
-    Top = 94
+    Top = 126
     Width = 161
     Height = 22
     HelpContext = 0
@@ -244,7 +244,7 @@ object Form2: TForm2
   object ckbxclipboard: TKOLCheckBox
     Tag = 0
     Left = 8
-    Top = 122
+    Top = 154
     Width = 249
     Height = 22
     HelpContext = 0
@@ -300,7 +300,7 @@ object Form2: TForm2
   object ckbxlastfm: TKOLCheckBox
     Tag = 0
     Left = 8
-    Top = 151
+    Top = 183
     Width = 257
     Height = 22
     HelpContext = 0
@@ -357,7 +357,7 @@ object Form2: TForm2
   object edtuser: TKOLEditBox
     Tag = 0
     Left = 56
-    Top = 179
+    Top = 211
     Width = 162
     Height = 22
     HelpContext = 0
@@ -411,7 +411,7 @@ object Form2: TForm2
   object edtpass: TKOLEditBox
     Tag = 0
     Left = 56
-    Top = 208
+    Top = 240
     Width = 162
     Height = 22
     HelpContext = 0
@@ -465,7 +465,7 @@ object Form2: TForm2
   object lbluser: TKOLLabel
     Tag = 0
     Left = 16
-    Top = 180
+    Top = 212
     Width = 41
     Height = 22
     HelpContext = 0
@@ -519,7 +519,7 @@ object Form2: TForm2
   object lblpass: TKOLLabel
     Tag = 0
     Left = 16
-    Top = 212
+    Top = 244
     Width = 41
     Height = 22
     HelpContext = 0
@@ -573,7 +573,7 @@ object Form2: TForm2
   object btapply: TKOLButton
     Tag = 0
     Left = 59
-    Top = 248
+    Top = 280
     Width = 64
     Height = 22
     HelpContext = 0
@@ -630,7 +630,7 @@ object Form2: TForm2
   object btupdate: TKOLButton
     Tag = 0
     Left = 131
-    Top = 248
+    Top = 280
     Width = 64
     Height = 22
     HelpContext = 0
@@ -683,6 +683,62 @@ object Form2: TForm2
     windowed = True
     Flat = False
     WordWrap = False
+  end
+  object ckbxballons: TKOLCheckBox
+    Tag = 0
+    Left = 8
+    Top = 8
+    Width = 249
+    Height = 22
+    HelpContext = 0
+    IgnoreDefault = False
+    AnchorLeft = False
+    AnchorTop = False
+    AnchorRight = False
+    AnchorBottom = False
+    AcceptChildren = False
+    MouseTransparent = False
+    TabOrder = 0
+    MinWidth = 0
+    MinHeight = 0
+    MaxWidth = 0
+    MaxHeight = 0
+    PlaceDown = False
+    PlaceRight = False
+    PlaceUnder = False
+    Visible = True
+    Enabled = True
+    DoubleBuffered = False
+    Align = caNone
+    CenterOnParent = False
+    Caption = 'Tray popups'
+    Ctl3D = True
+    Color = clBtnFace
+    parentColor = True
+    Font.Color = clWindowText
+    Font.FontStyle = []
+    Font.FontHeight = 0
+    Font.FontWidth = 0
+    Font.FontWeight = 0
+    Font.FontName = 'Arial'
+    Font.FontOrientation = 0
+    Font.FontCharset = 1
+    Font.FontPitch = fpFixed
+    Font.FontQuality = fqDefault
+    parentFont = False
+    EraseBackground = False
+    Localizy = loForm
+    Transparent = False
+    Checked = False
+    TabStop = True
+    autoSize = False
+    HasBorder = False
+    Brush.Color = clBtnFace
+    Brush.BrushStyle = bsSolid
+    Auto3State = False
+    windowed = True
+    WordWrap = False
+    Border = 2
   end
   object KOLForm1: TKOLForm
     Tag = 0
@@ -748,7 +804,7 @@ object Form2: TForm2
     OnFormCreate = KOLForm1FormCreate
     EraseBackground = False
     supportMnemonics = False
-    Left = 16
-    Top = 16
+    Left = 144
+    Top = 80
   end
 end

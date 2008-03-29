@@ -9,17 +9,17 @@ uses Windows,
   Messages,
   KOL,
   KOLBAPTrayIcon
-{$IFNDEF KOL_MCK},
-  mirror,
-  Classes,
-  Controls,
-  mckControls,
-  mckObjs,
-  Graphics,
-  mckCtrls,
-  mckBAPTrayIcon
-{$ENDIF (place your units here->)},
-  SysUtils;
+{$IF Defined(KOL_MCK)}{$ELSE},
+mirror,
+Classes,
+Controls,
+mckControls,
+mckObjs,
+Graphics,
+mckCtrls,
+mckBAPTrayIcon
+{$IFEND (place your units here->)},
+SysUtils;
 {$ELSE}
 {$I uses.inc}
 Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
@@ -27,51 +27,50 @@ Dialogs;
 {$ENDIF}
 
 type
-{$IFDEF KOL_MCK}
+{$IF Defined(KOL_MCK)}
 {$I MCKfakeClasses.inc}
   {$IFDEF KOLCLASSES} {$I TForm1class.inc} {$ELSE OBJECTS} PForm1 = ^TForm1; {$ENDIF CLASSES/OBJECTS}
   {$IFDEF KOLCLASSES}{$I TForm1.inc}{$ELSE} TForm1 = object(TObj) {$ENDIF}
     Form: PControl;
 {$ELSE not_KOL_MCK}
   TForm1 = class(TForm)
-{$ENDIF KOL_MCK}
-    KOLProject1: TKOLProject;
-    Timer: TKOLTimer;
-    lbltrack: TKOLLabel;
-    lblbuffer: TKOLLabel;
-    lblstatus: TKOLLabel;
-    channeltree: TKOLTreeView;
-    lblhelp: TKOLLabel;
-    lblradio: TKOLLabel;
-    btoptions: TKOLButton;
-    KOLForm1: TKOLForm;
-    Tray: TKOLBAPTrayIcon;
-    procedure TimerTimer(Sender: PObj);
-    procedure KOLForm1Destroy(Sender: PObj);
-    procedure KOLForm1FormCreate(Sender: PObj);
-    function KOLForm1Message(var Msg: tagMSG; var Rslt: Integer): Boolean;
-    procedure channeltreeSelChange(Sender: PObj);
-    procedure channeltreeMouseUp(Sender: PControl;
-      var Mouse: TMouseEventData);
-    procedure btoptionsClick(Sender: PObj);
-    procedure TrayMouseUp(Sender: PControl; var Mouse: TMouseEventData);
-  private
+{$IFEND KOL_MCK}
+      KOLProject1: TKOLProject;
+      lbltrack: TKOLLabel;
+      lblbuffer: TKOLLabel;
+      lblstatus: TKOLLabel;
+      channeltree: TKOLTreeView;
+      lblhelp: TKOLLabel;
+      lblradio: TKOLLabel;
+      btoptions: TKOLButton;
+      KOLForm1: TKOLForm;
+      Tray: TKOLBAPTrayIcon;
+      procedure KOLForm1Destroy(Sender: PObj);
+      procedure KOLForm1FormCreate(Sender: PObj);
+      function KOLForm1Message(var Msg: tagMSG; var Rslt: Integer): Boolean;
+      procedure channeltreeSelChange(Sender: PObj);
+      procedure channeltreeMouseUp(Sender: PControl;
+        var Mouse: TMouseEventData);
+      procedure btoptionsClick(Sender: PObj);
+      procedure TrayMouseUp(Sender: PControl; var Mouse: TMouseEventData);
+    private
     { Private declarations }
-  public
-    popupmenu: PMenu;
-    Thread: PThread;
-    LastFMThread: PThread;
-    function LastFMThreadExecute(Sender: PThread): Integer;
-    function ThreadExecute(Sender: PThread): Integer;
-    procedure PlayChannel;
-    procedure StopChannel;
-    procedure popupproc(Sender: PMenu; Item: Integer);
-    procedure LoadConfig;
-    procedure SaveConfig;
-  end;
+    public
+      popupmenu: PMenu;
+      Thread: PThread;
+      LastFMThread: PThread;
+      procedure TimerExecute();
+      function LastFMThreadExecute(Sender: PThread): Integer;
+      function ThreadExecute(Sender: PThread): Integer;
+      procedure PlayChannel;
+      procedure StopChannel;
+      procedure popupproc(Sender: PMenu; Item: Integer);
+      procedure LoadConfig;
+      procedure SaveConfig;
+    end;
 
-var
-  Form1{$IFDEF KOL_MCK}: PForm1{$ELSE}: TForm1{$ENDIF};
+  var
+    Form1{$IFDEF KOL_MCK}: PForm1{$ELSE}: TForm1{$ENDIF};
 
 {$IFDEF KOL_MCK}
 procedure NewForm1(var Result: PForm1; AParent: PControl);
@@ -90,7 +89,7 @@ uses
   EncryptIt;
 
 
-{$IFNDEF KOL_MCK}{$R *.DFM}{$ENDIF}
+{$IF Defined(KOL_MCK)}{$ELSE}{$R *.DFM}{$IFEND}
 
 {$IFDEF KOL_MCK}
 {$I Unit1_1.inc}
@@ -104,6 +103,7 @@ begin
   ini := OpenIniFile('oneclickmusic.ini');
   ini.Mode := ifmRead;
   ini.Section := 'options';
+  traypopups_enabled := ini.ValueBoolean('traypopups_enabled', True);
   firstrun_enabled := ini.ValueBoolean('firstrun_enabled', True);
   msn_enabled := ini.ValueBoolean('msn_enabled', False);
   msn_iconi := ini.ValueInteger('msn_iconi', 0);
@@ -133,8 +133,8 @@ var
 begin
   ini := OpenIniFile('oneclickmusic.ini');
   ini.Mode := ifmWrite;
-
   ini.Section := 'options';
+  ini.ValueBoolean('traypopups_enabled', traypopups_enabled);
   ini.ValueBoolean('firstrun_enabled', False);
   ini.ValueBoolean('msn_enabled', msn_enabled);
   ini.ValueInteger('msn_iconi', msn_iconi);
@@ -152,16 +152,21 @@ begin
   ini.Free;
 end;
 
+procedure TimerProc(Wnd: HWnd; Mesg, TimerID, SysTime: Longint); stdcall;
+begin
+  if TimerID = 1 then
+    Form1.TimerExecute();
+end;
 
-procedure TForm1.TimerTimer(Sender: PObj);
+
+procedure TForm1.TimerExecute();
 begin
   if (not Assigned(chn)) or
     (chn.Status = rsStoped) then
     Exit;
 
   // # GET INFO
-  progress := chn.GetBufferPercentage;
-  chn.GetPlayInfo(curTitle, curBitrate);
+  chn.GetPlayInfo(curTitle, curBitrate, progress);
 
   // # REFRESH GUI INFORMATION
   lbltrack.caption := curTitle;
@@ -198,11 +203,12 @@ begin
     begin
       lastTitle := curTitle;
 
-      fixTrackname();
-
-      Tray.BalloonTitle := 'Track change';
-      Tray.BalloonText := curTitle;
-      Tray.ShowBalloon(_NIIF_INFO);
+      if traypopups_enabled then
+      begin
+        Tray.BalloonTitle := 'Track change';
+        Tray.BalloonText := curTitle;
+        Tray.ShowBalloon(_NIIF_INFO);
+      end;
 
       if msn_enabled then
         updateMSN(True);
@@ -230,17 +236,32 @@ begin
 
     StopChannel;
 
-    lblstatus.Caption := 'Searching...';
+    SetTimer(appwinHANDLE, 1, 500, @TimerProc);
 
-    if not OpenRadio(radiolist.getpls(channeltree.TVItemText[channeltree.TVSelected]), chn, DS) then
+    lblstatus.Caption := 'Searching...';
+    
+    if traypopups_enabled then
     begin
-      StopChannel;
-      lblstatus.caption := 'error.: try another channel'
+      Tray.BalloonTitle := 'Connecting';
+      Tray.BalloonText := lblradio.Caption;
+      Tray.ShowBalloon(_NIIF_INFO);
+    end;
+
+    if OpenRadio(radiolist.getpls(channeltree.TVItemText[channeltree.TVSelected]), chn, DS) then
+    begin
+      TimerExecute(); //# Refresh GUI INFO
+      chn.Play();
     end
     else
     begin
-      TimerTimer(nil); //# Refresh GUI INFO
-      chn.Play();
+      if traypopups_enabled then
+      begin
+        Tray.BalloonTitle := 'Error Connecting';
+        Tray.BalloonText := lblradio.Caption;
+        Tray.ShowBalloon(_NIIF_ERROR);
+      end;
+      StopChannel;
+      lblstatus.caption := 'error.: try another channel';
     end;
     channeltree.Enabled := True;
     Thread.Suspend;
@@ -267,7 +288,9 @@ begin
   lbltrack.Caption := '';
   Tray.ToolTip := '';
   Form.Caption := '1ClickMusic';
-  TimerTimer(nil); //# Refresh GUI INFO
+
+  TimerExecute(); //# Refresh GUI INFO
+  KillTimer(appwinHANDLE, 1);
 end;
 
 function TForm1.KOLForm1Message(var Msg: tagMSG;
@@ -309,6 +332,8 @@ begin
     LastFMThread.Free;
   end;
 
+  KillTimer(appwinHANDLE, 1);
+
   Thread.Terminate;
   Thread.Free;
 
@@ -326,7 +351,7 @@ var
   i: Integer;
   loading, lbl: PControl;
 begin
-{$IFDEF _LOG_}Log(); {$ENDIF}
+  appwinHANDLE := form.Handle;
   loading := NewForm(Form, '');
   loading.HasBorder := False;
   loading.BoundsRect := Form.BoundsRect;
@@ -340,50 +365,50 @@ begin
   lbl.Color := clBlack;
   loading.CreateWindow;
   lbl.Update;
-{$IFDEF _LOG_}Log(); {$ENDIF}
+{$IFDEF _LOG_}Log('creating TDSOUTPUT'); {$ENDIF}
   //# Inicializa o SOM
-  DS := TDSoutput.Create;
-{$IFDEF _LOG_}Log(); {$ENDIF}
+  chn := nil;
+  DS := TDSoutput.Create(appwinHANDLE);
+{$IFDEF _LOG_}Log('created DSOUTPUT'); {$ENDIF}
   lbl.Caption := 'LOADING -> RADIO LIBRARY!';
   lbl.Update;
-{$IFDEF _LOG_}Log(); {$ENDIF}
+
   Tray.Icon := Form.Icon;
   Tray.AddIcon;
-{$IFDEF _LOG_}Log(); {$ENDIF}
-  //# HOTKEYS
-  RegisterHotKey(form.Handle, 1001, MOD_CONTROL, VK_UP);
-  RegisterHotKey(form.Handle, 3001, 0, $AF);
-  RegisterHotKey(form.Handle, 1002, MOD_CONTROL, VK_DOWN);
-  RegisterHotKey(form.Handle, 3002, 0, $AE);
-  RegisterHotKey(form.Handle, 1003, MOD_CONTROL, VK_END);
-  RegisterHotKey(form.Handle, 3003, 0, $B2);
-  RegisterHotKey(form.Handle, 1004, MOD_CONTROL, VK_HOME);
-  RegisterHotKey(form.Handle, 3004, 0, $B3);
-  RegisterHotKey(form.Handle, 2001, MOD_CONTROL, VK_F1);
-  RegisterHotKey(form.Handle, 2002, MOD_CONTROL, VK_F2);
-  RegisterHotKey(form.Handle, 2003, MOD_CONTROL, VK_F3);
-  RegisterHotKey(form.Handle, 2004, MOD_CONTROL, VK_F4);
-  RegisterHotKey(form.Handle, 2005, MOD_CONTROL, VK_F5);
-  RegisterHotKey(form.Handle, 2006, MOD_CONTROL, VK_F6);
-  RegisterHotKey(form.Handle, 2007, MOD_CONTROL, VK_F7);
-  RegisterHotKey(form.Handle, 2008, MOD_CONTROL, VK_F8);
-  RegisterHotKey(form.Handle, 2009, MOD_CONTROL, VK_F9);
-  RegisterHotKey(form.Handle, 2010, MOD_CONTROL, VK_F10);
-  RegisterHotKey(form.Handle, 2011, MOD_CONTROL, VK_F11);
-  RegisterHotKey(form.Handle, 2012, MOD_CONTROL, VK_F12);
 
-{$IFDEF _LOG_}Log(); {$ENDIF}
+  //# HOTKEYS
+  RegisterHotKey(appwinHANDLE, 1001, MOD_CONTROL, VK_UP);
+  RegisterHotKey(appwinHANDLE, 3001, 0, $AF);
+  RegisterHotKey(appwinHANDLE, 1002, MOD_CONTROL, VK_DOWN);
+  RegisterHotKey(appwinHANDLE, 3002, 0, $AE);
+  RegisterHotKey(appwinHANDLE, 1003, MOD_CONTROL, VK_END);
+  RegisterHotKey(appwinHANDLE, 3003, 0, $B2);
+  RegisterHotKey(appwinHANDLE, 1004, MOD_CONTROL, VK_HOME);
+  RegisterHotKey(appwinHANDLE, 3004, 0, $B3);
+  RegisterHotKey(appwinHANDLE, 2001, MOD_CONTROL, VK_F1);
+  RegisterHotKey(appwinHANDLE, 2002, MOD_CONTROL, VK_F2);
+  RegisterHotKey(appwinHANDLE, 2003, MOD_CONTROL, VK_F3);
+  RegisterHotKey(appwinHANDLE, 2004, MOD_CONTROL, VK_F4);
+  RegisterHotKey(appwinHANDLE, 2005, MOD_CONTROL, VK_F5);
+  RegisterHotKey(appwinHANDLE, 2006, MOD_CONTROL, VK_F6);
+  RegisterHotKey(appwinHANDLE, 2007, MOD_CONTROL, VK_F7);
+  RegisterHotKey(appwinHANDLE, 2008, MOD_CONTROL, VK_F8);
+  RegisterHotKey(appwinHANDLE, 2009, MOD_CONTROL, VK_F9);
+  RegisterHotKey(appwinHANDLE, 2010, MOD_CONTROL, VK_F10);
+  RegisterHotKey(appwinHANDLE, 2011, MOD_CONTROL, VK_F11);
+  RegisterHotKey(appwinHANDLE, 2012, MOD_CONTROL, VK_F12);
+
   //# Create the thread that open the radio
   Thread := NewThread;
   Thread.OnExecute := ThreadExecute;
-{$IFDEF _LOG_}Log(); {$ENDIF}
+
   //# KOL puro jah que a mck nao que funfar
   PopupMenu := NewMenu(channeltree, 0, ['Ctrl+F1', 'Ctrl+F2', 'Ctrl+F3', 'Ctrl+F4', 'Ctrl+F5', 'Ctrl+F6', 'Ctrl+F7', 'Ctrl+F8', 'Ctrl+F9', 'Ctrl+F10', 'Ctrl+F11', 'Ctrl+F12', 'Clear Hotkeys'], nil);
   for i := 0 to 12 do
     PopupMenu.AssignEvents(i, [popupproc]);
   //# define o popup da channeltree
   channeltree.SetAutoPopupMenu(PopupMenu);
-{$IFDEF _LOG_}Log(); {$ENDIF}
+
   //# Cria lista de radios
   Radiolist := NewRadioList;
 
@@ -449,13 +474,13 @@ begin
 
   for i := 0 to High(genreid) do
     channeltree.TVSort(genreid[i]);
-{$IFDEF _LOG_}Log(); {$ENDIF}
+
+{$IFDEF _LOG_}Log('loading CONFIG'); {$ENDIF}
   LoadConfig;
-{$IFDEF _LOG_}Log(); {$ENDIF}
+{$IFDEF _LOG_}Log('loaded CONFIG'); {$ENDIF}
   loading.Free;
-{$IFDEF _LOG_}Log(); {$ENDIF}
+
   if firstrun_enabled then showaboutbox;
-{$IFDEF _LOG_}Log(); {$ENDIF}
 end;
 
 procedure TForm1.channeltreeSelChange(Sender: PObj);
@@ -530,7 +555,7 @@ begin
     else
     begin
       Form.Show;
-      TimerTimer(nil); //# Refresh GUI INFO
+      TimerExecute(); //# Refresh GUI INFO
       Form.Focused := True;
     end;
   end
@@ -538,10 +563,6 @@ begin
     showaboutbox;
 end;
 
-initialization
-  IsMultiThread := True;
-
 end.
-
 
 

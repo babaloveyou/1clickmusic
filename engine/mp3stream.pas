@@ -3,7 +3,13 @@ unit mp3stream;
 interface
 
 uses
-  SysUtils, Windows, Classes, DSoutput, mpg123, httpstream, _DirectSound;
+  SysUtils,
+  Windows,
+  Classes,
+  DSoutput,
+  mpg123,
+  httpstream,
+  _DirectSound;
 
 type
   TMP3 = class(TRadioPlayer)
@@ -15,9 +21,8 @@ type
     procedure initdecoder; override;
     procedure initbuffer; override;
   public
-    procedure GetPlayInfo(out Atitle: string; out Aquality: Cardinal); override;
-    function GetBufferPercentage: Integer; override;
-    function open(const url: string): Boolean; override;
+    procedure GetPlayInfo(out Atitle: string; out Aquality, ABuffPercentage: Cardinal); override;
+    function Open(const url: string): Boolean; override;
     procedure Play; override;
     destructor Destroy; override;
   end;
@@ -25,19 +30,14 @@ type
 implementation
 
 uses
-  main, utils;
+  utils;
 
 { TMP3 }
 
-procedure TMP3.GetPlayInfo(out Atitle: string; out Aquality: Cardinal);
+procedure TMP3.GetPlayInfo(out Atitle: string; out Aquality, ABuffPercentage: Cardinal);
 begin
-  Atitle := FStream.MetaTitle;
-  Aquality := FStream.MetaBitrate;
-end;
-
-function TMP3.GetBufferPercentage: Integer;
-begin
-  Result := Round((FStream.bufffilled / BUFFCOUNT) * 100);
+  ABuffPercentage := FStream.GetBuffPercentage;
+  FStream.GetMetaInfo(Atitle,Aquality);
 end;
 
 destructor TMP3.Destroy;
@@ -45,24 +45,21 @@ begin
   DS.Stop;
   Terminate;
   inherited;
-  FStream.Free;
   mpg123_close(Fhandle);
   mpg123_exit;
+  FStream.Free;
 end;
 
 procedure TMP3.initbuffer;
 begin
-  mpg123_decode(Fhandle, @FStream.inbuffer[0], BUFFSIZE, nil, 0, nil);
-  mpg123_getformat(Fhandle, @Frate, @Fchannels, @Fencoding);
-  FStream.Cursor := 1;
-  if Fchannels = 0 then
+  FStream.Cursor := 0;
+  while (FStream.Cursor < 3) and (Fchannels = 0) do
   begin
-    mpg123_decode(Fhandle, @FStream.inbuffer[1], BUFFSIZE, nil, 0, nil);
+    mpg123_decode(Fhandle, FStream.ReadBuffer ,BUFFSIZE, nil, 0, nil);
     mpg123_getformat(Fhandle, @Frate, @Fchannels, @Fencoding);
-    FStream.Cursor := 2;
-    if Fchannels = 0 then
-      RaiseError('ERRO, tentando descobrir o formato do audio');
   end;
+  if Fchannels = 0 then
+    RaiseError('ERRO, tentando descobrir o formato do audio');
   mpg123_format_none(Fhandle);
   mpg123_format(Fhandle, Frate, Fchannels, Fencoding);
   Fbuffersize := DS.InitializeBuffer(Frate, Fchannels);
@@ -70,41 +67,48 @@ end;
 
 procedure TMP3.initdecoder;
 begin
-  if mpg123_init <> 0 then
+{$IFDEF _LOG_}Log('initing MPG DECODER'); {$ENDIF}
+  if mpg123_init <> MPG123_OK then
     RaiseError('ERRO, criando instancia do decodificador MPEG');
-
-  Fhandle := mpg123_new(nil, nil);
+  Fhandle := mpg123_new('mmx', nil);
   if Fhandle = nil then
     RaiseError('ERRO, inicializando o decodificador MPEG');
+  if mpg123_open_feed(Fhandle) <> MPG123_OK then
+    RaiseError('ERRO, abrindo feed de audio');
+{$IFDEF _LOG_}Log('inited MPG DECODER'); {$ENDIF}
 
-  mpg123_open_feed(Fhandle);
-
+{$IFDEF _LOG_}Log('creating httpfeeder'); {$ENDIF}
   FStream := THTTPSTREAM.Create;
+{$IFDEF _LOG_}Log('created httpfeeder'); {$ENDIF}
 end;
 
-function TMP3.open(const url: string): Boolean;
+function TMP3.Open(const url: string): Boolean;
 begin
+{$IFDEF _LOG_}Log('Opening Stream'); {$ENDIF}
   Result := FStream.open(url);
   if Result then
   begin
     Status := rsPrebuffering;
+{$IFDEF _LOG_}Log('Prebuffering Stream'); {$ENDIF}
     FStream.PreBuffer();
   end;
+{$IFDEF _LOG_}Log('Stream Opened'); {$ENDIF}
 end;
 
 procedure TMP3.Play;
 begin
+{$IFDEF _LOG_}Log('Play mp3'); {$ENDIF}
   initbuffer();
 
   Flastsection := MaxInt;
-  DS.SoundBuffer.SetCurrentPosition((Fbuffersize div 2) * 3);
   updatebuffer();
-  DS.SoundBuffer.SetCurrentPosition(0);
 
+{$IFDEF _LOG_}Log('resuming Threads'); {$ENDIF}
   Resume;
   FStream.Resume;
   DS.Play;
   Status := rsPlaying;
+{$IFDEF _LOG_}Log(Format('Play mp3 returned .%s .%s', [BoolToStr(not Suspended, True), BoolToStr(not FStream.Suspended, True)])); {$ENDIF}
 end;
 
 procedure TMP3.updatebuffer;
@@ -114,30 +118,28 @@ var
   section: Cardinal;
   r: Integer;
 begin
+{$IFDEF _LOG_}Log('cursor. called'); r := MaxInt; {$ENDIF}
   if DS.PlayCursorPos > Fbuffersize then
     section := 0
   else
-    section := 1;
+    section := Fbuffersize;
 
   if section = Flastsection then Exit;
+{$IFDEF _LOG_}Log(Format('updatebuffer trigered %d, locking buffer', [section])); {$ENDIF}
 
-  DSERROR(DS.SoundBuffer.Lock(section * Fbuffersize, Fbuffersize, @buffer, @Size,nil, nil, 0),'ERRO, Locking buffer');
-
-  if (GetBufferPercentage > BUFFMIN) then
+  DSERROR(DS.SoundBuffer.Lock(section, Fbuffersize, @buffer, @Size, nil, nil, 0), 'ERRO, Locking buffer');
+{$IFDEF _LOG_}Log(Format('buffer locked, %p %d', [buffer, Size])); {$ENDIF}
+  if (FStream.GetBuffPercentage > BUFFMIN) then
   begin
     SizeDecoded := 0;
     TotalDecoded := 0;
     bufferPos := buffer;
-
-    r := MPG123_NEED_MORE;
-    while r = MPG123_NEED_MORE do
-    begin
-      r := mpg123_decode(Fhandle, @FStream.inbuffer[FStream.Cursor], BUFFSIZE, bufferPos, Size - TotalDecoded, @SizeDecoded);
+    repeat
+      r := mpg123_decode(Fhandle,FStream.ReadBuffer , BUFFSIZE, bufferPos, Size - TotalDecoded, @SizeDecoded);
       Inc(bufferPos, SizeDecoded);
       Inc(TotalDecoded, SizeDecoded);
-      if FStream.Cursor = BUFFCOUNT - 1 then FStream.Cursor := 0 else Inc(FStream.Cursor);
-      Dec(FStream.bufffilled);
-    end;
+{$IFDEF _LOG_}Log(Format('decoder returned, %d', [r])); {$ENDIF}
+    until r <> MPG123_NEED_MORE;
   end
   else
   begin
@@ -145,7 +147,7 @@ begin
     DS.Stop;
     repeat
       Sleep(50);
-    until (GetBufferPercentage > BUFFRESTORE) or Terminated;
+    until (FStream.GetBuffPercentage > BUFFRESTORE) or Terminated;
     if not Terminated then
       DS.Play;
     Status := rsPlaying;
@@ -154,6 +156,7 @@ begin
   DS.SoundBuffer.Unlock(buffer, Size, nil, 0);
 
   Flastsection := section;
+{$IFDEF _LOG_}Log(Format('cursor. %d', [r])); {$ENDIF}
 end;
 
 end.

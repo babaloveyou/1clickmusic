@@ -96,7 +96,7 @@ PackageDLLOutputDir=
 PackageDCPOutputDir=
 SearchPath=engine
 Packages=vcl;rtl;vclie;xmlrtl;inet;inetdbbde;inetdbxpress;vclx;dbrtl;soaprtl;dsnap;VclSmp;dbexpress;vcldb;dbxcds;adortl;ibxpress;vclactnband;bdertl;vclshlctrls;dclOfficeXP;IcsDel70;Python_d7;PythonVCL_d7
-Conditionals=KOL_MCK;_LOG_
+Conditionals=KOL_MCK
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
@@ -131,9 +131,11 @@ ProductName=
 ProductVersion=1.0.0.0
 Comments=
 [HistoryLists\hlConditionals]
-Count=2
-Item0=KOL_MCK;_LOG_
-Item1=KOL_MCK
+Count=4
+Item0=KOL_MCK
+Item1=KOL_MCK;_LOG_
+Item2=KOL_MCK;
+Item3=KOL_MCK;_LOG_;ASM_VERSION
 [HistoryLists\hlUnitAliases]
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;

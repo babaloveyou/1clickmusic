@@ -1,4 +1,4 @@
-unit staic_mpg123;
+unit static_mpg123;
 interface
 
 uses windows, SysUtils;

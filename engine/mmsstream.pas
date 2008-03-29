@@ -15,8 +15,7 @@ type
     procedure initdecoder; override;
     procedure initbuffer; override;
   public
-    procedure GetPlayInfo(out Atitle: string; out Aquality: Cardinal); override;
-    function GetBufferPercentage: Integer; override;
+    procedure GetPlayInfo(out Atitle: string; out Aquality, ABuffPercentage: Cardinal); override;
     function open(const url: string): Boolean; override;
     procedure Play; override;
     destructor Destroy; override;
@@ -56,9 +55,7 @@ begin
 
   Status := rsPrebuffering;
   Flastsection := MaxInt;
-  DS.SoundBuffer.SetCurrentPosition((Fbuffersize div 2) * 3);
   updatebuffer();
-  DS.SoundBuffer.SetCurrentPosition(0);
 
   Resume;
   DS.Play;
@@ -75,11 +72,11 @@ begin
   if DS.PlayCursorPos > Fbuffersize then
     section := 0
   else
-    section := 1;
+    section := Fbuffersize;
 
   if section = Flastsection then Exit;
 
-  DS.SoundBuffer.Lock(section * Fbuffersize, Fbuffersize, @buffer, @Size, nil, nil, 0);
+  DS.SoundBuffer.Lock(section, Fbuffersize, @buffer, @Size, nil, nil, 0);
 
   tmpbuffersize := Size;
   bufferPos := buffer;
@@ -105,15 +102,9 @@ begin
   if not Result then Exit;
   Fchannels := Fhandle.channels;
   Frate := Fhandle.SampleRate;
-  StreamBitrate := Fhandle.Bitrate;
 end;
 
-function TMMS.GetBufferPercentage: Integer;
-begin
-  Result := 0;
-end;
-
-procedure TMMS.GetPlayInfo(out Atitle: string; out Aquality: Cardinal);
+procedure TMMS.GetPlayInfo(out Atitle: string; out Aquality, ABuffPercentage: Cardinal);
 begin
   Aquality := Fhandle.Bitrate div 1000;
 end;

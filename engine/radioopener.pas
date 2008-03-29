@@ -14,6 +14,8 @@ function OpenRadio(const url: string; var APlayer: TRadioPlayer; const ADevice: 
 
 implementation
 
+uses utils;
+
 function OpenRadio(const url: string; var APlayer: TRadioPlayer; const ADevice: TDSoutput): Boolean;
 var
   playlist: TPlaylist;

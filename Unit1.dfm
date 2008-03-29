@@ -1,7 +1,7 @@
 object Form1: TForm1
   Left = 230
   Top = 261
-  Width = 646
+  Width = 633
   Height = 312
   HorzScrollBar.Visible = False
   VertScrollBar.Visible = False
@@ -21,7 +21,7 @@ object Form1: TForm1
     Left = 2
     Top = 2
     Width = 231
-    Height = 281
+    Height = 272
     HelpContext = 0
     IgnoreDefault = False
     AnchorLeft = False
@@ -47,7 +47,7 @@ object Form1: TForm1
     Color = clBtnFace
     parentColor = True
     Font.Color = clBlack
-    Font.FontStyle = [fsBold]
+    Font.FontStyle = []
     Font.FontHeight = 0
     Font.FontWidth = 0
     Font.FontWeight = 0
@@ -75,7 +75,7 @@ object Form1: TForm1
   end
   object lblstatus: TKOLLabel
     Tag = 0
-    Left = 528
+    Left = 504
     Top = 75
     Width = 105
     Height = 17
@@ -128,9 +128,9 @@ object Form1: TForm1
   end
   object lblbuffer: TKOLLabel
     Tag = 0
-    Left = 457
+    Left = 448
     Top = 96
-    Width = 176
+    Width = 161
     Height = 20
     HelpContext = 0
     IgnoreDefault = False
@@ -171,7 +171,7 @@ object Form1: TForm1
     Localizy = loForm
     Transparent = False
     TextAlign = taRight
-    VerticalAlign = vaCenter
+    VerticalAlign = vaTop
     wordWrap = False
     autoSize = False
     Brush.Color = clBtnFace
@@ -181,9 +181,9 @@ object Form1: TForm1
   end
   object lbltrack: TKOLLabel
     Tag = 0
-    Left = 248
+    Left = 242
     Top = 8
-    Width = 369
+    Width = 366
     Height = 49
     HelpContext = 0
     IgnoreDefault = False
@@ -224,7 +224,7 @@ object Form1: TForm1
     Localizy = loForm
     Transparent = False
     TextAlign = taCenter
-    VerticalAlign = vaCenter
+    VerticalAlign = vaTop
     wordWrap = True
     autoSize = False
     Brush.Color = clBtnFace
@@ -235,9 +235,9 @@ object Form1: TForm1
   object lblhelp: TKOLLabel
     Tag = 0
     Left = 241
-    Top = 136
+    Top = 120
     Width = 272
-    Height = 137
+    Height = 153
     HelpContext = 0
     IgnoreDefault = False
     AnchorLeft = False
@@ -281,7 +281,7 @@ object Form1: TForm1
     parentFont = False
     EraseBackground = False
     Localizy = loForm
-    Transparent = True
+    Transparent = False
     TextAlign = taLeft
     VerticalAlign = vaTop
     wordWrap = False
@@ -295,7 +295,7 @@ object Form1: TForm1
     Tag = 0
     Left = 245
     Top = 74
-    Width = 196
+    Width = 212
     Height = 22
     HelpContext = 0
     IgnoreDefault = False
@@ -347,7 +347,7 @@ object Form1: TForm1
   object btoptions: TKOLButton
     Tag = 0
     Left = 536
-    Top = 256
+    Top = 248
     Width = 76
     Height = 22
     HelpContext = 0
@@ -421,18 +421,8 @@ object Form1: TForm1
     ShowHint = False
     ReportDetailed = False
     GeneratePCode = False
-    NewIF = False
+    NewIF = True
     Left = 80
-    Top = 16
-  end
-  object Timer: TKOLTimer
-    Interval = 500
-    Enabled = True
-    OnTimer = TimerTimer
-    Multimedia = False
-    Resolution = 0
-    Periodic = True
-    Left = 112
     Top = 16
   end
   object KOLForm1: TKOLForm

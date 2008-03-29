@@ -15,7 +15,13 @@ uses
   obj_playlist,
   httpsend;
 
+
+const
+  KEYCODE = 704; //# encoding password
+
 var
+  //# needed cuz of the KOL windows is Free with no control..
+  appwinHANDLE: HWND;
   // Core
   DS: TDSoutput;
   chn: TRadioPlayer;
@@ -29,6 +35,7 @@ var
   radiolist: PRadioList;
 
   // OPTIONS
+  traypopups_enabled: Boolean;
   firstrun_enabled: Boolean;
   // MSN NOW PLAYING FEATURE
   msn_enabled: Boolean;
@@ -45,40 +52,14 @@ var
   lastfm_enabled: Boolean;
   lastfm_user, lastfm_pass: string;
 
-procedure fixTrackname;
 procedure updateMSN(write: Boolean);
 procedure LastFMexecute;
 procedure showaboutbox;
 function AutoUpdate(const control: PControl): Boolean;
 
-const
-  KEYCODE = 704; // encoding password;
-
 implementation
 
 uses utils;
-
-procedure fixTrackname;
-var
-  p: Integer;
-begin
-  // POG
-  // get rid of some ad's!
-  p := Pos('http', curTitle);
-  if p > 0 then
-    Delete(curTitle, p, Length(curTitle) - p);
-  // get rid of 1.fm ad!
-  p := Pos('(1.FM', curTitle);
-  if p > 0 then
-    Delete(curTitle, p, Length(curTitle) - p);
-  // get rid of | album:
-  p := Pos('| Album', curTitle);
-  if p > 0 then
-    Delete(curTitle, p, Length(curTitle) - p);
-  //
-  StrReplace(curTitle, '&', ''); // avoid problems!
-  //
-end;
 
 procedure updateMSN(write: Boolean);
 var
@@ -86,17 +67,15 @@ var
   msnwindow: HWND;
   utf16buffer: WideString;
 begin
-  utf16buffer := Format('1ClickMusic\0%s\0%d\0{0}\0%s\0\0\0\0\0', [msn_icons, Integer(write), curTitle]);
+  utf16buffer := WideFormat('1ClickMusic\0%s\0%d\0{0}\0%s\0\0\0\0\0', [msn_icons, Integer(write), curTitle]);
   msndata.dwData := $547;
   msndata.cbData := (Length(utf16buffer) * 2) + 2;
   msndata.lpData := Pointer(utf16buffer);
   msnwindow := 0;
 
-  repeat
-    msnwindow := FindWindowEx(0, msnwindow, 'MsnMsgrUIManager', nil);
-    if msnwindow <> 0 then
-      SendMessage(msnwindow, WM_COPYDATA, 0, Integer(@msndata));
-  until msnwindow = 0;
+  msnwindow := FindWindowEx(0, msnwindow, 'MsnMsgrUIManager', nil);
+  if msnwindow <> 0 then
+    SendMessage(msnwindow, WM_COPYDATA, 0, Integer(@msndata));
 end;
 
 procedure LastFMexecute;
@@ -124,9 +103,9 @@ end;
 
 function AutoUpdate(const control: PControl): Boolean;
 const
-  appversion = 18;
-  updateurl1 = 'http://www.freeshells.ch/~arthurpr/update.txt';
-  updateurl2 = 'http://www.thehardwaresxtreme.com/nye/arthurprs/update.txt';
+  appversion = 18.1;
+  updateurl1 = 'http://www.thehardwaresxtreme.com/nye/arthurprs/update.txt';
+  updateurl2 = 'http://www.freeshells.ch/~arthurpr/update.txt';
   updatefile1 = 'http://www.freeshells.ch/~arthurpr/oneclick.exe';
   updatefile2 = 'http://www.thehardwaresxtreme.com/nye/arthurprs/oneclick.exe';
 var

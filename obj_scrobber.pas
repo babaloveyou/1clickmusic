@@ -18,16 +18,18 @@ type
     passMD5: string;
     scroburl: string;
     sessioncode: string;
+    class procedure fixTrackName(var Title: string);
     function HandShake(const UserName, password: string): Boolean;
     function Scrobb(const artist, track: string): Boolean;
   public
     Error: string;
-    function Execute(const title: string): Boolean;
+    function Execute(title: string): Boolean;
   end;
 
 implementation
 
-uses main, utils;
+uses main,
+  utils;
 
 { TScrober }
 
@@ -55,6 +57,29 @@ begin
   Result := StrToHex(MD5(str));
 end;
 
+
+class procedure TScrobber.fixTrackName(var Title: string);
+var
+  p: Integer;
+begin
+  // POG
+  // get rid of some ad's!
+  p := Pos('http', Title);
+  if p > 0 then
+    Delete(Title, p, Length(Title) - p);
+  // get rid of 1.fm ad!
+  p := Pos('(1.FM', Title);
+  if p > 0 then
+    Delete(Title, p, Length(Title) - p);
+  // get rid of | album:
+  p := Pos('| Album', Title);
+  if p > 0 then
+    Delete(Title, p, Length(Title) - p);
+  //
+  Title := StringReplace(Title, '&', '', [rfReplaceAll]); // avoid problems!
+  //
+end;
+
 function TScrobber.HandShake(const UserName, password: string): Boolean;
 const
   handshakeurl = 'http://post.audioscrobbler.com/?hs=true&p=1.1&c=1cm&v=0.1&u=%s';
@@ -66,8 +91,7 @@ begin
   pass := password;
   passMD5 := StrMD5(pass);
   lines := TStringlist.Create;
-  HttpGetText(Format(handshakeurl, [user]), lines);
-  try
+  if HttpGetText(Format(handshakeurl, [user]), lines) then
     if lines[0] = 'UPTODATE' then
     begin
       Result := True;
@@ -75,13 +99,13 @@ begin
       scroburl := lines[2]; // SCROB URL
     end
     else
-      Error := Format('Last.FM plugin handshake ERROR :' + #10#13 + '%s', [lines[0]]);
-  finally
-    lines.Free;
-  end;
+      Error := Format('Last.FM plugin handshake ERROR :' + #10#13 + '%s', [lines[0]])
+  else
+    Result := True;
+  lines.Free;
 end;
 
-function TScrobber.Execute(const title: string): Boolean;
+function TScrobber.Execute(title: string): Boolean;
 var
   artist, track: string;
   p: Integer;
@@ -91,11 +115,15 @@ begin
   if not HandShake(lastfm_user, lastfm_pass) then
     Exit;
 
+  fixTrackname(title);
+
   p := Pos(' - ', title);
 
-  if (p = 0) or
-    MultiPos(['www','http','.fm'],curTitle) then
+  if (title = '') or (p = 0) or MultiPos(['www', 'http', '.fm'], title) then
+  begin
+    Result := True; //# YES, result true
     Exit;
+  end;
 
   artist := Copy(title, 1, p - 1);
   track := Copy(title, p + 3, Length(title) - p + 2);
@@ -124,10 +152,13 @@ begin
   // the finalurl encoded to UTF-8
   urldata := AnsiToUtf8(Format(scroburlparam, [user, md5response, artist, track, '', 240, moment]));
   // submit the POST
-  if HttpPostText(scroburl, urldata, sl) and (sl[0] = 'OK') then
-    Result := True
+  if HttpPostText(scroburl, urldata, sl) then
+    if (sl[0] = 'OK') then
+      Result := True
+    else
+      Error := Format('Last.FM plugin scrobbing ERROR :' + #10#13 + '%s', [sl[0]])
   else
-    Error := Format('Last.FM plugin scrobbing ERROR :' + #10#13 + '%s', [sl[0]]);
+    Result := True;
   //
   sl.Free;
 end;
