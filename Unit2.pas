@@ -136,11 +136,10 @@ end;
 procedure TForm2.btupdateClick(Sender: PObj);
 begin
   btupdate.Enabled := False;
-  if AutoUpdate(Form) then
+  if AutoUpdate then
   begin
     firstrun_enabled := True;
-    Form2.Free;
-    Form1.Free;
+    Form1.SaveConfig;
     Halt;
   end;
   btupdate.Enabled := True;

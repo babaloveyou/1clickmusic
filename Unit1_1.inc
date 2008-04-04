@@ -31,13 +31,14 @@ begin
   Result.Form.Add2AutoFree( Result.Tray );
       Result.Tray.OnMouseUp := Result.TrayMouseUp;
     // Result.lblbuffer.TabOrder = -1
-    Result.lblbuffer := NewLabel( Result.Form, '' ).SetPosition( 448, 96 ).SetSize( 161, 20 );
+    Result.lblbuffer := NewLabel( Result.Form, '' ).SetPosition( 553, 112 ).SetSize( 57, 40 );
    {$IFDEF USE_NAMES}
     Result.lblbuffer.SetName( Result.Form, 'lblbuffer' ); 
    {$ENDIF}
    {$IFDEF UNICODE_CTRLS}
    Result.lblbuffer.SetUnicode(TRUE);
    {$ENDIF UNICODE_CTRLS}
+    Result.lblbuffer.Font.Color := TColor(clBlue);
     Result.lblbuffer.Font.FontCharset := 0;
     Result.lblbuffer.TextAlign := KOL.taRight;
     // Result.lblhelp.TabOrder = -1
@@ -63,7 +64,7 @@ begin
     Result.lblradio.Font.Color := TColor(clPurple);
     Result.lblradio.Font.FontCharset := 0;
     // Result.lblstatus.TabOrder = -1
-    Result.lblstatus := NewLabel( Result.Form, '' ).SetPosition( 504, 75 ).SetSize( 105, 17 );
+    Result.lblstatus := NewLabel( Result.Form, '' ).SetPosition( 480, 75 ).SetSize( 130, 17 );
    {$IFDEF USE_NAMES}
     Result.lblstatus.SetName( Result.Form, 'lblstatus' ); 
    {$ENDIF}
@@ -75,7 +76,7 @@ begin
     Result.lblstatus.TextAlign := KOL.taRight;
     Result.lblstatus.IgnoreDefault := TRUE;
     // Result.lbltrack.TabOrder = -1
-    Result.lbltrack := NewLabel( Result.Form, '' ).SetPosition( 242, 8 ).SetSize( 366, 49 ).MakeWordWrap;
+    Result.lbltrack := NewLabel( Result.Form, '' ).SetPosition( 242, 8 ).SetSize( 366, 57 ).MakeWordWrap;
    {$IFDEF USE_NAMES}
     Result.lbltrack.SetName( Result.Form, 'lbltrack' ); 
    {$ENDIF}
@@ -106,11 +107,33 @@ begin
    {$ENDIF UNICODE_CTRLS}
     Result.btoptions.Font.FontStyle := [ fsBold ];
     Result.btoptions.Style := Result.btoptions.Style or BS_FLAT;
+    // Result.btplay.TabOrder = 1
+    Result.btplay := NewButton( Result.Form, 'Play' ).SetPosition( 536, 216 ).SetSize( 76, 0 );
+   {$IFDEF USE_NAMES}
+    Result.btplay.SetName( Result.Form, 'btplay' ); 
+   {$ENDIF}
+   {$IFDEF UNICODE_CTRLS}
+   Result.btplay.SetUnicode(TRUE);
+   {$ENDIF UNICODE_CTRLS}
+    Result.btplay.Font.FontStyle := [ fsBold ];
+    Result.btplay.Style := Result.btplay.Style or BS_FLAT;
+    // Result.pgrbuffer.TabOrder = 2
+    Result.pgrbuffer := NewProgressBarEx( Result.Form, [ pboSmooth ] ).SetPosition( 536, 93 ).SetSize( 74, 18 );
+   {$IFDEF USE_NAMES}
+    Result.pgrbuffer.SetName( Result.Form, 'pgrbuffer' ); 
+   {$ENDIF}
+   {$IFDEF UNICODE_CTRLS}
+   Result.pgrbuffer.SetUnicode(TRUE);
+   {$ENDIF UNICODE_CTRLS}
+    Result.pgrbuffer.Visible := False;
+    Result.pgrbuffer.Color := TColor($E39C5A);
+    Result.pgrbuffer.ProgressColor := clBtnFace;
       Result.channeltree.OnMouseUp := Result.channeltreeMouseUp;
       Result.channeltree.OnSelChange := Result.channeltreeSelChange;
     {$IFDEF OVERRIDE_SCROLLBARS}
     OverrideScrollbars( Result.channeltree);
     {$ENDIF OVERRIDE_SCROLLBARS}
+      Result.btplay.OnClick := Result.btplayClick;
       Result.btoptions.OnClick := Result.btoptionsClick;
     Result.Form.CenterOnParent.CanResize := False;
     Result.Form.Perform( WM_INITMENU, 0, 0 );

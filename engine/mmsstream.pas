@@ -105,8 +105,12 @@ begin
 end;
 
 procedure TMMS.GetPlayInfo(out Atitle: string; out Aquality, ABuffPercentage: Cardinal);
+//var
+//  title : WideString;
 begin
   Aquality := Fhandle.Bitrate div 1000;
+  //lwma_async_reader_get_title(Fhandle,title);
+  //Atitle := title;
 end;
 
 end.

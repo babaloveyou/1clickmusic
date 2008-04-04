@@ -15,17 +15,14 @@ uses
   obj_playlist,
   httpsend;
 
-
-const
-  KEYCODE = 704; //# encoding password
-
 var
   //# needed cuz of the KOL windows is Free with no control..
   appwinHANDLE: HWND;
   // Core
   DS: TDSoutput;
   chn: TRadioPlayer;
-  progress: Cardinal;
+  curProgress: Cardinal;
+  curVolume: Cardinal;
   //
   curBitrate: Cardinal;
   lastTitle, curTitle: string;
@@ -55,7 +52,7 @@ var
 procedure updateMSN(write: Boolean);
 procedure LastFMexecute;
 procedure showaboutbox;
-function AutoUpdate(const control: PControl): Boolean;
+function AutoUpdate: Boolean;
 
 implementation
 
@@ -72,7 +69,6 @@ begin
   msndata.cbData := (Length(utf16buffer) * 2) + 2;
   msndata.lpData := Pointer(utf16buffer);
   msnwindow := 0;
-
   msnwindow := FindWindowEx(0, msnwindow, 'MsnMsgrUIManager', nil);
   if msnwindow <> 0 then
     SendMessage(msnwindow, WM_COPYDATA, 0, Integer(@msndata));
@@ -90,20 +86,19 @@ end;
 
 procedure showaboutbox;
 begin
-  MessageBox(0, '1ClickMusic 1.8' + #13#10 +
+  MessageBox(0, '1ClickMusic 1.8.2' + #13#10 +
     'by arthurprs (arthurprs@gmail.com)' + #13#10#13#10 +
     'Agradecimentos a:' + #13#10 +
     'freak_insane, Blizzy, Kintoun Rlz, Paperback Writer,' + #13#10 +
-    'kamikazze, BomGaroto, SnowHill, Greel, The_Terminator,' + #13#10 +
-    'jotaeme, Mouse Pad, Lokinhow, Mario Bros.,' + #13#10 +
-    'e a toda a galera que tem me incentivado.' + #13#10#13#10 +
-    'Agradecimento especial ao Greel nessa versão.', '1ClickMusic 1.8', MB_OK
-    + MB_ICONINFORMATION + MB_TOPMOST);
+    'kamikazze, BomGaroto, SnowHill, Ricardo, Greel, The_Terminator,' + #13#10
+    + 'jotaeme, Mouse Pad, Lokinhow, Mario Bros.,' + #13#10 +
+    'e a toda a galera que tem me incentivado.',
+    '1ClickMusic 1.8.2', MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
 end;
 
-function AutoUpdate(const control: PControl): Boolean;
+function AutoUpdate: Boolean;
 const
-  appversion = 18.1;
+  appversion = 182;
   updateurl1 = 'http://www.thehardwaresxtreme.com/nye/arthurprs/update.txt';
   updateurl2 = 'http://www.freeshells.ch/~arthurpr/update.txt';
   updatefile1 = 'http://www.freeshells.ch/~arthurpr/oneclick.exe';
@@ -119,47 +114,48 @@ begin
     HttpGetText(updateurl2, Text)) then
   begin
     Result := False;
-    control.Caption := 'ERROR DOWNLOADING THE UPDATE!';
-    sleep(500);
+    RaiseError('ERROR DOWNLOADING THE UPDATE!', False);
   end;
 
-  if Result and (StrToFloat(Text[0]) > appversion) then
+  if Result and (StrToInt(Text[0]) > appversion) then
   begin
-    control.Caption := 'DOWNLOADING THE UPDATE : ' + Text[0];
-
-    tempfilepath := GetTempDir + 'onemusic.exe';
-    newfile := TFileStream.Create(tempfilepath, fmCreate);
-    if not (HttpGetBinary(updatefile1, newfile) or
-      HttpGetBinary(updatefile2, newfile)) then
-      Result := False;
-    newfile.Free;
-
-    if Result then
+    if MessageBox(0,
+      PChar(Format('Version %s is avaliable, download and update?', [Text[0]])),
+      '1ClickMusic update avaliable', MB_YESNO + MB_ICONQUESTION) = IDYES then
     begin
-      batpath := GetTempDir + 'oneclickupdate.bat';
+      tempfilepath := GetTempDir + 'onemusic.exe';
+      newfile := TFileStream.Create(tempfilepath, fmCreate);
+      if not (HttpGetBinary(updatefile1, newfile) or
+        HttpGetBinary(updatefile2, newfile)) then
+        Result := False;
+      newfile.Free;
+
+      if Result then
+      begin
+        batpath := GetTempDir + 'oneclickupdate.bat';
 {$WARNINGS OFF}
-      FileSetAttr(ParamStr(0), 0);
+        FileSetAttr(ParamStr(0), 0);
 {$WARNINGS ON}
-      Text.Clear;
-      Text.Add(':Label1');
-      Text.Add('del ' + AnsiQuotedStr(ParamStr(0), '"'));
-      Text.Add('if Exist ' + AnsiQuotedStr(ParamStr(0), '"') + ' goto Label1');
-      Text.Add('Move ' + AnsiQuotedStr(tempfilepath, '"') + ' ' + AnsiQuotedStr(ParamStr(0), '"'));
-      Text.Add('Call ' + AnsiQuotedStr(ParamStr(0), '"'));
-      Text.Add('del ' + AnsiQuotedStr(batpath, '"'));
-      Text.SaveToFile(batpath);
-      Result := WinExec(PChar(batpath), SW_HIDE) > 0;
+        Text.Clear;
+        Text.Add(':Label1');
+        Text.Add('del "' + ParamStr(0) + '"');
+        Text.Add('if Exist "' + ParamStr(0) + '" goto Label1');
+        Text.Add('Move "' + tempfilepath + '" "' + ParamStr(0) + '"');
+        Text.Add('Call "' + ParamStr(0) + '"');
+        Text.Add('del "' + batpath + '"');
+        Text.SaveToFile(batpath);
+        Result := WinExec(PChar(batpath), SW_HIDE) > 0;
+      end
+      else
+      RaiseError('Error Downloading update',False);
     end
     else
-    begin
-      control.Caption := 'ERROR DOWNLOADING THE UPDATE!';
-      sleep(500);
-    end;
+      Result := False;
   end
   else
   begin
     Result := False;
-    control.Caption := 'APP UP TO DATE!';
+    MessageBox(0, 'Your version is up-to-date', '1ClickMusic', MB_ICONINFORMATION);
   end;
   Text.Free;
 end;

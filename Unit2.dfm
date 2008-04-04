@@ -1,7 +1,7 @@
 object Form2: TForm2
   Left = 481
   Top = 245
-  Width = 275
+  Width = 301
   Height = 332
   HorzScrollBar.Visible = False
   VertScrollBar.Visible = False
@@ -11,6 +11,7 @@ object Form2: TForm2
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
+  Font.Pitch = fpFixed
   Font.Style = []
   OldCreateOrder = False
   Scaled = False
@@ -20,7 +21,7 @@ object Form2: TForm2
     Tag = 0
     Left = 8
     Top = 40
-    Width = 257
+    Width = 273
     Height = 22
     HelpContext = 0
     IgnoreDefault = False
@@ -245,7 +246,7 @@ object Form2: TForm2
     Tag = 0
     Left = 8
     Top = 154
-    Width = 249
+    Width = 273
     Height = 22
     HelpContext = 0
     IgnoreDefault = False
@@ -301,7 +302,7 @@ object Form2: TForm2
     Tag = 0
     Left = 8
     Top = 183
-    Width = 257
+    Width = 273
     Height = 22
     HelpContext = 0
     IgnoreDefault = False
@@ -572,8 +573,8 @@ object Form2: TForm2
   end
   object btapply: TKOLButton
     Tag = 0
-    Left = 59
-    Top = 280
+    Left = 75
+    Top = 268
     Width = 64
     Height = 22
     HelpContext = 0
@@ -629,8 +630,8 @@ object Form2: TForm2
   end
   object btupdate: TKOLButton
     Tag = 0
-    Left = 131
-    Top = 280
+    Left = 147
+    Top = 268
     Width = 64
     Height = 22
     HelpContext = 0
@@ -688,7 +689,7 @@ object Form2: TForm2
     Tag = 0
     Left = 8
     Top = 8
-    Width = 249
+    Width = 273
     Height = 22
     HelpContext = 0
     IgnoreDefault = False

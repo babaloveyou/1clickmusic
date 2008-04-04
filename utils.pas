@@ -6,15 +6,41 @@ uses
   sysutils,
   Windows;
 
+  function Decode(const str : string):string;
+  function Encode(const str : string):string;
 procedure writeFile(const FileName, Text: string);
 function MultiPos(const SubStr: array of string; const str: string): Boolean;
 procedure RaiseError(const Error: string; const Fatal: Boolean = True);
-
-{$IFDEF _LOG_}
-procedure Log(const str: string = '');
-{$ENDIF}
-
 implementation
+
+const
+  KEYCODE = 704; //# encoding password
+
+function Decode(const str : string):string;
+var
+  i : Integer;
+  key : Byte;
+begin
+  SetLength(Result,Length(str));
+  key := Length(str) mod 10;
+  for i := 1 to Length(str) do
+  begin
+    Result[i] := Char(( ord(str[i]) xor ( KEYCODE * i * key ) ) mod 256);
+  end;
+end;
+
+function Encode(const str : string):string;
+var
+  i : Integer;
+  key : Byte;
+begin
+  SetLength(Result,Length(str));
+  key := Length(str) mod 10;
+  for i := 1 to Length(str) do
+  begin
+    Result[i] := Char(( ord(str[i]) xor ( KEYCODE * i * key) ) mod 256);
+  end;
+end;
 
 procedure writeFile(const FileName, Text: string);
 var
@@ -50,22 +76,6 @@ begin
   writeFile('ERROR.txt', Error);
   if Fatal then Halt;
 end;
-
-{$IFDEF _LOG_}
-var
-  step: Cardinal = 0;
-
-procedure Log(const str: string = '');
-begin
-  writeFile('LOG.txt', IntToStr(step)+#9+str);
-  Inc(step);
-end;
-
-initialization
-  writeFile('LOG.txt', '');
-  writeFile('LOG.txt', '$--------------$');
-  writeFile('LOG.txt', 'SESSION STARTING');
-{$ENDIF}
 
 end.
 

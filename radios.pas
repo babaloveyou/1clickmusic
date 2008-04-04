@@ -21,11 +21,11 @@ const
     '80''s / 90''s / Classic',
     'Industrial',
     'Others',
-    'Brasil (BETA)'
+    'Brasileiras'
     );
 
 const
-  chn_eletronic: array[0..71] of string = (
+  chn_eletronic: array[0..72] of string = (
     'Trance ( afterhours )',
     'Club ( blitz )',
     'Club ( playdio )',
@@ -42,6 +42,7 @@ const
     'Chillout ( 1.fm )',
     'Funky House ( rautemusik )',
     'Lounge ( rautemusik )',
+    'Lounge ( smoothlounge )',
     'Progressive ( soma )',
     'Ambient ( groove.soma )',
     'Ambient ( space.soma )',
@@ -101,7 +102,7 @@ const
     );
 
 const
-  pls_eletronic: array[0..71] of string = (
+  pls_eletronic: array[0..72] of string = (
     'http://stats.ah.fm/dynamicplaylist.m3u?quality=96',
     'http://blitz-stream.de/stream/stream.m3u',
     'http://www.playdio.se/bredband.pls',
@@ -110,7 +111,7 @@ const
     'http://www.pulsradio.com/pls/puls-adsl.m3u',
     'http://dsl.technobase.eu/listen-dsl.pls',
     'http://88.191.35.197/listen.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=5438&file=filename.pls',
+    'http://www.radioseven.se/128.pls',
     'http://club-office.rautemusik.de/listen.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=402939&file=filename.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=6057&file=filename.pls',
@@ -118,6 +119,7 @@ const
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=6951&file=filename.pls',
     'http://funky-office.rautemusik.de/listen.pls',
     'http://lounge-office.rautemusik.de/listen.pls',
+    'http://www.smoothlounge.com/streams/smoothlounge_128.pls',
     'http://somafm.com/tagstrance.pls',
     'http://somafm.com/groovesalad.pls',
     'http://somafm.com/spacestation.pls',
@@ -329,8 +331,8 @@ const
 const
   chn_industrial: array[0..9] of string = (
     // 'Post Industrial ( darksection )',
-    //'Post Industrial ( dunkle )',
-    //'Post Industrial ( darkness )',
+    // 'Post Industrial ( dunkle )',
+    // 'Post Industrial ( darkness )',
     'Post Industrial ( tormented )',
     'Post Industrial ( digitalgunfire )',
     'Post Industrial ( ultradark )',
@@ -346,8 +348,8 @@ const
 const
   pls_industrial: array[0..9] of string = (
     // 'http://dark-section.de/streams/winamp_128.pls',
-    //'http://www.dunklewelle.de/modules/mod_internetradio/makeplaylist.php?ip=87.106.67.16&port=10000&format=M3U',
-    //'http://radio.darkness.com/listen.pls',
+    // 'http://www.dunklewelle.de/modules/mod_internetradio/makeplaylist.php?ip=87.106.67.16&port=10000&format=M3U',
+    // 'http://radio.darkness.com/listen.pls',
     'http://playlist.tormentedradio.com/radioG.pls',
     'http://www.digitalgunfire.com/playlist.pls',
     'http://www.ultradarkradio.com/listen.pls',
@@ -361,7 +363,8 @@ const
     );
 
 const
-  chn_misc: array[0..35] of string = (
+  chn_misc: array[0..36] of string = (
+    'Folk ( liveireland )',
     'Experimental Jazz ( sonic.soma )',
     'Country ( boot.soma )',
     'Country ( 977music )',
@@ -401,7 +404,8 @@ const
     );
 
 const
-  pls_misc: array[0..35] of string = (
+  pls_misc: array[0..36] of string = (
+    'http://www.liveireland.com/live.pls',
     'http://somafm.com/sonicuniverse.pls',
     'http://somafm.com/bootliquor.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=2338&file=filename.pls',
@@ -441,11 +445,19 @@ const
     );
 
 const
-  chn_brasil: array[0..13] of string = (
-    'Popular ( tupi - 104.1fm)',
+  chn_brasil: array[0..27] of string = (
+    'Ecletic ( tribunafm )',
+    'Noticias ( cbn sp )',
+    'Noticias ( cbn.rj )',
+    'Noticias ( cbn.brasilia )',
+    'Noticias ( cbn.bh )',
+    'Noticias ( cbn.salvador )',
+    'Popular ( tupi.rj )',
+    'Popular ( tupi.fm )',
     'Popular ( piatafm )',
     'Classic Rock ( Kissfm )',
-    'Ecletic ( jovempan sp)',
+    'Ecletic ( rede.blitz )',
+    'Ecletic ( jovempan.sp)',
     'Ecletic ( radiorox )',
     'Ecletic ( hits.transamerica )',
     'Ecletic ( pop.transamerica )',
@@ -453,18 +465,31 @@ const
     'Ecletic ( japan.transamerica )',
     'Ecletic ( mixfm )',
     'Ecletic ( totalshare )',
-    // radios da globo
+    //
+    'Ecletic ( 98fm )',
+    'Ecletic ( globo.fm )',
+    'Popular ( globo.am.sp )',
+    'Popular ( globo.am.rj )',
+    'Popular ( globo.am.mg )',
     'Rock/Metal ( sporttv )',
     'Ecletic ( multishow )',
-    'Classicos ( gnt )'
-
+    'Classicos ( gnt )',
+    'Ecletic ( 97fm )'
     );
 
 const
-  pls_brasil: array[0..13] of string = (
+  pls_brasil: array[0..27] of string = (
+    'mms://radio.e-tribuna.com.br/tribuna',
+    'http://cbn.globoradio.globo.com/cbn/wma/radiosp/asx.asp?audio=',
+    'http://cbn.globoradio.globo.com/cbn/wma/radiorj/asx.asp?audio=',
+    'http://cbn.globoradio.globo.com/cbn/wma/radiobsb/asx.asp?audio=',
+    'http://cbn.globoradio.globo.com/cbn/wma/radiobh/asx.asp?audio=',
+    'http://www.crossdigital.com.br/servidor1/8080/listen.pls',
+    'mms://tupirio.interrogacaodigital.net/tupirio',
     'http://www.crosshost.com.br/cbs/tupifm/listen.pls',
     'http://www.piatafm.com.br/radio.mp3.m3u',
     'http://www.crosshost.com.br/cbs/kiss/listen.pls',
+    'http://www.redeblitz.com.br/redeblitz.m3u',
     'mms://server09.virgula.com.br/jovempanfm/',
     'http://radiorox.oi.com.br/listen.m3u',
     'mms://wmedia.telium.com.br/transsphits',
@@ -473,10 +498,16 @@ const
     'mms://transastream.dyndns.org/transapop',
     'mms://mixstr.ig.com.br/mixfm',
     'http://radio.2streaming.info/players/8014.pls',
-    // radios da globo
+    //
+    'http://wmsgr.globo.com/webmedia/ObterPathMidia?usuario=sgr01&tipo=live&path=/sgr_off_98fmrj_live.wma&midiaId=513694&ext.asx&output=ASX',
+    'http://wmsgr.globo.com/webmedia/ObterPathMidia?usuario=sgr01&tipo=live&path=/sgr_off_globofmrj_live.wma&midiaId=505114&ext.asx&output=ASX',
+    'http://wmsgr.globo.com/webmedia/ObterPathMidia?usuario=sgr01&tipo=live&path=/sgr_off_globoamsp_live.wma&midiaId=511329&ext.asx&output=ASX',
+    'http://wmsgr.globo.com/webmedia/ObterPathMidia?usuario=sgr01&tipo=live&path=/sgr_off_globoamrj_live.wma&midiaId=505105&ext.asx&output=ASX',
+    'http://wmsgr.globo.com/webmedia/ObterPathMidia?usuario=sgr01&tipo=live&path=/sgr_off_globoambh_live.wma&midiaId=519058&ext.asx&output=ASX',
     'http://wmsgr.globo.com/webmedia/ObterPathMidia?usuario=sgr01&tipo=live&path=/sgr_off_sportv_live.wma&midiaId=511317&ext=.asx&output=ASX',
     'http://wmsgr.globo.com/webmedia/ObterPathMidia?usuario=sgr01&tipo=live&path=/sgr_off_multishow_live.wma&midiaId=581681&ext.asx&output=ASX',
-    'http://wmsgr.globo.com/webmedia/ObterPathMidia?usuario=sgr01&tipo=live&path=/sgr_off_gnt_live.wma&midiaId=510705&ext.asx&output=ASX'
+    'http://wmsgr.globo.com/webmedia/ObterPathMidia?usuario=sgr01&tipo=live&path=/sgr_off_gnt_live.wma&midiaId=510705&ext.asx&output=ASX',
+    'http://relay.corptv.com.br/97fm.asp'
     );
 
 implementation

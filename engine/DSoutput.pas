@@ -20,12 +20,13 @@ type
     function GetPlayCursorPos: Cardinal;
   public
     property PlayCursorPos: Cardinal read GetPlayCursorPos;
-    property Device: IDirectSound read FDS;
     property SoundBuffer: IDirectSoundBuffer read FSecondary;
+    procedure ChangeVolume(const value: Integer);
+    procedure GetVolume(out AVolume: Cardinal);
     procedure Play;
     procedure Stop;
     function InitializeBuffer(const Arate, Achannels: Cardinal): Cardinal;
-    constructor Create(const wndHandle : HWND);
+    constructor Create(const wndHandle: HWND);
     destructor Destroy; override;
   end;
 
@@ -51,7 +52,6 @@ type
   public
     Status: TRadioStatus;
     property DS: TDSoutput read FDevice write FDevice;
-    procedure Volume(const value: Integer);
     procedure GetPlayInfo(out Atitle: string; out Aquality, ABuffPercentage: Cardinal); virtual; abstract;
     function open(const url: string): Boolean; virtual; abstract;
     procedure Play; virtual; abstract;
@@ -91,7 +91,7 @@ begin
     DSERR_PRIOLEVELNEEDED: ErrorStr := 'DSERR_PRIOLEVELNEEDED';
     DSERR_UNINITIALIZED: ErrorStr := 'DSERR_UNINITIALIZED';
     DSERR_UNSUPPORTED: ErrorStr := 'DSERR_UNSUPPORTED';
-    else ErrorStr := 'Unrecognized DS Error';
+  else ErrorStr := 'Unrecognized DS Error';
   end;
   RaiseError('DIRECTSOUND ERROR, [' + ErrorStr + '] : ' + Error);
 end;
@@ -111,23 +111,17 @@ begin
     Result := True;
 end;
 
-constructor TDSoutput.Create(const wndHandle : HWND);
+constructor TDSoutput.Create(const wndHandle: HWND);
 var
   Fpwfm: TWAVEFORMATEX;
   Fpdesc: TDSBUFFERDESC;
   DeviceGUID: PGUID;
 begin
   New(DeviceGUID);
-{$IFDEF _LOG_}Log('enumerating AUDIODEVICES'); {$ENDIF}
   DirectSoundEnumerate(DSEnumOutputCallback, DeviceGUID);
-{$IFDEF _LOG_}Log('enumerated AUDIODEVICES'); {$ENDIF}
-{$IFDEF _LOG_}Log('creating DIRECTSOUND DEVICE'); {$ENDIF}
   DSERROR(DirectSoundCreate(DeviceGUID, FDS, nil), 'Creating DS device');
   Dispose(DeviceGUID);
-{$IFDEF _LOG_}Log('created DIRECTSOUND DEVICE'); {$ENDIF}
-{$IFDEF _LOG_}Log('seting DIRECTSOUND COOPLEVEL'); {$ENDIF}
   DSERROR(FDS.SetCooperativeLevel(wndHandle, DSSCL_PRIORITY), 'Setting the cooperative level');
-{$IFDEF _LOG_}Log('seted DIRECTSOUND COOPLEVEL'); {$ENDIF}
 
   FillChar(Fpdesc, SizeOf(TDSBUFFERDESC), 0);
   with Fpdesc do
@@ -138,9 +132,7 @@ begin
     dwBufferBytes := 0;
   end;
 
-{$IFDEF _LOG_}Log('creating DIRECTSOUND PBUFFER'); {$ENDIF}
   DSERROR(FDS.CreateSoundBuffer(Fpdesc, Fprimary, nil), 'Creating Primary buffer');
-{$IFDEF _LOG_}Log('created DIRECTSOUND PBUFFER'); {$ENDIF}
 
   FillChar(Fpwfm, SizeOf(TWAVEFORMATEX), 0);
   with Fpwfm do
@@ -154,9 +146,7 @@ begin
     nAvgBytesPerSec := 44100 * 4;
   end;
 
-{$IFDEF _LOG_}Log('seting DIRECTSOUND PBUFFER FORMAT'); {$ENDIF}
   DSERROR(FPrimary.SetFormat(@Fpwfm), 'Changing Primary buffer format');
-{$IFDEF _LOG_}Log('seted DIRECTSOUND PBUFFER FORMAT'); {$ENDIF}
 end;
 
 destructor TDSoutput.Destroy;
@@ -173,15 +163,33 @@ begin
     FSecondary.GetCurrentPosition(@Result, nil);
 end;
 
+procedure TDSoutput.ChangeVolume(const value: Integer);
+var
+  volume: Integer;
+begin
+  if not Assigned(FSecondary) then Exit;
+  FSecondary.GetVolume(volume);
+  Inc(volume, value);
+  FSecondary.SetVolume(volume);
+end;
+
+procedure TDSoutput.GetVolume(out AVolume: Cardinal);
+var
+  volume: Integer;
+begin
+  if not Assigned(FSecondary) then Exit;
+  FSecondary.GetVolume(volume);
+  AVolume := 100 - Round((volume / DSBVOLUME_MIN) * 100);
+end;
+
 function TDSoutput.InitializeBuffer(const Arate, Achannels: Cardinal): Cardinal;
 var
   Fswfm: TWAVEFORMATEX;
   Fsdesc: TDSBUFFERDESC;
   lastvolume: Integer;
-  Buffer : PByte;
-  Size : Cardinal;
+  Buffer: PByte;
+  Size: Cardinal;
 begin
-{$IFDEF _LOG_}Log(Format('initing DIRECTSOUND SBUFFER %d %d', [Arate, Achannels])); {$ENDIF}
   lastvolume := 0;
   if Assigned(FSecondary) then
     FSecondary.GetVolume(lastvolume);
@@ -220,11 +228,10 @@ begin
 
   FSecondary.SetVolume(lastvolume);
 
-  FSecondary.Lock(0,Fsdesc.dwBufferBytes,@Buffer,@Size,nil,nil,DSBLOCK_ENTIREBUFFER);
-  FillChar(Buffer^,Size,0);
-  FSecondary.Unlock(Buffer,Size,nil,0);
-  
-{$IFDEF _LOG_}Log('inited DIRECTSOUND SBUFFER'); {$ENDIF}
+  FSecondary.Lock(0, Fsdesc.dwBufferBytes, @Buffer, @Size, nil, nil, DSBLOCK_ENTIREBUFFER);
+  FillChar(Buffer^, Size, 0);
+  FSecondary.Unlock(Buffer, Size, nil, 0);
+
 end;
 
 procedure TDSoutput.Play;
@@ -263,18 +270,6 @@ begin
     UpdateBuffer();
     Sleep(25);
   until Terminated;
-end;
-
-procedure TRadioPlayer.Volume(const value: Integer);
-var
-  curvolume: Integer;
-begin
-  if not Assigned(FDevice.SoundBuffer) then Exit;
-  FDevice.SoundBuffer.GetVolume(curvolume);
-  Inc(curvolume, value);
-  if not ((curvolume < DSBVOLUME_MIN) or
-    (curvolume > DSBVOLUME_MAX)) then
-    FDevice.SoundBuffer.SetVolume(curvolume);
 end;
 
 end.

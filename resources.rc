@@ -1,15 +1,16 @@
-TRAY ICON "res/trayicon.ico"
+ICO ICON "res/icon.ico"
+TRAY ICON "res/tray.ico"
 
 VER VERSIONINFO
-FILEVERSION 0,1,8,1
-PRODUCTVERSION 0,1,8,1
+FILEVERSION 0,1,8,2
+PRODUCTVERSION 0,1,8,2
 BEGIN
   BLOCK "StringFileInfo"
   BEGIN
     BLOCK "040904E4"
     BEGIN
-      VALUE "FileVersion", "1.8.1\000"
-      VALUE "ProductVersion", "1.8.1\000"
+      VALUE "FileVersion", "1.8.2\000"
+      VALUE "ProductVersion", "1.8.2\000"
       VALUE "ProductName", "1ClickMusic\000"
       VALUE "FileDescription", "por arthurprs\000"
       VALUE "LegalCopyright", "arthurprs@gmail.com\000"

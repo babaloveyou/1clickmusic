@@ -9,7 +9,7 @@ uses
   _DirectSound;
 
 const // CONFIGURATION
-  BUFFTOTALSIZE = 102400 div 2;
+  BUFFTOTALSIZE = 102400;
   BUFFSIZE = 1024;
   BUFFCOUNT = BUFFTOTALSIZE div BUFFSIZE;
 
@@ -176,7 +176,6 @@ var
   metalength: Byte;
   byteswrited, bytestowrite: Cardinal;
 begin
-{$IFDEF _LOG_}Log('feed. called'); {$ENDIF}
   byteswrited := 0;
   while byteswrited < BUFFSIZE do
   begin
@@ -199,16 +198,13 @@ begin
   end;
   if FFeed = BUFFCOUNT - 1 then FFeed := 0 else Inc(FFeed);
   Inc(BuffFilled);
-{$IFDEF _LOG_}Log('feed. returned'); {$ENDIF}
 end;
 
 constructor THTTPSTREAM.Create;
 begin
-{$IFDEF _LOG_}Log('creating HTTPSTREAM FEEDER'); {$ENDIF}
   inherited Create(True);
   FHTTP := TTCPBlockSocket.Create;
   Priority := tpTimeCritical;
-{$IFDEF _LOG_}Log('created HTTPSTREAM FEEDER'); {$ENDIF}
 end;
 
 destructor THTTPSTREAM.Destroy;

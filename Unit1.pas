@@ -45,6 +45,8 @@ type
       btoptions: TKOLButton;
       KOLForm1: TKOLForm;
       Tray: TKOLBAPTrayIcon;
+      btplay: TKOLButton;
+      pgrbuffer: TKOLProgressBar;
       procedure KOLForm1Destroy(Sender: PObj);
       procedure KOLForm1FormCreate(Sender: PObj);
       function KOLForm1Message(var Msg: tagMSG; var Rslt: Integer): Boolean;
@@ -53,6 +55,7 @@ type
         var Mouse: TMouseEventData);
       procedure btoptionsClick(Sender: PObj);
       procedure TrayMouseUp(Sender: PControl; var Mouse: TMouseEventData);
+      procedure btplayClick(Sender: PObj);
     private
     { Private declarations }
     public
@@ -82,11 +85,10 @@ uses
   Unit2,
   DSoutput,
   radioopener,
-  radios,
+  radios_,
   obj_list,
   main,
-  utils,
-  EncryptIt;
+  utils;
 
 
 {$IF Defined(KOL_MCK)}{$ELSE}{$R *.DFM}{$IFEND}
@@ -113,7 +115,7 @@ begin
   clipboard_enabled := ini.ValueBoolean('clipboard_enabled', False);
   lastfm_enabled := ini.ValueBoolean('lastfm_enabled', False);
   lastfm_user := ini.ValueString('lastfm_user', '');
-  lastfm_pass := Decrypt(ini.ValueString('lastfm_pass', ''), KEYCODE);
+  lastfm_pass := Decode(ini.ValueString('lastfm_pass', ''));
 
   ini.Section := 'hotkeys';
   ini.Mode := ifmRead;
@@ -144,7 +146,7 @@ begin
   ini.ValueBoolean('clipboard_enabled', clipboard_enabled);
   ini.ValueBoolean('lastfm_enabled', lastfm_enabled);
   ini.ValueString('lastfm_user', lastfm_user);
-  ini.ValueString('lastfm_pass', Encrypt(lastfm_pass, KEYCODE));
+  ini.ValueString('lastfm_pass', Encode(lastfm_pass));
 
   ini.Section := 'hotkeys';
   for i := 1 to 12 do
@@ -154,10 +156,9 @@ end;
 
 procedure TimerProc(Wnd: HWnd; Mesg, TimerID, SysTime: Longint); stdcall;
 begin
-  if TimerID = 1 then
+  if (TimerID = 1) then
     Form1.TimerExecute();
 end;
-
 
 procedure TForm1.TimerExecute();
 begin
@@ -166,31 +167,8 @@ begin
     Exit;
 
   // # GET INFO
-  chn.GetPlayInfo(curTitle, curBitrate, progress);
+  chn.GetPlayInfo(curTitle, curBitrate, curProgress);
 
-  // # REFRESH GUI INFORMATION
-  lbltrack.caption := curTitle;
-
-  case progress of
-    //# skip 0 because of the mms streams
-    1..45:
-      lblbuffer.Font.Color := clRed;
-    46..70:
-      lblbuffer.Font.Color := clGreen;
-  else
-    lblbuffer.Font.Color := clBlue;
-  end;
-
-  lblbuffer.Caption :=
-    IntToStr(curBitrate) + 'kbps @ buffer:. ' + IntToStr(progress) + '%';
-
-  case chn.Status of
-    rsPlaying: lblstatus.Caption := 'Connected';
-    rsPrebuffering: lblstatus.Caption := 'Prebufering..';
-    rsRecovering: lblstatus.Caption := 'Recovering buffer..';
-  end;
-
-  // # EVENTS & TRAY ICON CONTROL
   Tray.Tooltip := curTitle;
 
   if curTitle = '' then
@@ -226,20 +204,51 @@ begin
           LastFMThread := NewThreadEx(LastFMThreadExecute);
     end;
   end;
+
+  if not Form.Visible then Exit;
+  // # REFRESH GUI INFORMATION
+  lbltrack.caption := curTitle;
+
+  case curProgress of
+    //# skip 0 because of the mms streams
+    1..45:
+      pgrbuffer.ProgressBkColor := clRed;
+    46..75:
+      pgrbuffer.ProgressBkColor := clGreen;
+  else
+    pgrbuffer.ProgressBkColor := $00E39C5A;
+  end;
+  pgrbuffer.Progress := 100 - curProgress;
+
+  lblbuffer.Caption := IntToStr(curBitrate) + 'kbps' +
+    #13 + 'vol:' + IntToStr(curVolume) + '%';
+
+  case chn.Status of
+    rsPlaying: lblstatus.Caption := 'Connected!';
+    rsPrebuffering: lblstatus.Caption := 'Prebufering..';
+    rsRecovering: lblstatus.Caption := 'Recovering Buffer!';
+  end;
+  
 end;
 
 function TForm1.ThreadExecute(Sender: PThread): Integer;
 begin
   Result := 1;
-  repeat
+  repeat //# JUST BEFORE TRY PLAY!
     channeltree.Enabled := False;
 
     StopChannel;
 
+    btplay.Caption := 'Stop';
+
     SetTimer(appwinHANDLE, 1, 500, @TimerProc);
 
+    pgrbuffer.Progress := 100;
+    pgrbuffer.ProgressBkColor := clRed;
+    pgrbuffer.Visible := True;
+
     lblstatus.Caption := 'Searching...';
-    
+
     if traypopups_enabled then
     begin
       Tray.BalloonTitle := 'Connecting';
@@ -261,7 +270,7 @@ begin
         Tray.ShowBalloon(_NIIF_ERROR);
       end;
       StopChannel;
-      lblstatus.caption := 'error.: try another channel';
+      lblstatus.caption := 'Error.:';
     end;
     channeltree.Enabled := True;
     Thread.Suspend;
@@ -270,9 +279,11 @@ end;
 
 procedure TForm1.PlayChannel;
 begin
-  lblradio.Caption := channeltree.TVItemText[channeltree.TVSelected];
-  Form.Caption := '1ClickMusic';
-  Thread.Resume;
+  if not channeltree.TVItemHasChildren[channeltree.TVSelected] then
+  begin
+    lblradio.Caption := channeltree.TVItemText[channeltree.TVSelected];
+    Thread.Resume;
+  end;
 end;
 
 procedure TForm1.StopChannel;
@@ -281,16 +292,20 @@ begin
     updateMSN(False);
   if Assigned(chn) then
     FreeAndNil(chn);
+
+  KillTimer(appwinHANDLE, 1);
+
+  pgrbuffer.Visible := False;
+  curProgress := 0;
   curBitrate := 0;
+  pgrbuffer.Progress := 100;
+  btplay.Caption := 'Play';
   curTitle := '';
   lblbuffer.Caption := '';
   lblstatus.Caption := '';
   lbltrack.Caption := '';
   Tray.ToolTip := '';
   Form.Caption := '1ClickMusic';
-
-  TimerExecute(); //# Refresh GUI INFO
-  KillTimer(appwinHANDLE, 1);
 end;
 
 function TForm1.KOLForm1Message(var Msg: tagMSG;
@@ -301,8 +316,18 @@ begin
   if (Msg.Message = WM_HOTKEY) and (channeltree.Enabled) then
   begin
     case Msg.wParam of
-      1001, 3001: if Assigned(chn) then chn.Volume(100);
-      1002, 3002: if Assigned(chn) then chn.Volume(-100);
+      1001, 3001:
+        if Assigned(chn) then
+        begin
+          DS.ChangeVolume(100);
+          DS.GetVolume(curVolume);
+        end;
+      1002, 3002:
+        if Assigned(chn) then
+        begin
+          DS.ChangeVolume(-100);
+          DS.GetVolume(curVolume);
+        end;
       1003, 3003:
         StopChannel;
       1004, 3004:
@@ -310,7 +335,10 @@ begin
           PlayChannel;
       2001..2012:
         if hotkeys[Msg.wParam - 2000] > 0 then
+        begin
+          channeltree.TVSelected := channeltree.TVRoot; //# reset selection
           channeltree.TVSelected := hotkeys[Msg.wParam - 2000];
+        end;
     end;
   end
   else
@@ -349,31 +377,14 @@ end;
 procedure TForm1.KOLForm1FormCreate(Sender: PObj);
 var
   i: Integer;
-  loading, lbl: PControl;
 begin
   appwinHANDLE := form.Handle;
-  loading := NewForm(Form, '');
-  loading.HasBorder := False;
-  loading.BoundsRect := Form.BoundsRect;
-  loading.AlphaBlend := 220;
-  lbl := NewLabel(loading, 'LOADING -> SOUND ENGINE!');
-  lbl.Align := caClient;
-  lbl.TextAlign := taCenter;
-  lbl.VerticalAlign := vaCenter;
-  lbl.Font.FontHeight := 32;
-  lbl.Font.Color := clWhite;
-  lbl.Color := clBlack;
-  loading.CreateWindow;
-  lbl.Update;
-{$IFDEF _LOG_}Log('creating TDSOUTPUT'); {$ENDIF}
   //# Inicializa o SOM
+  curVolume:= 100;
   chn := nil;
   DS := TDSoutput.Create(appwinHANDLE);
-{$IFDEF _LOG_}Log('created DSOUTPUT'); {$ENDIF}
-  lbl.Caption := 'LOADING -> RADIO LIBRARY!';
-  lbl.Update;
 
-  Tray.Icon := Form.Icon;
+  Tray.Icon := LoadIcon(HInstance,'TRAY');
   Tray.AddIcon;
 
   //# HOTKEYS
@@ -420,73 +431,71 @@ begin
     radiolist.Add(
       channeltree.TVInsert(genreid[ELETRONIC], 0, chn_eletronic[i]),
       chn_eletronic[i],
-      pls_eletronic[i]
+      decode(pls_eletronic[i])
       );
 
   for i := 0 to High(chn_rockmetal) do
     radiolist.Add(
       channeltree.TVInsert(genreid[ROCKMETAL], 0, chn_rockmetal[i]),
       chn_rockmetal[i],
-      pls_rockmetal[i]
+      decode(pls_rockmetal[i])
       );
 
   for i := 0 to High(chn_ecletic) do
     radiolist.Add(
       channeltree.TVInsert(genreid[ECLETIC], 0, chn_ecletic[i]),
       chn_ecletic[i],
-      pls_ecletic[i]
+      decode(pls_ecletic[i])
       );
 
   for i := 0 to High(chn_hiphop) do
     radiolist.Add(
       channeltree.TVInsert(genreid[HIPHOP], 0, chn_hiphop[i]),
       chn_hiphop[i],
-      pls_hiphop[i]
+      decode(pls_hiphop[i])
       );
 
   for i := 0 to High(chn_oldmusic) do
     radiolist.Add(
       channeltree.TVInsert(genreid[OLDMUSIC], 0, chn_oldmusic[i]),
       chn_oldmusic[i],
-      pls_oldmusic[i]
+      decode(pls_oldmusic[i] )
       );
 
   for i := 0 to High(chn_industrial) do
     radiolist.Add(
       channeltree.TVInsert(genreid[INDUSTRIAL], 0, chn_industrial[i]),
       chn_industrial[i],
-      pls_industrial[i]
+      decode(pls_industrial[i] )
       );
 
   for i := 0 to High(chn_misc) do
     radiolist.Add(
       channeltree.TVInsert(genreid[MISC], 0, chn_misc[i]),
       chn_misc[i],
-      pls_misc[i]
+      decode(pls_misc[i]    )
       );
 
   for i := 0 to High(chn_brasil) do
     radiolist.Add(
       channeltree.TVInsert(genreid[BRASIL], 0, chn_brasil[i]),
       chn_brasil[i],
-      pls_brasil[i]
+      decode(pls_brasil[i])
       );
 
   for i := 0 to High(genreid) do
     channeltree.TVSort(genreid[i]);
 
-{$IFDEF _LOG_}Log('loading CONFIG'); {$ENDIF}
+  channeltree.TVSelected := channeltree.TVRoot;
+
   LoadConfig;
-{$IFDEF _LOG_}Log('loaded CONFIG'); {$ENDIF}
-  loading.Free;
 
   if firstrun_enabled then showaboutbox;
 end;
 
 procedure TForm1.channeltreeSelChange(Sender: PObj);
 begin
-  if not channeltree.TVItemHasChildren[channeltree.TVSelected] then
-    PlayChannel;
+  PlayChannel;
 end;
 
 procedure TForm1.popupproc(Sender: PMenu; Item: Integer);
@@ -563,6 +572,14 @@ begin
     showaboutbox;
 end;
 
-end.
+procedure TForm1.btplayClick(Sender: PObj);
+begin
+  if channeltree.Enabled then
+    if not Assigned(chn) then
+      PlayChannel
+    else
+      StopChannel;
+end;
 
+end.
 

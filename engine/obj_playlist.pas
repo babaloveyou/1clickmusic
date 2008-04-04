@@ -24,7 +24,8 @@ implementation
 
 { TPlaylist }
 
-uses StrUtils, utils;
+uses StrUtils,
+  utils;
 
 procedure ParseASX(Lines: TStrings);
 
@@ -95,16 +96,16 @@ begin
 
   if MultiPos(['.as', '.wma'], plsurl) then
   begin
-    HttpGetText(plsurl, urls);
-    ParseASX(urls);
+    if HttpGetText(plsurl, urls) then
+      ParseASX(urls);
     Exit;
   end;
 
   //# php cuz of some dynamic generated playlists ex: triplag
   if multipos(['.pls', '.m3u', '.php'], plsurl) then
   begin
-    HttpGetText(plsurl, urls);
-    ParsePLS(urls);
+    if HttpGetText(plsurl, urls) then
+      ParsePLS(urls);
   end
   else
     urls.Add(plsurl);
