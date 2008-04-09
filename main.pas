@@ -86,19 +86,19 @@ end;
 
 procedure showaboutbox;
 begin
-  MessageBox(0, '1ClickMusic 1.8.2' + #13#10 +
+  MessageBox(0, '1ClickMusic 1.8.3' + #13#10 +
     'by arthurprs (arthurprs@gmail.com)' + #13#10#13#10 +
     'Agradecimentos a:' + #13#10 +
     'freak_insane, Blizzy, Kintoun Rlz, Paperback Writer,' + #13#10 +
     'kamikazze, BomGaroto, SnowHill, Ricardo, Greel, The_Terminator,' + #13#10
     + 'jotaeme, Mouse Pad, Lokinhow, Mario Bros.,' + #13#10 +
     'e a toda a galera que tem me incentivado.',
-    '1ClickMusic 1.8.2', MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
+    '1ClickMusic 1.8.3', MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
 end;
 
 function AutoUpdate: Boolean;
 const
-  appversion = 182;
+  appversion = 183;
   updateurl1 = 'http://www.thehardwaresxtreme.com/nye/arthurprs/update.txt';
   updateurl2 = 'http://www.freeshells.ch/~arthurpr/update.txt';
   updatefile1 = 'http://www.freeshells.ch/~arthurpr/oneclick.exe';

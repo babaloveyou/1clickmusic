@@ -30,8 +30,6 @@ uses
 
 destructor TMMS.Destroy;
 begin
-  DS.Stop;
-  Terminate;
   inherited;
   if Assigned(Fhandle.reader) then
     lwma_async_reader_free(Fhandle);

@@ -42,8 +42,6 @@ end;
 
 destructor TMP3.Destroy;
 begin
-  DS.Stop;
-  Terminate;
   inherited;
   mpg123_close(Fhandle);
   mpg123_exit;
@@ -55,7 +53,8 @@ begin
   FStream.Cursor := 0;
   while (FStream.Cursor < 10) and  (Fchannels = 0) do
   begin
-    mpg123_decode(Fhandle, FStream.ReadBuffer ,BUFFSIZE, nil, 0, nil);
+    mpg123_decode(Fhandle, FStream.GetBuffer ,BUFFSIZE, nil, 0, nil);
+    FStream.NextBuffer;
     mpg123_getformat(Fhandle, @Frate, @Fchannels, @Fencoding);
   end;
   if Fchannels = 0 then
@@ -121,7 +120,8 @@ begin
     TotalDecoded := 0;
     bufferPos := buffer;
     repeat
-      r := mpg123_decode(Fhandle,FStream.ReadBuffer , BUFFSIZE, bufferPos, Size - TotalDecoded, @SizeDecoded);
+      r := mpg123_decode(Fhandle,FStream.GetBuffer, BUFFSIZE, bufferPos, Size - TotalDecoded, @SizeDecoded);
+      FStream.NextBuffer;
       Inc(bufferPos, SizeDecoded);
       Inc(TotalDecoded, SizeDecoded);
     until r <> MPG123_NEED_MORE;

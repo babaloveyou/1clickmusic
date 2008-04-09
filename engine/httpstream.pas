@@ -40,7 +40,8 @@ type
     //# Get ShoutCast info
     procedure GetMetaInfo(out Atitle: string; out Aquality: Cardinal);
     //# Read the Buffer
-    function ReadBuffer:Pointer;
+    function GetBuffer:Pointer;
+    procedure NextBuffer;
     //# Prebuffer, Open stream
     procedure PreBuffer;
     function Open(const url: string): Boolean;
@@ -288,12 +289,16 @@ begin
   Aquality := MetaBitrate;
 end;
 
-function THTTPSTREAM.ReadBuffer: Pointer;
+function THTTPSTREAM.GetBuffer: Pointer;
 begin
   Result := @inbuffer[FCursor];
+end;
+
+procedure THTTPSTREAM.NextBuffer;
+begin
   if FCursor = BUFFCOUNT - 1 then FCursor := 0 else Inc(FCursor);
   Dec(BuffFilled);
-end;
+end;  
 
 end.
 

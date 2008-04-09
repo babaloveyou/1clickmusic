@@ -260,6 +260,8 @@ end;
 
 destructor TRadioPlayer.Destroy;
 begin
+  DS.Stop;
+  Terminate;
   // DESTROY THREAD
   inherited;
 end;
@@ -268,7 +270,7 @@ procedure TRadioPlayer.Execute;
 begin
   repeat
     UpdateBuffer();
-    Sleep(25);
+    Sleep(20);
   until Terminated;
 end;
 

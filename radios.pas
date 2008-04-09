@@ -445,8 +445,9 @@ const
     );
 
 const
-  chn_brasil: array[0..27] of string = (
+  chn_brasil: array[0..28] of string = (
     'Ecletic ( tribunafm )',
+    'Ecletic ( 89fm )',
     'Noticias ( cbn sp )',
     'Noticias ( cbn.rj )',
     'Noticias ( cbn.brasilia )',
@@ -478,8 +479,9 @@ const
     );
 
 const
-  pls_brasil: array[0..27] of string = (
+  pls_brasil: array[0..28] of string = (
     'mms://radio.e-tribuna.com.br/tribuna',
+    'http://www.89fm.com.br/aovivo/aovivo.asx',
     'http://cbn.globoradio.globo.com/cbn/wma/radiosp/asx.asp?audio=',
     'http://cbn.globoradio.globo.com/cbn/wma/radiorj/asx.asp?audio=',
     'http://cbn.globoradio.globo.com/cbn/wma/radiobsb/asx.asp?audio=',
