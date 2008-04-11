@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 230
-  Top = 261
+  Left = 246
+  Top = 217
   Width = 633
   Height = 312
   HorzScrollBar.Visible = False

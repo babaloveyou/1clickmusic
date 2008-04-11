@@ -2,7 +2,8 @@ unit radioopener;
 
 interface
 
-uses SysUtils,
+uses
+  SysUtils,
   Windows,
   Classes,
   DSoutput,

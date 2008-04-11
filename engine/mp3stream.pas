@@ -113,7 +113,8 @@ begin
 
   if section = Flastsection then Exit;
 
-  DSERROR(DS.SoundBuffer.Lock(section, Fbuffersize, @buffer, @Size, nil, nil, 0), 'ERRO, Locking buffer');
+  DS.SoundBuffer.Lock(section, Fbuffersize, @buffer, @Size, nil, nil, 0);
+
   if (FStream.GetBuffPercentage > BUFFMIN) then
   begin
     SizeDecoded := 0;

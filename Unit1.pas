@@ -29,11 +29,11 @@ Dialogs;
 type
 {$IF Defined(KOL_MCK)}
 {$I MCKfakeClasses.inc}
-  {$IFDEF KOLCLASSES} {$I TForm1class.inc} {$ELSE OBJECTS} PForm1 = ^TForm1; {$ENDIF CLASSES/OBJECTS}
-  {$IFDEF KOLCLASSES}{$I TForm1.inc}{$ELSE} TForm1 = object(TObj) {$ENDIF}
+{$IFDEF KOLCLASSES}{$I TForm1class.inc}{$ELSE OBJECTS}PForm1 = ^TForm1; {$ENDIF CLASSES/OBJECTS}
+{$IFDEF KOLCLASSES}{$I TForm1.inc}{$ELSE}TForm1 = object(TObj){$ENDIF}
     Form: PControl;
 {$ELSE not_KOL_MCK}
-  TForm1 = class(TForm)
+    TForm1 = class(TForm)
 {$IFEND KOL_MCK}
       KOLProject1: TKOLProject;
       lbltrack: TKOLLabel;
@@ -228,7 +228,7 @@ begin
     rsPrebuffering: lblstatus.Caption := 'Prebufering..';
     rsRecovering: lblstatus.Caption := 'Recovering Buffer!';
   end;
-  
+
 end;
 
 function TForm1.ThreadExecute(Sender: PThread): Integer;
@@ -240,7 +240,7 @@ begin
     StopChannel;
 
     btplay.Caption := 'Stop';
-
+    //# Init timer that refresh GUI info, 500ms interval
     SetTimer(appwinHANDLE, 1, 500, @TimerProc);
 
     pgrbuffer.Progress := 100;
@@ -256,12 +256,13 @@ begin
       Tray.ShowBalloon(_NIIF_INFO);
     end;
 
+    //# Lets Try to play
     if OpenRadio(radiolist.getpls(channeltree.TVItemText[channeltree.TVSelected]), chn, DS) then
-    begin
+    begin //# Radio Opened
       TimerExecute(); //# Refresh GUI INFO
       chn.Play();
     end
-    else
+    else //# Radio not Opened
     begin
       if traypopups_enabled then
       begin
@@ -318,15 +319,11 @@ begin
     case Msg.wParam of
       1001, 3001:
         if Assigned(chn) then
-        begin
-          DS.ChangeVolume(100);
-          DS.GetVolume(curVolume);
-        end;
+          curVolume := DS.Volume(curVolume + 5);
       1002, 3002:
         if Assigned(chn) then
         begin
-          DS.ChangeVolume(-100);
-          DS.GetVolume(curVolume);
+          curVolume := DS.Volume(curVolume - 5);
         end;
       1003, 3003:
         StopChannel;
@@ -360,6 +357,7 @@ begin
     LastFMThread.Free;
   end;
 
+  //# Kill the GUI timer, it exists? I don't care!
   KillTimer(appwinHANDLE, 1);
 
   Thread.Terminate;
@@ -369,7 +367,7 @@ begin
     chn.Free;
 
   DS.Free;
-  //
+  //# Save .INI config
   SaveConfig;
   radiolist.Free;
 end;
@@ -380,11 +378,11 @@ var
 begin
   appwinHANDLE := form.Handle;
   //# Inicializa o SOM
-  curVolume:= 100;
+  curVolume := 100;
   chn := nil;
   DS := TDSoutput.Create(appwinHANDLE);
 
-  Tray.Icon := LoadIcon(HInstance,'TRAY');
+  Tray.Icon := LoadIcon(HInstance, 'TRAY');
   Tray.AddIcon;
 
   //# HOTKEYS
@@ -459,21 +457,21 @@ begin
     radiolist.Add(
       channeltree.TVInsert(genreid[OLDMUSIC], 0, chn_oldmusic[i]),
       chn_oldmusic[i],
-      decode(pls_oldmusic[i] )
+      decode(pls_oldmusic[i])
       );
 
   for i := 0 to High(chn_industrial) do
     radiolist.Add(
       channeltree.TVInsert(genreid[INDUSTRIAL], 0, chn_industrial[i]),
       chn_industrial[i],
-      decode(pls_industrial[i] )
+      decode(pls_industrial[i])
       );
 
   for i := 0 to High(chn_misc) do
     radiolist.Add(
       channeltree.TVInsert(genreid[MISC], 0, chn_misc[i]),
       chn_misc[i],
-      decode(pls_misc[i]    )
+      decode(pls_misc[i])
       );
 
   for i := 0 to High(chn_brasil) do
@@ -483,13 +481,15 @@ begin
       decode(pls_brasil[i])
       );
 
+  //# Sort Radio List
   for i := 0 to High(genreid) do
     channeltree.TVSort(genreid[i]);
 
   channeltree.TVSelected := channeltree.TVRoot;
 
+  //# Load .INI Config
   LoadConfig;
-
+  //# Show About box if first run or just updated!
   if firstrun_enabled then showaboutbox;
 end;
 
@@ -529,6 +529,7 @@ procedure TForm1.channeltreeMouseUp(Sender: PControl;
 var
   where: Cardinal;
 begin
+  //# Store where the mouse is for popupmenu
   if Mouse.Button = mbright then
     undermouse := channeltree.TVItemAtPos(Mouse.X, Mouse.Y, where);
 end;

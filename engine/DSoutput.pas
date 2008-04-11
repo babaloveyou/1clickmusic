@@ -21,8 +21,7 @@ type
   public
     property PlayCursorPos: Cardinal read GetPlayCursorPos;
     property SoundBuffer: IDirectSoundBuffer read FSecondary;
-    procedure ChangeVolume(const value: Integer);
-    procedure GetVolume(out AVolume: Cardinal);
+    function Volume(const value: Integer): Cardinal;
     procedure Play;
     procedure Stop;
     function InitializeBuffer(const Arate, Achannels: Cardinal): Cardinal;
@@ -163,23 +162,33 @@ begin
     FSecondary.GetCurrentPosition(@Result, nil);
 end;
 
-procedure TDSoutput.ChangeVolume(const value: Integer);
+function TDSoutput.Volume(const value: Integer): Cardinal;
 var
-  volume: Integer;
+  vol: integer;
 begin
+  Result := 0;
   if not Assigned(FSecondary) then Exit;
-  FSecondary.GetVolume(volume);
-  Inc(volume, value);
-  FSecondary.SetVolume(volume);
-end;
 
-procedure TDSoutput.GetVolume(out AVolume: Cardinal);
-var
-  volume: Integer;
-begin
-  if not Assigned(FSecondary) then Exit;
-  FSecondary.GetVolume(volume);
-  AVolume := 100 - Round((volume / DSBVOLUME_MIN) * 100);
+  if value >= 100 then
+  begin
+    vol := DSBVOLUME_MAX;
+    Result := 100;
+  end
+  else
+    if value <= 0 then
+    begin
+      vol := DSBVOLUME_MIN;
+      Result := 0;
+    end
+    else
+    begin
+      vol := Round(
+        ((100 - value) * DSBVOLUME_MIN) / 500
+        );
+      Result := value;
+    end;
+
+  FSecondary.SetVolume(vol);
 end;
 
 function TDSoutput.InitializeBuffer(const Arate, Achannels: Cardinal): Cardinal;
@@ -270,7 +279,7 @@ procedure TRadioPlayer.Execute;
 begin
   repeat
     UpdateBuffer();
-    Sleep(20);
+    Sleep(25);
   until Terminated;
 end;
 

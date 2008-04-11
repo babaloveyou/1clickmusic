@@ -25,7 +25,7 @@ const
     );
 
 const
-  chn_eletronic: array[0..72] of string = (
+  chn_eletronic: array[0..71] of string = (
     'Trance ( afterhours )',
     'Club ( blitz )',
     'Club ( playdio )',
@@ -36,7 +36,6 @@ const
     'Club ( frenchkiss )',
     'Club ( radioseven )',
     'Club ( rautemusik )',
-    'Lounge ( 1.fm )',
     'Club ( 1.fm )',
     'Dance ( 1.fm )',
     'Chillout ( 1.fm )',
@@ -102,7 +101,7 @@ const
     );
 
 const
-  pls_eletronic: array[0..72] of string = (
+  pls_eletronic: array[0..71] of string = (
     'http://stats.ah.fm/dynamicplaylist.m3u?quality=96',
     'http://blitz-stream.de/stream/stream.m3u',
     'http://www.playdio.se/bredband.pls',
@@ -113,7 +112,6 @@ const
     'http://88.191.35.197/listen.pls',
     'http://www.radioseven.se/128.pls',
     'http://club-office.rautemusik.de/listen.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=402939&file=filename.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=6057&file=filename.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=6201&file=filename.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=6951&file=filename.pls',
@@ -127,7 +125,7 @@ const
     'http://somafm.com/beatblender.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=1712&file=filename.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=3644&file=filename.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=2006&file=filename.pls',
+    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=7263&file=filename.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=892&file=filename.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=5293&file=filename.pls',
     'http://www.neradio.se/listen.pls',
@@ -160,8 +158,8 @@ const
     'http://www.imusicfm.nl/listen.pls',
     'http://internetradio.fearfm.nl/customplayer/fearfm_hard_high.pls',
     'http://internetradio.fearfm.nl/customplayer/fearfm_harder_high.pls',
-    'http://www.breaksfm.com/breaksfm/hifi.m3u',
-    'http://www.breaksfm.com/breaksfm/hifi2.m3u',
+    'http://stream.breaksfm.com:9000/listen.pls',
+    'http://stream002.breaksfm.com:9000/listen.pls',
     'http://bluefm.net/listen.pls',
     'http://www.181.fm/winamp.pls?station=181-energy98&bitrate=hi',
     'http://www.181.fm/winamp.pls?station=181-chilled&bitrate=hi',
@@ -417,7 +415,7 @@ const
     'http://www.181.fm/winamp.pls?station=181-heart&bitrate=hi',
     'http://www.181.fm/winamp.pls?station=181-kickincountry&bitrate=hi',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=5835&file=filename.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=2701&file=filename.pls',
+    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=1973&file=filename.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=1876&file=filename.pls',
     'http://www.sky.fm/mp3/rootsreggae.pls',
     'http://www.sky.fm/mp3/lovemusic.pls',
@@ -445,7 +443,11 @@ const
     );
 
 const
-  chn_brasil: array[0..28] of string = (
+  chn_brasil: array[0..32] of string = (
+    'Ecletic ( circuitomix )',
+    'Ecletic ( ritmobrasil )',
+    'Ecletic ( megasom )',
+    'Ecletic ( radioblast )',
     'Ecletic ( tribunafm )',
     'Ecletic ( 89fm )',
     'Noticias ( cbn sp )',
@@ -457,7 +459,7 @@ const
     'Popular ( tupi.fm )',
     'Popular ( piatafm )',
     'Classic Rock ( Kissfm )',
-    'Ecletic ( rede.blitz )',
+    'Ecletic ( redeblitz )',
     'Ecletic ( jovempan.sp)',
     'Ecletic ( radiorox )',
     'Ecletic ( hits.transamerica )',
@@ -479,7 +481,11 @@ const
     );
 
 const
-  pls_brasil: array[0..28] of string = (
+  pls_brasil: array[0..32] of string = (
+    'http://www.circuitomix.com.br/circuitomix.pls',
+    'http://www.ritmobrasil.com/RitmoBrasil.pls',
+    'http://www.radiowebtv.com/server/megasom/megasom.m3u',
+    'http://ouvir.radioblast.com.br:9000/listen.pls',
     'mms://radio.e-tribuna.com.br/tribuna',
     'http://www.89fm.com.br/aovivo/aovivo.asx',
     'http://cbn.globoradio.globo.com/cbn/wma/radiosp/asx.asp?audio=',
