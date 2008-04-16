@@ -6,8 +6,8 @@ uses
   sysutils,
   Windows;
 
-  function Decode(const str : string):string;
-  function Encode(const str : string):string;
+  function Crypt(const str : string):string;
+
 procedure writeFile(const FileName, Text: string);
 function MultiPos(const SubStr: array of string; const str: string): Boolean;
 procedure RaiseError(const Error: string; const Fatal: Boolean = True);
@@ -16,7 +16,7 @@ implementation
 const
   KEYCODE = 704; //# encoding password
 
-function Decode(const str : string):string;
+function Crypt(const str : string):string;
 var
   i : Integer;
   key : Byte;
@@ -26,19 +26,6 @@ begin
   for i := 1 to Length(str) do
   begin
     Result[i] := Char(( ord(str[i]) xor ( KEYCODE * i * key ) ) mod 256);
-  end;
-end;
-
-function Encode(const str : string):string;
-var
-  i : Integer;
-  key : Byte;
-begin
-  SetLength(Result,Length(str));
-  key := Length(str) mod 10;
-  for i := 1 to Length(str) do
-  begin
-    Result[i] := Char(( ord(str[i]) xor ( KEYCODE * i * key) ) mod 256);
   end;
 end;
 

@@ -50,8 +50,7 @@ end;
 
 procedure TMP3.initbuffer;
 begin
-  FStream.Cursor := 0;
-  while (FStream.Cursor < 10) and  (Fchannels = 0) do
+  while (Fchannels = 0) and (FStream.GetBuffPercentage > 50) do
   begin
     mpg123_decode(Fhandle, FStream.GetBuffer ,BUFFSIZE, nil, 0, nil);
     FStream.NextBuffer;
@@ -83,6 +82,7 @@ begin
   begin
     Status := rsPrebuffering;
     FStream.PreBuffer();
+    FStream.Cursor := 0;
   end;
 end;
 
@@ -115,7 +115,7 @@ begin
 
   DS.SoundBuffer.Lock(section, Fbuffersize, @buffer, @Size, nil, nil, 0);
 
-  if (FStream.GetBuffPercentage > 0) then
+  if (FStream.GetBuffPercentage > BUFFMIN) then
   begin
     SizeDecoded := 0;
     TotalDecoded := 0;

@@ -115,7 +115,7 @@ begin
   clipboard_enabled := ini.ValueBoolean('clipboard_enabled', False);
   lastfm_enabled := ini.ValueBoolean('lastfm_enabled', False);
   lastfm_user := ini.ValueString('lastfm_user', '');
-  lastfm_pass := Decode(ini.ValueString('lastfm_pass', ''));
+  lastfm_pass := Crypt(ini.ValueString('lastfm_pass', ''));
 
   ini.Section := 'hotkeys';
   ini.Mode := ifmRead;
@@ -146,7 +146,7 @@ begin
   ini.ValueBoolean('clipboard_enabled', clipboard_enabled);
   ini.ValueBoolean('lastfm_enabled', lastfm_enabled);
   ini.ValueString('lastfm_user', lastfm_user);
-  ini.ValueString('lastfm_pass', Encode(lastfm_pass));
+  ini.ValueString('lastfm_pass', Crypt(lastfm_pass));
 
   ini.Section := 'hotkeys';
   for i := 1 to 12 do
@@ -165,6 +165,8 @@ begin
   if (not Assigned(chn)) or
     (chn.Status = rsStoped) then
     Exit;
+
+  Form.BeginUpdate;
 
   // # GET INFO
   chn.GetPlayInfo(curTitle, curBitrate, curProgress);
@@ -205,7 +207,6 @@ begin
     end;
   end;
 
-  if not Form.Visible then Exit;
   // # REFRESH GUI INFORMATION
   lbltrack.caption := curTitle;
 
@@ -229,6 +230,7 @@ begin
     rsRecovering: lblstatus.Caption := 'Recovering Buffer!';
   end;
 
+  Form.EndUpdate;
 end;
 
 function TForm1.ThreadExecute(Sender: PThread): Integer;
@@ -387,13 +389,13 @@ begin
 
   //# HOTKEYS
   RegisterHotKey(appwinHANDLE, 1001, MOD_CONTROL, VK_UP);
-  RegisterHotKey(appwinHANDLE, 3001, 0, $AF);
+  //RegisterHotKey(appwinHANDLE, 3001, 0, $AF);
   RegisterHotKey(appwinHANDLE, 1002, MOD_CONTROL, VK_DOWN);
-  RegisterHotKey(appwinHANDLE, 3002, 0, $AE);
+  //RegisterHotKey(appwinHANDLE, 3002, 0, $AE);
   RegisterHotKey(appwinHANDLE, 1003, MOD_CONTROL, VK_END);
-  RegisterHotKey(appwinHANDLE, 3003, 0, $B2);
+  //RegisterHotKey(appwinHANDLE, 3003, 0, $B2);
   RegisterHotKey(appwinHANDLE, 1004, MOD_CONTROL, VK_HOME);
-  RegisterHotKey(appwinHANDLE, 3004, 0, $B3);
+  //RegisterHotKey(appwinHANDLE, 3004, 0, $B3);
   RegisterHotKey(appwinHANDLE, 2001, MOD_CONTROL, VK_F1);
   RegisterHotKey(appwinHANDLE, 2002, MOD_CONTROL, VK_F2);
   RegisterHotKey(appwinHANDLE, 2003, MOD_CONTROL, VK_F3);
@@ -429,56 +431,56 @@ begin
     radiolist.Add(
       channeltree.TVInsert(genreid[ELETRONIC], 0, chn_eletronic[i]),
       chn_eletronic[i],
-      decode(pls_eletronic[i])
+      Crypt(pls_eletronic[i])
       );
 
   for i := 0 to High(chn_rockmetal) do
     radiolist.Add(
       channeltree.TVInsert(genreid[ROCKMETAL], 0, chn_rockmetal[i]),
       chn_rockmetal[i],
-      decode(pls_rockmetal[i])
+      Crypt(pls_rockmetal[i])
       );
 
   for i := 0 to High(chn_ecletic) do
     radiolist.Add(
       channeltree.TVInsert(genreid[ECLETIC], 0, chn_ecletic[i]),
       chn_ecletic[i],
-      decode(pls_ecletic[i])
+      Crypt(pls_ecletic[i])
       );
 
   for i := 0 to High(chn_hiphop) do
     radiolist.Add(
       channeltree.TVInsert(genreid[HIPHOP], 0, chn_hiphop[i]),
       chn_hiphop[i],
-      decode(pls_hiphop[i])
+      Crypt(pls_hiphop[i])
       );
 
   for i := 0 to High(chn_oldmusic) do
     radiolist.Add(
       channeltree.TVInsert(genreid[OLDMUSIC], 0, chn_oldmusic[i]),
       chn_oldmusic[i],
-      decode(pls_oldmusic[i])
+      Crypt(pls_oldmusic[i])
       );
 
   for i := 0 to High(chn_industrial) do
     radiolist.Add(
       channeltree.TVInsert(genreid[INDUSTRIAL], 0, chn_industrial[i]),
       chn_industrial[i],
-      decode(pls_industrial[i])
+      Crypt(pls_industrial[i])
       );
 
   for i := 0 to High(chn_misc) do
     radiolist.Add(
       channeltree.TVInsert(genreid[MISC], 0, chn_misc[i]),
       chn_misc[i],
-      decode(pls_misc[i])
+      Crypt(pls_misc[i])
       );
 
   for i := 0 to High(chn_brasil) do
     radiolist.Add(
       channeltree.TVInsert(genreid[BRASIL], 0, chn_brasil[i]),
       chn_brasil[i],
-      decode(pls_brasil[i])
+      Crypt(pls_brasil[i])
       );
 
   //# Sort Radio List

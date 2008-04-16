@@ -10,14 +10,15 @@ uses
   KOL,
   DSoutput,
   radioopener,
+  mp3stream,
   obj_scrobber,
   obj_list,
   obj_playlist,
   httpsend;
 
 const
-  appversion = 183;
-  appversionstr = '1.8.3';
+  appversion = 184;
+  appversionstr = '1.8.4';
 
 var
   //# needed cuz of the KOL windows is Free with no control..
