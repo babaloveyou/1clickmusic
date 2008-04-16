@@ -17,7 +17,7 @@ begin
     Result.Form.SetName( Applet, 'Form2' );
    {$ENDIF}
     Result.Form.Style := Result.Form.Style and not WS_MAXIMIZEBOX;
-    Result.Form.SetClientSize( 285, 296 );
+    Result.Form.SetClientSize( 285, 335 );
     // Result.lblpass.TabOrder = -1
     Result.lblpass := NewLabel( Result.Form, 'Pass :' ).SetPosition( 16, 244 ).SetSize( 41, 0 );
    {$IFDEF USE_NAMES}
@@ -36,6 +36,18 @@ begin
    Result.lbluser.SetUnicode(TRUE);
    {$ENDIF UNICODE_CTRLS}
     Result.lbluser.Font.FontPitch := fpFixed;
+    // Result.lblversion.TabOrder = -1
+    Result.lblversion := NewLabel( Result.Form, '' ).SetPosition( 16, 296 ).SetSize( 257, 33 );
+   {$IFDEF USE_NAMES}
+    Result.lblversion.SetName( Result.Form, 'lblversion' ); 
+   {$ENDIF}
+   {$IFDEF UNICODE_CTRLS}
+   Result.lblversion.SetUnicode(TRUE);
+   {$ENDIF UNICODE_CTRLS}
+    Result.lblversion.Font.FontHeight := 16;
+    Result.lblversion.Font.FontName := 'Arial';
+    Result.lblversion.Font.FontPitch := fpFixed;
+    Result.lblversion.TextAlign := KOL.taRight;
     // Result.ckbxballons.TabOrder = 0
     Result.ckbxballons := NewCheckBox( Result.Form, 'Tray popups' ).SetPosition( 8, 8 ).SetSize( 273, 0 );
    {$IFDEF USE_NAMES}

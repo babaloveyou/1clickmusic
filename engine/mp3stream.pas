@@ -115,7 +115,7 @@ begin
 
   DS.SoundBuffer.Lock(section, Fbuffersize, @buffer, @Size, nil, nil, 0);
 
-  if (FStream.GetBuffPercentage > BUFFMIN) then
+  if (FStream.GetBuffPercentage > 0) then
   begin
     SizeDecoded := 0;
     TotalDecoded := 0;

@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 246
-  Top = 217
+  Left = 284
+  Top = 203
   Width = 633
   Height = 312
   HorzScrollBar.Visible = False
@@ -21,7 +21,7 @@ object Form1: TForm1
     Left = 2
     Top = 2
     Width = 231
-    Height = 272
+    Height = 281
     HelpContext = 0
     IgnoreDefault = False
     AnchorLeft = False
@@ -235,9 +235,9 @@ object Form1: TForm1
   object lblhelp: TKOLLabel
     Tag = 0
     Left = 241
-    Top = 120
+    Top = 136
     Width = 272
-    Height = 153
+    Height = 137
     HelpContext = 0
     IgnoreDefault = False
     AnchorLeft = False
@@ -262,9 +262,8 @@ object Form1: TForm1
     Caption = 
       'Hotkeys:'#13#10' CTRL + UP  : raise volume'#13#10' CTRL + Down : decrease vo' +
       'lume'#13#10' CTRL + END : Stop'#13#10' CTRL + HOME : Play'#13#10' CTRL + (F1..F12)' +
-      ' : Hotkey for Channels'#13#10#13#10'!!! Right click on a channel to bind i' +
-      't for a hotkey'#13#10'!!! Left or Right click on TrayIcon to Hide/Show' +
-      #13#10'Middle click on TrayIcon to see INFO'
+      ' : Hotkey for Channels'#13#10#13#10'!! Right click on a channel to bind it' +
+      ' for a hotkey'#13#10'!! Left or Right click on TrayIcon to Hide/Show'
     Ctl3D = True
     Color = clBtnFace
     parentColor = True
@@ -516,8 +515,8 @@ object Form1: TForm1
     Localizy = False
     projectName = 'oneclick'
     projectDest = 'oneclick'
-    sourcePath = 'C:\Documents and Settings\arthur pires\Desktop\1clickmusic\'
-    outdcuPath = 'C:\Documents and Settings\arthur pires\Desktop\1clickmusic\'
+    sourcePath = 'C:\Documents and Settings\Administrador\Desktop\1clickmusic\'
+    outdcuPath = 'C:\Documents and Settings\Administrador\Desktop\1clickmusic\'
     dprResource = False
     protectFiles = True
     showReport = False
@@ -546,7 +545,7 @@ object Form1: TForm1
     AllBtnReturnClick = False
     Tabulate = False
     TabulateEx = False
-    UnitSourcePath = 'C:\Documents and Settings\arthur pires\Desktop\1clickmusic\'
+    UnitSourcePath = 'C:\Documents and Settings\Administrador\Desktop\1clickmusic\'
     Locked = False
     formUnit = 'Unit1'
     formMain = True
@@ -606,7 +605,10 @@ object Form1: TForm1
     Top = 16
   end
   object Tray: TKOLBAPTrayIcon
+    Active = False
+    HideBallOnTimer = False
     OnMouseUp = TrayMouseUp
+    Localizy = loForm
     Left = 16
     Top = 16
   end

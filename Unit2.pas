@@ -44,6 +44,7 @@ type
     btapply: TKOLButton;
     btupdate: TKOLButton;
     ckbxballons: TKOLCheckBox;
+    lblversion: TKOLLabel;
     procedure ckbxlistenabledClick(Sender: PObj);
     procedure ckbxmsnenabledClick(Sender: PObj);
     procedure ckbxlastfmClick(Sender: PObj);
@@ -91,6 +92,9 @@ end;
 
 procedure TForm2.KOLForm1FormCreate(Sender: PObj);
 begin
+  lblversion.Caption := 'version:'+appversionstr+
+  #13#10 + 'by arthurprs, arthurprs@gmail.com';
+  //
   ckbxballons.Checked := traypopups_enabled;
   //
   ckbxmsnenabled.Checked := msn_enabled;

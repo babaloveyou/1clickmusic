@@ -15,10 +15,14 @@ uses
   obj_playlist,
   httpsend;
 
+const
+  appversion = 183;
+  appversionstr = '1.8.3';
+
 var
   //# needed cuz of the KOL windows is Free with no control..
   appwinHANDLE: HWND;
-  // Core
+  //# Core Global Variables
   DS: TDSoutput;
   chn: TRadioPlayer;
   curProgress: Cardinal;
@@ -31,16 +35,16 @@ var
   genreid: array[0..7] of Cardinal;
   radiolist: PRadioList;
 
-  // OPTIONS
+  //# OPTIONS
   traypopups_enabled: Boolean;
   firstrun_enabled: Boolean;
-  // MSN NOW PLAYING FEATURE
+  //# MSN NOW PLAYING FEATURE
   msn_enabled: Boolean;
   msn_iconi: Integer;
   msn_icons: string;
-  // Hotkeys
+  //# Hotkeys
   hotkeys: array[1..12] of Cardinal;
-  // list
+  //# list
   list_enabled: Boolean;
   list_file: string;
   //
@@ -86,19 +90,18 @@ end;
 
 procedure showaboutbox;
 begin
-  MessageBox(0, '1ClickMusic 1.8.3' + #13#10 +
+  MessageBox(0, '1ClickMusic '+appversionstr + #13#10 +
     'by arthurprs (arthurprs@gmail.com)' + #13#10#13#10 +
     'Agradecimentos a:' + #13#10 +
     'freak_insane, Blizzy, Kintoun Rlz, Paperback Writer,' + #13#10 +
     'kamikazze, BomGaroto, SnowHill, Ricardo, Greel, The_Terminator,' + #13#10
     + 'jotaeme, Mouse Pad, Lokinhow, Mario Bros.,' + #13#10 +
     'e a toda a galera que tem me incentivado.',
-    '1ClickMusic 1.8.3', MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
+    '1ClickMusic '+appversionstr, MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
 end;
 
 function AutoUpdate: Boolean;
 const
-  appversion = 183;
   updateurl1 = 'http://www.thehardwaresxtreme.com/nye/arthurprs/update.txt';
   updateurl2 = 'http://www.freeshells.ch/~arthurpr/update.txt';
   updatefile1 = 'http://www.freeshells.ch/~arthurpr/oneclick.exe';

@@ -131,14 +131,11 @@ ProductName=
 ProductVersion=1.0.0.0
 Comments=
 [HistoryLists\hlConditionals]
-Count=4
-Item0=KOL_MCK
-Item1=KOL_MCK;_LOG_
-Item2=KOL_MCK;
-Item3=KOL_MCK;_LOG_;ASM_VERSION
+Count=1
+Item0=INPACKAGE
 [HistoryLists\hlUnitAliases]
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
 Count=1
-Item0=engine
+Item0=C:\Borland\Delphi7\Source\ToolsAPI

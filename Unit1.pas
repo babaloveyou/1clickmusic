@@ -29,11 +29,11 @@ Dialogs;
 type
 {$IF Defined(KOL_MCK)}
 {$I MCKfakeClasses.inc}
-{$IFDEF KOLCLASSES}{$I TForm1class.inc}{$ELSE OBJECTS}PForm1 = ^TForm1; {$ENDIF CLASSES/OBJECTS}
-{$IFDEF KOLCLASSES}{$I TForm1.inc}{$ELSE}TForm1 = object(TObj){$ENDIF}
+  {$IFDEF KOLCLASSES} {$I TForm1class.inc} {$ELSE OBJECTS} PForm1 = ^TForm1; {$ENDIF CLASSES/OBJECTS}
+  {$IFDEF KOLCLASSES}{$I TForm1.inc}{$ELSE} TForm1 = object(TObj) {$ENDIF}
     Form: PControl;
 {$ELSE not_KOL_MCK}
-    TForm1 = class(TForm)
+  TForm1 = class(TForm)
 {$IFEND KOL_MCK}
       KOLProject1: TKOLProject;
       lbltrack: TKOLLabel;
@@ -185,7 +185,7 @@ begin
       begin
         Tray.BalloonTitle := 'Track change';
         Tray.BalloonText := curTitle;
-        Tray.ShowBalloon(_NIIF_INFO);
+        Tray.ShowBalloon(NIIF_INFO,3);
       end;
 
       if msn_enabled then
@@ -221,7 +221,7 @@ begin
   pgrbuffer.Progress := 100 - curProgress;
 
   lblbuffer.Caption := IntToStr(curBitrate) + 'kbps' +
-    #13 + 'vol:' + IntToStr(curVolume) + '%';
+    #13#10 + 'vol:' + IntToStr(curVolume) + '%';
 
   case chn.Status of
     rsPlaying: lblstatus.Caption := 'Connected!';
@@ -253,7 +253,7 @@ begin
     begin
       Tray.BalloonTitle := 'Connecting';
       Tray.BalloonText := lblradio.Caption;
-      Tray.ShowBalloon(_NIIF_INFO);
+      Tray.ShowBalloon(NIIF_INFO,3);
     end;
 
     //# Lets Try to play
@@ -268,7 +268,7 @@ begin
       begin
         Tray.BalloonTitle := 'Error Connecting';
         Tray.BalloonText := lblradio.Caption;
-        Tray.ShowBalloon(_NIIF_ERROR);
+        Tray.ShowBalloon(NIIF_ERROR,3);
       end;
       StopChannel;
       lblstatus.caption := 'Error.:';
@@ -319,11 +319,11 @@ begin
     case Msg.wParam of
       1001, 3001:
         if Assigned(chn) then
-          curVolume := DS.Volume(curVolume + 5);
+          curVolume := DS.Volume(curVolume + 2);
       1002, 3002:
         if Assigned(chn) then
         begin
-          curVolume := DS.Volume(curVolume - 5);
+          curVolume := DS.Volume(curVolume - 2);
         end;
       1003, 3003:
         StopChannel;
@@ -383,7 +383,7 @@ begin
   DS := TDSoutput.Create(appwinHANDLE);
 
   Tray.Icon := LoadIcon(HInstance, 'TRAY');
-  Tray.AddIcon;
+  Tray.Active := True;
 
   //# HOTKEYS
   RegisterHotKey(appwinHANDLE, 1001, MOD_CONTROL, VK_UP);

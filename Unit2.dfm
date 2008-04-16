@@ -2,7 +2,7 @@ object Form2: TForm2
   Left = 481
   Top = 245
   Width = 301
-  Height = 332
+  Height = 371
   HorzScrollBar.Visible = False
   VertScrollBar.Visible = False
   Caption = 'Options'
@@ -73,6 +73,7 @@ object Form2: TForm2
     windowed = True
     WordWrap = False
     Border = 2
+    LikeSpeedButton = False
   end
   object cmbxmsnicon: TKOLComboBox
     Tag = 0
@@ -187,6 +188,7 @@ object Form2: TForm2
     windowed = True
     WordWrap = False
     Border = 2
+    LikeSpeedButton = False
   end
   object edtlistname: TKOLEditBox
     Tag = 0
@@ -297,6 +299,7 @@ object Form2: TForm2
     windowed = True
     WordWrap = False
     Border = 2
+    LikeSpeedButton = False
   end
   object ckbxlastfm: TKOLCheckBox
     Tag = 0
@@ -354,6 +357,7 @@ object Form2: TForm2
     windowed = True
     WordWrap = False
     Border = 2
+    LikeSpeedButton = False
   end
   object edtuser: TKOLEditBox
     Tag = 0
@@ -620,13 +624,13 @@ object Form2: TForm2
     TextAlign = taCenter
     VerticalAlign = vaCenter
     TabStop = True
-    LikeSpeedButton = False
     autoSize = False
     DefaultBtn = True
     CancelBtn = False
     windowed = True
     Flat = False
     WordWrap = False
+    LikeSpeedButton = False
   end
   object btupdate: TKOLButton
     Tag = 0
@@ -677,13 +681,13 @@ object Form2: TForm2
     TextAlign = taCenter
     VerticalAlign = vaCenter
     TabStop = True
-    LikeSpeedButton = False
     autoSize = False
     DefaultBtn = False
     CancelBtn = False
     windowed = True
     Flat = False
     WordWrap = False
+    LikeSpeedButton = False
   end
   object ckbxballons: TKOLCheckBox
     Tag = 0
@@ -740,6 +744,60 @@ object Form2: TForm2
     windowed = True
     WordWrap = False
     Border = 2
+    LikeSpeedButton = False
+  end
+  object lblversion: TKOLLabel
+    Tag = 0
+    Left = 16
+    Top = 296
+    Width = 257
+    Height = 33
+    HelpContext = 0
+    IgnoreDefault = False
+    AnchorLeft = False
+    AnchorTop = False
+    AnchorRight = False
+    AnchorBottom = False
+    AcceptChildren = False
+    MouseTransparent = False
+    TabOrder = -1
+    MinWidth = 0
+    MinHeight = 0
+    MaxWidth = 0
+    MaxHeight = 0
+    PlaceDown = False
+    PlaceRight = False
+    PlaceUnder = False
+    Visible = True
+    Enabled = True
+    DoubleBuffered = False
+    Align = caNone
+    CenterOnParent = False
+    Ctl3D = True
+    Color = clBtnFace
+    parentColor = True
+    Font.Color = clWindowText
+    Font.FontStyle = []
+    Font.FontHeight = 16
+    Font.FontWidth = 0
+    Font.FontWeight = 0
+    Font.FontName = 'Arial'
+    Font.FontOrientation = 0
+    Font.FontCharset = 1
+    Font.FontPitch = fpFixed
+    Font.FontQuality = fqDefault
+    parentFont = False
+    EraseBackground = False
+    Localizy = loForm
+    Transparent = False
+    TextAlign = taRight
+    VerticalAlign = vaTop
+    wordWrap = False
+    autoSize = False
+    Brush.Color = clBtnFace
+    Brush.BrushStyle = bsSolid
+    ShowAccelChar = False
+    windowed = True
   end
   object KOLForm1: TKOLForm
     Tag = 0
@@ -805,7 +863,7 @@ object Form2: TForm2
     OnFormCreate = KOLForm1FormCreate
     EraseBackground = False
     supportMnemonics = False
-    Left = 144
-    Top = 80
+    Left = 16
+    Top = 16
   end
 end
