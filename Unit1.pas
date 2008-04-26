@@ -65,6 +65,7 @@ type
       procedure TimerExecute();
       function LastFMThreadExecute(Sender: PThread): Integer;
       function ThreadExecute(Sender: PThread): Integer;
+      procedure ChangeTrayIcon(const NewIcon: HICON);
       procedure PlayChannel;
       procedure StopChannel;
       procedure popupproc(Sender: PMenu; Item: Integer);
@@ -90,6 +91,9 @@ uses
   main,
   utils;
 
+var
+  ITrayBlue, ITrayGreen, ITrayRed: HICON;
+
 
 {$IF Defined(KOL_MCK)}{$ELSE}{$R *.DFM}{$IFEND}
 
@@ -105,6 +109,7 @@ begin
   ini := OpenIniFile('oneclickmusic.ini');
   ini.Mode := ifmRead;
   ini.Section := 'options';
+  trayiconcolor_enabled := ini.ValueBoolean('trayiconcolor_enabled', True);
   traypopups_enabled := ini.ValueBoolean('traypopups_enabled', True);
   firstrun_enabled := ini.ValueBoolean('firstrun_enabled', True);
   msn_enabled := ini.ValueBoolean('msn_enabled', False);
@@ -136,6 +141,7 @@ begin
   ini := OpenIniFile('oneclickmusic.ini');
   ini.Mode := ifmWrite;
   ini.Section := 'options';
+  ini.ValueBoolean('trayiconcolor_enabled', trayiconcolor_enabled);
   ini.ValueBoolean('traypopups_enabled', traypopups_enabled);
   ini.ValueBoolean('firstrun_enabled', False);
   ini.ValueBoolean('msn_enabled', msn_enabled);
@@ -187,7 +193,7 @@ begin
       begin
         Tray.BalloonTitle := 'Track change';
         Tray.BalloonText := curTitle;
-        Tray.ShowBalloon(NIIF_INFO,3);
+        Tray.ShowBalloon(NIIF_INFO, 3);
       end;
 
       if msn_enabled then
@@ -212,12 +218,21 @@ begin
 
   case curProgress of
     //# skip 0 because of the mms streams
-    1..45:
-      pgrbuffer.ProgressBkColor := clRed;
-    46..75:
-      pgrbuffer.ProgressBkColor := clGreen;
+    1..40:
+      begin
+        ChangeTrayIcon(ITrayRed);
+        pgrbuffer.ProgressBkColor := clRed;
+      end;
+    41..75:
+      begin
+        ChangeTrayIcon(ITrayGreen);
+        pgrbuffer.ProgressBkColor := clGreen;
+      end;
   else
-    pgrbuffer.ProgressBkColor := $00E39C5A;
+    begin
+      ChangeTrayIcon(ITrayBlue);
+      pgrbuffer.ProgressBkColor := $00E39C5A;
+    end;
   end;
   pgrbuffer.Progress := 100 - curProgress;
 
@@ -255,7 +270,7 @@ begin
     begin
       Tray.BalloonTitle := 'Connecting';
       Tray.BalloonText := lblradio.Caption;
-      Tray.ShowBalloon(NIIF_INFO,3);
+      Tray.ShowBalloon(NIIF_INFO, 3);
     end;
 
     //# Lets Try to play
@@ -270,14 +285,14 @@ begin
       begin
         Tray.BalloonTitle := 'Error Connecting';
         Tray.BalloonText := lblradio.Caption;
-        Tray.ShowBalloon(NIIF_ERROR,3);
+        Tray.ShowBalloon(NIIF_ERROR, 3);
       end;
       StopChannel;
       lblstatus.caption := 'Error.:';
     end;
     channeltree.Enabled := True;
-    Thread.Suspend;
-  until Thread.Terminated;
+    Sender.Suspend;
+  until Sender.Terminated;
 end;
 
 procedure TForm1.PlayChannel;
@@ -309,6 +324,8 @@ begin
   lbltrack.Caption := '';
   Tray.ToolTip := '';
   Form.Caption := '1ClickMusic';
+
+  ChangeTrayIcon(Form.Icon);
 end;
 
 function TForm1.KOLForm1Message(var Msg: tagMSG;
@@ -384,7 +401,12 @@ begin
   chn := nil;
   DS := TDSoutput.Create(appwinHANDLE);
 
-  Tray.Icon := LoadIcon(HInstance, 'TRAY');
+  ITrayBlue := LoadIcon(HInstance, 'TRAYBLUE');
+  ITrayGreen := LoadIcon(HInstance, 'TRAYGREEN');
+  ITrayRed := LoadIcon(HInstance, 'TRAYRED');
+
+
+  Tray.Icon := Form1.form.Icon;
   Tray.Active := True;
 
   //# HOTKEYS
@@ -524,6 +546,7 @@ begin
         PopupMenu.ItemText[Item] := 'Ctrl+F' + IntToStr(Item + 1) + ' :' + #9 + channeltree.TVItemText[undermouse];
       end;
     end;
+  SaveConfig;
 end;
 
 procedure TForm1.channeltreeMouseUp(Sender: PControl;
@@ -546,6 +569,7 @@ begin
   Form2.Form.Free;
   Form2 := nil;
   Form.AlphaBlend := 255;
+  SaveConfig;
 end;
 
 function TForm1.LastFMThreadExecute(Sender: PThread): Integer;
@@ -584,5 +608,12 @@ begin
       StopChannel;
 end;
 
+procedure TForm1.ChangeTrayIcon(const NewIcon: HICON);
+begin
+  if (Tray.Icon <> NewIcon) and (trayiconcolor_enabled) then
+    Tray.Icon := NewIcon;
+end;
+
 end.
+
 

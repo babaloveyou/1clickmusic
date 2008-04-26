@@ -15,20 +15,21 @@ function OpenRadio(const url: string; var APlayer: TRadioPlayer; const ADevice: 
 
 implementation
 
-uses utils;
+uses utils, StrUtils;
 
 function OpenRadio(const url: string; var APlayer: TRadioPlayer; const ADevice: TDSoutput): Boolean;
 var
   playlist: TPlaylist;
-  RadioType: TRADIOTYPE;
   i: Integer;
 begin
   Result := False;
   playlist := TPlaylist.Create;
-  RadioType := playlist.openpls(url);
+  playlist.openpls(url);
   for i := 0 to playlist.urls.Count - 1 do
   begin
-    if RadioType = rtMMS then
+    if MultiPos(['.as', '.wma'], url)
+      or
+      (Pos('mms://', playlist.urls[i]) > 0) then
       APlayer := TMMS.Create(ADevice)
     else
       APlayer := TMP3.Create(ADevice);
@@ -44,4 +45,3 @@ end;
 
 end.
 
- 

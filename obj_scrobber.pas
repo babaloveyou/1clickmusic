@@ -76,8 +76,6 @@ begin
   if p > 0 then
     Delete(Title, p, Length(Title) - p);
   //
-  Title := StringReplace(Title, '&', '', [rfReplaceAll]); // avoid problems!
-  //
 end;
 
 function TScrobber.HandShake(const UserName, password: string): Boolean;
@@ -152,7 +150,7 @@ begin
   // the finalurl encoded to UTF-8
   urldata := AnsiToUtf8(Format(scroburlparam, [user, md5response, artist, track, '', 240, moment]));
   // submit the POST
-  if HttpPostText(scroburl, urldata, sl) then
+  if HttpPostText(scroburl, EncodeURL(urldata), sl) then
     if (sl[0] = 'OK') then
       Result := True
     else

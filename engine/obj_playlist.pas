@@ -9,13 +9,10 @@ uses
   KOL;
 
 type
-  TRadioType = (rtMP3, rtMMS);
-
-type
   TPlaylist = class
   public
     urls: TStringlist;
-    function openpls(const plsurl: string): TRadioType;
+    procedure openpls(const plsurl: string);
     constructor Create;
     destructor Destroy; override;
   end;
@@ -33,13 +30,11 @@ var
   i, a, b: Integer;
   Line: string;
 begin
-  // Delete first line, it is not usefull
-  Lines.Delete(0);
   i := 0;
   while i < Lines.Count do
   begin
     Line := Lines[i];
-    if (not MultiPos(['.htm', '.as', '.php'], Line))
+    if (not MultiPos(['.htm', '.as', '.php', '.cgi'], Line))
       and
       (Pos('<REF', UpperCase(Line)) > 0) then
     begin
@@ -88,32 +83,25 @@ begin
   inherited;
 end;
 
-function TPlaylist.openpls(const plsurl: string): TRadioType;
+procedure TPlaylist.openpls(const plsurl: string);
 begin
-  Result := rtMMS;
   if plsurl = '' then Exit;
   urls.Clear;
 
   if MultiPos(['.as', '.wma'], plsurl) then
   begin
-    if HttpGetText(plsurl, urls) then
-      ParseASX(urls);
-    Exit;
-  end;
-
-  //# php cuz of some dynamic generated playlists ex: triplag
-  if multipos(['.pls', '.m3u', '.php'], plsurl) then
-  begin
-    if HttpGetText(plsurl, urls) then
-      ParsePLS(urls);
+    HttpGetText(plsurl, urls);
+    ParseASX(urls);
   end
   else
-    urls.Add(plsurl);
-
-  if (Pos('mms://', urls.Text) > 0) then
-    Result := rtMMS
-  else
-    Result := rtMP3;
+  //# php cuz of some dynamic generated playlists ex: triplag
+    if multipos(['.pls', '.m3u', '.php'], plsurl) then
+    begin
+      HttpGetText(plsurl, urls);
+      ParsePLS(urls);
+    end
+    else
+      urls.Add(plsurl);
 end;
 
 end.

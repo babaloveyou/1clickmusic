@@ -1,5 +1,8 @@
 ICO ICON "res/icon.ico"
 TRAY ICON "res/tray.ico"
+TRAYBLUE ICON "res/trayblue.ico"
+TRAYGREEN ICON "res/traygreen.ico"
+TRAYRED ICON "res/trayred.ico"
 
 VER VERSIONINFO
 FILEVERSION 0,1,8,4

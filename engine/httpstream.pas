@@ -25,7 +25,7 @@ type
     MetaInterval, MetaBitrate: Cardinal;
     MetaTitle: string;
     BuffFilled: Cardinal;
-    inbuffer: array[0..BUFFCOUNT-1] of array[0..BUFFSIZE-1] of Byte;
+    inbuffer: array[0..BUFFCOUNT - 1] of array[0..BUFFSIZE - 1] of Byte;
     procedure UpdateBuffer;
     procedure ParseMetaData(meta: string);
     class function ParseMetaHeader(var meta: string; out MetaInterval, MetaBitrate: Cardinal): Integer;
@@ -40,7 +40,7 @@ type
     //# Get ShoutCast info
     procedure GetMetaInfo(out Atitle: string; out Aquality: Cardinal);
     //# Read the Buffer
-    function GetBuffer:Pointer;
+    function GetBuffer: Pointer;
     procedure NextBuffer;
     //# Prebuffer, Open stream
     procedure PreBuffer;
@@ -51,7 +51,7 @@ type
 
 implementation
 
-uses utils;
+uses utils, StrUtils;
 
 procedure SplitValue(const data: string; out field, value: string);
 const
@@ -166,7 +166,7 @@ const
   fieldlen = Length(field);
 begin
   if meta = '' then Exit;
-  Delete(meta, 1, fieldlen);
+  Delete(meta, Pos(field, meta), fieldlen);
   MetaTitle := Copy(meta, 1, Pos('''', meta) - 1);
 end;
 
@@ -193,7 +193,7 @@ begin
       if bytestoreceive > BytesUntilMeta then
         bytestoreceive := BytesUntilMeta;
 
-      FHTTP.RecvBufferEx(@inbuffer[Feed,bytesreceived], bytestoreceive, MaxInt);
+      FHTTP.RecvBufferEx(@inbuffer[Feed, bytesreceived], bytestoreceive, MaxInt);
 
       Dec(BytesUntilMeta, bytestoreceive);
       Inc(bytesreceived, bytestoreceive);
@@ -253,7 +253,7 @@ begin
   Feed := 0;
   BuffFilled := 0;
   BytesUntilMeta := MetaInterval;
-  
+
 end;
 
 procedure THTTPSTREAM.PreBuffer;
@@ -270,14 +270,14 @@ end;
 
 function THTTPSTREAM.GetBuffer: Pointer;
 begin
-  Result := @inbuffer[Cursor,0];
+  Result := @inbuffer[Cursor, 0];
 end;
 
 procedure THTTPSTREAM.NextBuffer;
 begin
   if Cursor = BUFFCOUNT - 1 then Cursor := 0 else Inc(Cursor);
   Dec(BuffFilled);
-end;  
+end;
 
 end.
 

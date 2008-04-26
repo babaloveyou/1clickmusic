@@ -1,4 +1,4 @@
-﻿import httplib, urllib , sys, threading
+import httplib, urllib , sys, threading
 
 level = 1;
 
@@ -17,15 +17,13 @@ class son(threading.Thread):
         threading.Thread.__init__(self)
     def run(self):
         try:
+            ok = False;
             target = urllib.urlopen(self.url)
-            text = target.read().lower()
-            if not("404" in text or "error" in text or "found" in text):
-                for line in target:
-                    if ("http://" in line) and not("#" in line):
-                        curson = son2(self.url.split(".")[1],line)
-                        sons.append(curson)
-                        curson.start()
-            else:
+            for line in target:
+                if ("://" in line):
+                    ok = True;
+                    break
+            if ok == False:
                 print "-------------------"
                 print self.name, "?", "!"
                 print self.url
@@ -39,41 +37,6 @@ class son(threading.Thread):
                 print self.name, "?", "!"
                 print self.url
                 print "-------------------"
-        finally:
-            sons.remove(self)
-
-
-class son2(threading.Thread):
-    def __init__(self,name,url):
-        self.fullurl = url
-        url = url.split("://",1)[1]
-
-        values = url.split("/",1)
-        if len(values) == 1: values = (values[0],"")
-
-        self.host , self.target = values
-        self.target = '/'+ self.target
-        self.url = url
-        self.name = name
-        threading.Thread.__init__(self)
-    def run(self):
-        try:
-            conn = httplib.HTTPConnection(self.host)
-            conn.request("GET", self.target,None,{"User-Agent": "1ClickMusic/1.7.1","Accept": "*/*"})
-            r1 = conn.getresponse()
-            if r1.status not in (200,302):
-                print "-------------------"
-                print self.name, r1.status, r1.reason
-                print self.url
-                print "-------------------"
-
-        except:
-            if level > 0:
-                print "-------------------"
-                print self.name, "?", sys.exc_info()[0]
-                print self.url
-                print "-------------------"
-
         finally:
             sons.remove(self)
 

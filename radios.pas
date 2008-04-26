@@ -2,7 +2,7 @@ unit radios;
 
 interface
 
-const
+const //# genre index
   ELETRONIC = 0;
   ROCKMETAL = 1;
   ECLETIC = 2;
@@ -25,7 +25,8 @@ const
     );
 
 const
-  chn_eletronic: array[0..71] of string = (
+  chn_eletronic: array[0..74] of string = (
+    'Minimal ( deepmix )',
     'Trance ( afterhours )',
     'Club ( blitz )',
     'Club ( playdio )',
@@ -87,6 +88,7 @@ const
     'Chillout ( bluefm )',
     'Dance ( 181.fm )',
     'Chillout ( 181.fm )',
+    'Eurodance ( 181.fm )',
     'Psytrance Mixes ( psychedelik )',
     'Psytrance ( psychedelik )',
     'Psyprog ( psychedelik )',
@@ -97,11 +99,13 @@ const
     'Dance ( frisky )',
     'Club ( RaveTrax )',
     'Dance ( FG Radio )',
-    'Dance ( ibizaglobal )'
+    'Dance ( ibizaglobal )',
+    'Dance ( fusion )'
     );
 
 const
-  pls_eletronic: array[0..71] of string = (
+  pls_eletronic: array[0..74] of string = (
+    'http://85.21.79.5:8040/listen.pls',
     'http://stats.ah.fm/dynamicplaylist.m3u?quality=96',
     'http://blitz-stream.de/stream/stream.m3u',
     'http://www.playdio.se/bredband.pls',
@@ -124,10 +128,10 @@ const
     'http://somafm.com/dronezone.pls',
     'http://somafm.com/beatblender.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=1712&file=filename.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=3644&file=filename.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=7263&file=filename.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=892&file=filename.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=5293&file=filename.pls',
+    'http://streamer.psyradio.org:8030/listen.pls',
+    'http://streamer.psyradio.org:8010/listen.pls',
+    'http://streamer.psyradio.org:8020/listen.pls',
+    'http://streamer.psyradio.org:8040/listen.pls',
     'http://www.neradio.se/listen.pls',
     'http://www.dnbradio.com/hi.pls',
     'http://www.bassdrive.com/v2/streams/BassDrive.pls',
@@ -163,6 +167,7 @@ const
     'http://bluefm.net/listen.pls',
     'http://www.181.fm/winamp.pls?station=181-energy98&bitrate=hi',
     'http://www.181.fm/winamp.pls?station=181-chilled&bitrate=hi',
+    'http://www.181.fm/winamp.pls?station=181-energy93&bitrate=hi',
     'http://88.191.15.43:8020/listen.pls',
     'http://88.191.38.140:8000/listen.pls',
     'http://88.191.38.140:8002/listen.pls',
@@ -173,7 +178,8 @@ const
     'http://www.friskyradio.com/frisky.m3u',
     'http://ravetrax.com/mp3_hi.pls',
     'http://fg.impek.tv/listen.pls',
-    'http://s6.viastreaming.net:7010/listen.pls'
+    'http://s6.viastreaming.net:7010/listen.pls',
+    'http://streams.fusionchicago.com/128.pls'
     );
 
 const
@@ -206,8 +212,8 @@ const
   pls_rockmetal: array[0..21] of string = (
     'http://somafm.com/indiepop.pls',
     'http://www.idobi.com/radio/iradio.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=8854&file=filename.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=4278&file=filename.pls',
+    'http://www.977music.com/tunein/web/classicrock.asx',
+    'http://www.977music.com/tunein/web/rock.asx',
     'http://edge-radio.net/edgeradio/edge.m3u',
     'http://64.62.252.134:6670/listen.pls',
     'http://www.chronixradio.com/chronixaggression/listen/listen.pls',
@@ -249,11 +255,11 @@ const
   pls_ecletic: array[0..12] of string = (
     'http://streams.fusionchicago.com/128.pls',
     'http://www.radioparadise.com/musiclinks/rp_128-1.m3u',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=9462&file=filename.pls',
+    'http://www.enjoystation.net/player/mp3.m3u',
     'http://www.sky.fm/mp3/tophits.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=6409&file=filename.pls',
+    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=6567&file=filename.pls',
     'http://www.977music.com/tunein/web/hitz.asx',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=9956&file=filename.pls',
+    'http://streams.frequence3.fr/mp3-192.m3u',
     'http://www.181.fm/winamp.pls?station=181-power&bitrate=hi',
     'http://www.181.fm/winamp.pls?station=181-themix&bitrate=hi',
     'http://www.181.fm/winamp.pls?station=181-thepoint&bitrate=hi',
@@ -263,7 +269,8 @@ const
     );
 
 const
-  chn_hiphop: array[0..7] of string = (
+  chn_hiphop: array[0..8] of string = (
+    'HipHop ( defjay )',
     'HipHop ( rautemusik )',
     'HipHop ( 1.fm )',
     'HipHop ( hot108 )',
@@ -275,7 +282,8 @@ const
     );
 
 const
-  pls_hiphop: array[0..7] of string = (
+  pls_hiphop: array[0..8] of string = (
+  'http://www.defjay.com/listen.pls',
     'http://jam-office.rautemusik.de/listen.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=5548&file=filename.pls',
     'http://www.hot108.com/hot108.pls',
@@ -287,17 +295,19 @@ const
     );
 
 const
-  chn_oldmusic: array[0..15] of string = (
+  chn_oldmusic: array[0..16] of string = (
+    // '60''s - 70''s ( beatlesradio )',
     '60''s ( sky )',
     '70''s ( sky )',
     '80''s ( sky )',
-    '60''s - 70''s ( 181.fm)',
+    '90''s ( star.181.fm )',
+    '60''s - 70''s ( oldies.181.fm )',
     '80''s ( awesome.181.fm )',
     '80''s ( lite.181.fm )',
     '90''s ( 181.fm )',
     '80''s ( 977music )',
     '90''s ( 977music )',
-    '50''s - 80''s ( RauteMusik )',
+    '50''s - 80''s ( rautemusik )',
     'Oldies ( sky )',
     'Baroque ( 1.fm )',
     'Opera ( 1.fm )',
@@ -307,16 +317,18 @@ const
     );
 
 const
-  pls_oldmusic: array[0..15] of string = (
+  pls_oldmusic: array[0..16] of string = (
+    // 'http://www.beatlesradio.com:8088/listen.pls',
     'http://www.sky.fm/mp3/oldies.pls',
     'http://www.sky.fm/mp3/hit70s.pls',
     'http://www.sky.fm/mp3/the80s.pls',
+    'http://www.181.fm/winamp.pls?station=181-star90s&bitrate=hi',
     'http://www.181.fm/winamp.pls?station=181-greatoldies&bitrate=hi',
     'http://www.181.fm/winamp.pls?station=181-awesome80s&bitrate=hi',
     'http://www.181.fm/winamp.pls?station=181-lite80s&bitrate=hi',
     'http://www.181.fm/winamp.pls?station=181-star90s&bitrate=hi',
     'http://www.977music.com/tunein/web/80s.asx',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=3306&file=filename.pls',
+    'http://www.977music.com/tunein/web/90s.asx',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=6422&file=filename.pls',
     'http://www.sky.fm/mp3/classical.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=4899&file=filename.pls',
@@ -361,12 +373,11 @@ const
     );
 
 const
-  chn_misc: array[0..36] of string = (
+  chn_misc: array[0..35] of string = (
     'Folk ( liveireland )',
     'Experimental Jazz ( sonic.soma )',
     'Country ( boot.soma )',
     'Country ( 977music )',
-    'Comedy ( 977music )',
     'Smoothjazz ( swissgroove )',
     'Smoothjazz ( 1.fm )',
     'Smoothjazz ( smoothjazz )',
@@ -402,12 +413,11 @@ const
     );
 
 const
-  pls_misc: array[0..36] of string = (
+  pls_misc: array[0..35] of string = (
     'http://www.liveireland.com/live.pls',
     'http://somafm.com/sonicuniverse.pls',
     'http://somafm.com/bootliquor.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=2338&file=filename.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=2135&file=filename.pls',
+    'http://www.977music.com/tunein/web/country.asx',
     'http://www.swissgroove.ch/listen.m3u',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=3654&file=filename.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=1042&file=filename.pls',
@@ -434,7 +444,7 @@ const
     'http://www.sky.fm/mp3/salsa.pls',
     'http://www.sky.fm/mp3/jazz.pls',
     'http://kawaii-radio.net/listen.m3u',
-    'http://216.32.85.51:8000/listen.pls',
+    'http://209.250.239.98:8676/listen.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=7504&file=filename.pls',
     'http://www.animenfo.com/radio/listen.m3u',
     'http://www.vgamp.com/listen128.pls',

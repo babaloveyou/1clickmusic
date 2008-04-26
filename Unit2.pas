@@ -45,6 +45,7 @@ type
     btupdate: TKOLButton;
     ckbxballons: TKOLCheckBox;
     lblversion: TKOLLabel;
+    ckbxtraycolors: TKOLCheckBox;
     procedure ckbxlistenabledClick(Sender: PObj);
     procedure ckbxmsnenabledClick(Sender: PObj);
     procedure ckbxlastfmClick(Sender: PObj);
@@ -96,6 +97,7 @@ begin
   #13#10 + 'by arthurprs, arthurprs@gmail.com';
   //
   ckbxballons.Checked := traypopups_enabled;
+  ckbxtraycolors.Checked := trayiconcolor_enabled;
   //
   ckbxmsnenabled.Checked := msn_enabled;
   cmbxmsnicon.CurIndex := msn_iconi;
@@ -121,6 +123,10 @@ procedure TForm2.btapplyClick(Sender: PObj);
 begin
   // submit changes
   traypopups_enabled := ckbxballons.Checked;
+  if not ckbxtraycolors.Checked then
+    Form1.ChangeTrayIcon(Form1.Form.Icon);
+  trayiconcolor_enabled := ckbxtraycolors.Checked;
+
   msn_enabled := ckbxmsnenabled.Checked;
   updateMSN(msn_enabled);
   msn_iconi := cmbxmsnicon.CurIndex;

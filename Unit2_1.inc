@@ -17,7 +17,7 @@ begin
     Result.Form.SetName( Applet, 'Form2' );
    {$ENDIF}
     Result.Form.Style := Result.Form.Style and not WS_MAXIMIZEBOX;
-    Result.Form.SetClientSize( 285, 335 );
+    Result.Form.SetClientSize( 293, 344 );
     // Result.lblpass.TabOrder = -1
     Result.lblpass := NewLabel( Result.Form, 'Pass :' ).SetPosition( 16, 244 ).SetSize( 41, 0 );
    {$IFDEF USE_NAMES}
@@ -49,7 +49,7 @@ begin
     Result.lblversion.Font.FontPitch := fpFixed;
     Result.lblversion.TextAlign := KOL.taRight;
     // Result.ckbxballons.TabOrder = 0
-    Result.ckbxballons := NewCheckBox( Result.Form, 'Tray popups' ).SetPosition( 8, 8 ).SetSize( 273, 0 );
+    Result.ckbxballons := NewCheckBox( Result.Form, 'Tray popups' ).SetPosition( 8, 8 ).SetSize( 113, 0 );
    {$IFDEF USE_NAMES}
     Result.ckbxballons.SetName( Result.Form, 'ckbxballons' ); 
    {$ENDIF}
@@ -58,6 +58,16 @@ begin
    {$ENDIF UNICODE_CTRLS}
     Result.ckbxballons.Font.FontName := 'Arial';
     Result.ckbxballons.Font.FontPitch := fpFixed;
+    // Result.ckbxtraycolors.TabOrder = 0
+    Result.ckbxtraycolors := NewCheckBox( Result.Form, 'Trayicon colors' ).SetPosition( 152, 8 ).SetSize( 129, 0 );
+   {$IFDEF USE_NAMES}
+    Result.ckbxtraycolors.SetName( Result.Form, 'ckbxtraycolors' ); 
+   {$ENDIF}
+   {$IFDEF UNICODE_CTRLS}
+   Result.ckbxtraycolors.SetUnicode(TRUE);
+   {$ENDIF UNICODE_CTRLS}
+    Result.ckbxtraycolors.Font.FontName := 'Arial';
+    Result.ckbxtraycolors.Font.FontPitch := fpFixed;
     // Result.ckbxmsnenabled.TabOrder = 1
     Result.ckbxmsnenabled := NewCheckBox( Result.Form, 'Messenger Now playing' ).SetPosition( 8, 40 ).SetSize( 273, 0 );
    {$IFDEF USE_NAMES}
@@ -155,11 +165,11 @@ begin
     Result.edtlistname.Color := TColor(clWindow);
       Result.ckbxlastfm.OnClick := Result.ckbxlastfmClick;
     Result.edtuser.Color := TColor(clWindow);
+    Result.edtpass.Color := TColor(clWindow);
       Result.ckbxmsnenabled.OnClick := Result.ckbxmsnenabledClick;
       Result.btapply.OnClick := Result.btapplyClick;
     Result.btapply.DefaultBtn := TRUE;
       Result.btupdate.OnClick := Result.btupdateClick;
-    Result.edtpass.Color := TColor(clWindow);
     Result.Form.CenterOnParent.CanResize := False;
     Result.Form.Perform( WM_INITMENU, 0, 0 );
     Result.KOLForm1FormCreate( Result );
