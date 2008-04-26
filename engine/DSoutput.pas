@@ -53,7 +53,7 @@ type
     property DS: TDSoutput read FDevice write FDevice;
     procedure GetPlayInfo(out Atitle: string; out Aquality, ABuffPercentage: Cardinal); virtual; abstract;
     function open(const url: string): Boolean; virtual; abstract;
-    procedure Play; virtual; abstract;
+    procedure StartPlay; virtual; abstract;
     constructor Create(ADevice: TDSoutput);
     destructor Destroy; override;
   end;
@@ -277,6 +277,7 @@ end;
 
 procedure TRadioPlayer.Execute;
 begin
+  StartPlay;
   repeat
     UpdateBuffer();
     Sleep(25);

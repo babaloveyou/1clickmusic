@@ -42,8 +42,7 @@ type
     //# Read the Buffer
     function GetBuffer: Pointer;
     procedure NextBuffer;
-    //# Prebuffer, Open stream
-    procedure PreBuffer;
+    //# Open stream
     function Open(const url: string): Boolean;
     constructor Create;
     destructor Destroy; override;
@@ -254,12 +253,6 @@ begin
   BuffFilled := 0;
   BytesUntilMeta := MetaInterval;
 
-end;
-
-procedure THTTPSTREAM.PreBuffer;
-begin
-  while BuffFilled < BUFFPRE do
-    UpdateBuffer;
 end;
 
 procedure THTTPSTREAM.GetMetaInfo(out Atitle: string; out Aquality: Cardinal);

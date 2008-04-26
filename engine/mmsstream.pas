@@ -17,7 +17,7 @@ type
   public
     procedure GetPlayInfo(out Atitle: string; out Aquality, ABuffPercentage: Cardinal); override;
     function open(const url: string): Boolean; override;
-    procedure Play; override;
+    procedure StartPlay; override;
     destructor Destroy; override;
   end;
 
@@ -47,11 +47,16 @@ begin
   Fbuffersize := DS.InitializeBuffer(Frate, Fchannels);
 end;
 
-procedure TMMS.Play;
+procedure TMMS.StartPlay;
 begin
+  // WAIT TO PREBUFFER!
+  while Fhandle.BlockList.Count < 5 do
+  begin
+    Sleep(10);
+    if Terminated then Exit;
+  end;  
   initbuffer();
 
-  Status := rsPrebuffering;
   Flastsection := MaxInt;
   updatebuffer();
 
@@ -83,7 +88,7 @@ begin
   while (TotalDecoded < Size) do
   begin
     lwma_async_reader_get_data(Fhandle, tmpbuffer, tmpbuffersize);
-    CopyMemory(bufferPos, tmpbuffer, tmpbuffersize);
+    Move(tmpbuffer^,bufferPos^,tmpbuffersize);
     Inc(bufferPos, tmpbuffersize);
     Inc(TotalDecoded, tmpbuffersize);
     tmpbuffersize := Size - TotalDecoded;
@@ -100,6 +105,7 @@ begin
   if not Result then Exit;
   Fchannels := Fhandle.channels;
   Frate := Fhandle.SampleRate;
+  Status := rsPrebuffering;
 end;
 
 procedure TMMS.GetPlayInfo(out Atitle: string; out Aquality, ABuffPercentage: Cardinal);

@@ -141,6 +141,8 @@ begin
   lastfm_enabled := ckbxlastfm.Checked;
   lastfm_user := edtuser.Text;
   lastfm_pass := edtpass.Text;
+
+  Form1.SaveConfig;
 end;
 
 procedure TForm2.btupdateClick(Sender: PObj);

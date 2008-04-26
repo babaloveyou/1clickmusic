@@ -29,11 +29,11 @@ Dialogs;
 type
 {$IF Defined(KOL_MCK)}
 {$I MCKfakeClasses.inc}
-  {$IFDEF KOLCLASSES} {$I TForm1class.inc} {$ELSE OBJECTS} PForm1 = ^TForm1; {$ENDIF CLASSES/OBJECTS}
-  {$IFDEF KOLCLASSES}{$I TForm1.inc}{$ELSE} TForm1 = object(TObj) {$ENDIF}
+{$IFDEF KOLCLASSES}{$I TForm1class.inc}{$ELSE OBJECTS}PForm1 = ^TForm1; {$ENDIF CLASSES/OBJECTS}
+{$IFDEF KOLCLASSES}{$I TForm1.inc}{$ELSE}TForm1 = object(TObj){$ENDIF}
     Form: PControl;
 {$ELSE not_KOL_MCK}
-  TForm1 = class(TForm)
+    TForm1 = class(TForm)
 {$IFEND KOL_MCK}
       KOLProject1: TKOLProject;
       lbltrack: TKOLLabel;
@@ -275,11 +275,11 @@ begin
 
     //# Lets Try to play
     if OpenRadio(radiolist.getpls(channeltree.TVItemText[channeltree.TVSelected]), chn, DS) then
-    begin //# Radio Opened
-      TimerExecute(); //# Refresh GUI INFO
-      chn.Play();
+    begin
+      TimerExecute;
+      chn.Resume
     end
-    else //# Radio not Opened
+    else
     begin
       if traypopups_enabled then
       begin
@@ -411,13 +411,9 @@ begin
 
   //# HOTKEYS
   RegisterHotKey(appwinHANDLE, 1001, MOD_CONTROL, VK_UP);
-  //RegisterHotKey(appwinHANDLE, 3001, 0, $AF);
   RegisterHotKey(appwinHANDLE, 1002, MOD_CONTROL, VK_DOWN);
-  //RegisterHotKey(appwinHANDLE, 3002, 0, $AE);
   RegisterHotKey(appwinHANDLE, 1003, MOD_CONTROL, VK_END);
-  //RegisterHotKey(appwinHANDLE, 3003, 0, $B2);
   RegisterHotKey(appwinHANDLE, 1004, MOD_CONTROL, VK_HOME);
-  //RegisterHotKey(appwinHANDLE, 3004, 0, $B3);
   RegisterHotKey(appwinHANDLE, 2001, MOD_CONTROL, VK_F1);
   RegisterHotKey(appwinHANDLE, 2002, MOD_CONTROL, VK_F2);
   RegisterHotKey(appwinHANDLE, 2003, MOD_CONTROL, VK_F3);
@@ -569,7 +565,6 @@ begin
   Form2.Form.Free;
   Form2 := nil;
   Form.AlphaBlend := 255;
-  SaveConfig;
 end;
 
 function TForm1.LastFMThreadExecute(Sender: PThread): Integer;
@@ -615,5 +610,4 @@ begin
 end;
 
 end.
-
 

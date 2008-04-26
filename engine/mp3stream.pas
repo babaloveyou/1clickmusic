@@ -23,7 +23,7 @@ type
   public
     procedure GetPlayInfo(out Atitle: string; out Aquality, ABuffPercentage: Cardinal); override;
     function Open(const url: string): Boolean; override;
-    procedure Play; override;
+    procedure StartPlay; override;
     destructor Destroy; override;
   end;
 
@@ -49,17 +49,21 @@ begin
 end;
 
 procedure TMP3.initbuffer;
+var
+  r : Integer;
 begin
-  while (Fchannels = 0) and (FStream.GetBuffPercentage > 50) do
-  begin
-    mpg123_decode(Fhandle, FStream.GetBuffer ,BUFFSIZE, nil, 0, nil);
+  repeat
+    r := mpg123_decode(Fhandle, FStream.GetBuffer ,BUFFSIZE, nil, 0, nil);
     FStream.NextBuffer;
     mpg123_getformat(Fhandle, @Frate, @Fchannels, @Fencoding);
-  end;
+  until (r <> MPG123_NEED_MORE) or (Fchannels > 0) or (FStream.GetBuffPercentage < 50);
+  
   if Fchannels = 0 then
     RaiseError('ERRO, tentando descobrir o formato do audio');
+
   mpg123_format_none(Fhandle);
-  mpg123_format(Fhandle, Frate, Fchannels, Fencoding);
+  if mpg123_format(Fhandle, Frate, Fchannels, MPG123_ENC_SIGNED_16) <> MPG123_OK then
+    RaiseError('ERRO, definindo o formato de audio');  
   Fbuffersize := DS.InitializeBuffer(Frate, Fchannels);
 end;
 
@@ -81,20 +85,25 @@ begin
   if Result then
   begin
     Status := rsPrebuffering;
-    FStream.PreBuffer();
+    FStream.Resume;
     FStream.Cursor := 0;
   end;
 end;
 
-procedure TMP3.Play;
+procedure TMP3.StartPlay;
 begin
+  // WAIT TO PREBUFFER!
+  while FStream.GetBuffPercentage < BUFFPRE do
+  begin
+    Sleep(10);
+    if Terminated then Exit;
+  end;
   initbuffer();
 
   Flastsection := MaxInt;
   updatebuffer();
 
   Resume;
-  FStream.Resume;
   DS.Play;
   Status := rsPlaying;
 end;

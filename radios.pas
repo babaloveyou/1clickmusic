@@ -505,7 +505,7 @@ const
     'http://www.crossdigital.com.br/servidor1/8080/listen.pls',
     'mms://tupirio.interrogacaodigital.net/tupirio',
     'http://www.crosshost.com.br/cbs/tupifm/listen.pls',
-    'http://www.piatafm.com.br/radio.mp3.m3u',
+    'http://198.106.109.53/radio.mp3.m3u',
     'http://www.crosshost.com.br/cbs/kiss/listen.pls',
     'http://www.redeblitz.com.br/redeblitz.m3u',
     'mms://server09.virgula.com.br/jovempanfm/',
