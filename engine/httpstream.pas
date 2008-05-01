@@ -9,7 +9,7 @@ uses
   _DirectSound;
 
 const // CONFIGURATION
-  BUFFSIZE = 1024;
+  BUFFSIZE = 800;
   BUFFCOUNT = 100;
   BUFFTOTALSIZE = BUFFSIZE * BUFFCOUNT;
 
@@ -20,8 +20,7 @@ const // CONFIGURATION
 type
   THTTPSTREAM = class(TThread)
   private
-    BytesRead : Cardinal;
-    //BytesUntilMeta: Cardinal; // used to manage icy data
+    BytesUntilMeta: Cardinal; // used to manage icy data
     FHTTP: TTCPBlockSocket;
     MetaInterval, MetaBitrate: Cardinal;
     MetaTitle: string;
@@ -177,11 +176,9 @@ begin
   bytesreceived := 0;
   while bytesreceived < BUFFSIZE do
   begin
-    //if (BytesUntilMeta = 0) then
-    if BytesRead = MetaInterval then
+    if (BytesUntilMeta = 0) then
     begin
-      //BytesUntilMeta := MetaInterval;
-      BytesRead := 0;
+      BytesUntilMeta := MetaInterval;
       metalength := FHTTP.RecvByte(MaxInt);
       if metalength = 0 then Continue;
       ParseMetaData(FHTTP.RecvBufferStr(metalength*16, MaxInt),MetaTitle);
@@ -189,15 +186,12 @@ begin
     else
     begin
       bytestoreceive := BUFFSIZE - bytesreceived;
-      //if bytestoreceive > BytesUntilMeta then
-      //  bytestoreceive := BytesUntilMeta;
-      if bytestoreceive > MetaInterval - BytesRead then
-        bytestoreceive := MetaInterval - BytesRead;
+      if bytestoreceive > BytesUntilMeta then
+        bytestoreceive := BytesUntilMeta;
 
       FHTTP.RecvBufferEx(@inbuffer[Feed, bytesreceived], bytestoreceive, MaxInt);
 
-      //Dec(BytesUntilMeta, bytestoreceive);
-      Inc(BytesRead,bytestoreceive);
+      Dec(BytesUntilMeta, bytestoreceive);
       Inc(bytesreceived, bytestoreceive);
     end;
   end;
@@ -257,12 +251,7 @@ begin
       Result := Open(response);
   end;
 
-  if Result then
-  begin
-    //BytesUntilMeta := MetaInterval;
-    BytesRead := 0;
-    Resume;
-  end;
+  BytesUntilMeta := MetaInterval;
 end;
 
 procedure THTTPSTREAM.GetMetaInfo(out Atitle: string; out Aquality: Cardinal);

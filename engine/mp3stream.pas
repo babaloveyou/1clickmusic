@@ -8,8 +8,7 @@ uses
   Classes,
   DSoutput,
   mpg123,
-  httpstream,
-  _DirectSound;
+  httpstream;
 
 type
   TMP3 = class(TRadioPlayer)
@@ -84,7 +83,7 @@ begin
   if Result then
   begin
     Status := rsPrebuffering;
-    Resume;
+    FStream.Resume;
   end;
 end;
 

@@ -277,8 +277,7 @@ begin
     //# Lets Try to play
     if OpenRadio(radiolist.getpls(channeltree.TVItemText[channeltree.TVSelected]), chn, DS) then
     begin
-      //# apply the current vol
-      DS.Volume(curVolume);
+      chn.Resume;
       //# update window info
       TimerExecute;
     end
