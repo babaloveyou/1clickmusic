@@ -14,17 +14,17 @@ type
     procedure updatebuffer; override;
     procedure initdecoder; override;
     procedure initbuffer; override;
+    procedure StartPlay; override;
   public
     procedure GetPlayInfo(out Atitle: string; out Aquality, ABuffPercentage: Cardinal); override;
-    function open(const url: string): Boolean; override;
-    procedure StartPlay; override;
+    function Open(const url: string): Boolean; override;
     destructor Destroy; override;
   end;
 
 implementation
 
 uses
-  main;
+  main, utils;
 
 { TMP3 }
 
@@ -39,7 +39,7 @@ procedure TMMS.initdecoder;
 begin
   lwma_async_reader_init(Fhandle);
   if not Assigned(Fhandle.reader) then
-    raise Exception.Create('ERRO, inicializando o decodificador wma (mms)');
+    RaiseError('ERRO, inicializando o decodificador wma (mms)');
 end;
 
 procedure TMMS.initbuffer;
@@ -50,14 +50,12 @@ end;
 procedure TMMS.StartPlay;
 begin
   // WAIT TO PREBUFFER!
-  while Fhandle.BlockList.Count < 5 do
-  begin
-    Sleep(10);
+  repeat
+    Sleep(50);
     if Terminated then Exit;
-  end;  
+  until Fhandle.BlockList.Count > 5;
   initbuffer();
 
-  Flastsection := MaxInt;
   updatebuffer();
 
   Resume;
@@ -84,28 +82,30 @@ begin
   tmpbuffersize := Size;
   bufferPos := buffer;
   TotalDecoded := 0;
-
-  while (TotalDecoded < Size) do
-  begin
+  
+  repeat
     lwma_async_reader_get_data(Fhandle, tmpbuffer, tmpbuffersize);
     Move(tmpbuffer^,bufferPos^,tmpbuffersize);
     Inc(bufferPos, tmpbuffersize);
     Inc(TotalDecoded, tmpbuffersize);
     tmpbuffersize := Size - TotalDecoded;
-  end;
+  until TotalDecoded >= Size;
 
   DS.SoundBuffer.Unlock(buffer, Size, nil, 0);
   Flastsection := section;
 end;
 
-function TMMS.open(const url: string): Boolean;
+function TMMS.Open(const url: string): Boolean;
 begin
   lwma_async_reader_open(Fhandle, url);
   Result := Fhandle.has_audio;
-  if not Result then Exit;
-  Fchannels := Fhandle.channels;
-  Frate := Fhandle.SampleRate;
-  Status := rsPrebuffering;
+  if Result then
+  begin
+    Fchannels := Fhandle.channels;
+    Frate := Fhandle.SampleRate;
+    Status := rsPrebuffering;
+    Resume;
+  end;
 end;
 
 procedure TMMS.GetPlayInfo(out Atitle: string; out Aquality, ABuffPercentage: Cardinal);

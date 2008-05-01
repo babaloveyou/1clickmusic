@@ -9,34 +9,34 @@ uses
   _DirectSound;
 
 const // CONFIGURATION
-  BUFFSIZE = 768;
+  BUFFSIZE = 1024;
   BUFFCOUNT = 100;
   BUFFTOTALSIZE = BUFFSIZE * BUFFCOUNT;
 
   BUFFMIN = 8; // PERCENT TO TRIGER BUFF RECOVER?
   BUFFRESTORE = 50; // PERCENT TO RECOVER
-  BUFFPRE = 80; // 80% PREBUFFER
+  BUFFPRE = 85; // 85% PREBUFFER
 
 type
   THTTPSTREAM = class(TThread)
   private
-    BytesUntilMeta: Cardinal; // used to manage icy data
+    BytesRead : Cardinal;
+    //BytesUntilMeta: Cardinal; // used to manage icy data
     FHTTP: TTCPBlockSocket;
     MetaInterval, MetaBitrate: Cardinal;
     MetaTitle: string;
-    BuffFilled: Cardinal;
+
     inbuffer: array[0..BUFFCOUNT - 1] of array[0..BUFFSIZE - 1] of Byte;
     procedure UpdateBuffer;
-    procedure ParseMetaData(meta: string);
+    class procedure ParseMetaData(meta: string; out MetaTitle : string);
     class function ParseMetaHeader(var meta: string; out MetaInterval, MetaBitrate: Cardinal): Integer;
     class procedure ParseURL(url: string; out host, port, icyheader: string);
   protected
     procedure Execute; override;
   public
     Cursor, Feed: Cardinal;
-    //# Return % of buffer that is filled
-    property GetBuffPercentage: Cardinal read BuffFilled;
-    //function GetBuffPercentage: Cardinal;
+    //# % of buffer that is filled
+    BuffFilled: Cardinal;
     //# Get ShoutCast info
     procedure GetMetaInfo(out Atitle: string; out Aquality: Cardinal);
     //# Read the Buffer
@@ -50,15 +50,13 @@ type
 
 implementation
 
-uses utils, StrUtils;
+uses utils;
 
 procedure SplitValue(const data: string; out field, value: string);
-const
-  delimiter = ':';
 var
   p: Integer;
 begin
-  p := Pos(delimiter, data);
+  p := Pos(':', data);
   if p > 0 then
   begin
     field := Copy(data, 1, p - 1);
@@ -72,8 +70,8 @@ const
     'GET %s HTTP/1.0' + #13#10 +
     'Host: %s' + #13#10 +
     'Accept: */*' + #13#10 +
-    'User-Agent: 1ClickMusic/1.7.1' + #13#10 +
     'Icy-MetaData: 1' + #13#10 +
+    'User-Agent: 1ClickMusic' + #13#10 +
     #13#10;
 var
   i: Integer;
@@ -136,21 +134,21 @@ begin
       else if field = 'icy-br' then MetaBitrate := StrToInt(value)
         //else if field='icy-description' then StreamInfo.Desc:=Value
         //else if field='icy-genre' then StreamInfo.Genre:=Value
-        //else if field = 'icy-name' then StreamInfo.Name := value
+        //else if field= 'icy-name' then StreamInfo.Name := value
         //else if field='icy-pub' then StreamInfo.Pub:=Value
         //else if field='icy-url' then StreamInfo.URL:=Value
         ;
     end;
-    if (MetaInterval = 0) and (MetaBitrate = 0) then
+    if (MetaInterval = 0) or (MetaBitrate = 0) then
       Result := 0;
   end
   else
     if MultiPos(['302', '303', '301'], MetaData[0]) then
     begin
-      Result := -1;
       for i := 1 to MetaData.Count - 1 do
         if Pos('Location:', MetaData[i]) > 0 then
         begin
+          Result := -1;
           Meta := Trim(Copy(MetaData[i], Length('Location:') + 1, Length(MetaData[i])));
           break;
         end;
@@ -159,13 +157,13 @@ begin
   MetaData.Free;
 end;
 
-procedure THTTPSTREAM.ParseMetaData(meta: string);
+class procedure THTTPSTREAM.ParseMetaData(meta: string; out MetaTitle : string);
 const
   field = 'StreamTitle=''';
   fieldlen = Length(field);
 begin
   if meta = '' then Exit;
-  Delete(meta, Pos(field, meta), fieldlen);
+  Delete(meta, 1, fieldlen);
   MetaTitle := Copy(meta, 1, Pos('''', meta) - 1);
 end;
 
@@ -179,22 +177,27 @@ begin
   bytesreceived := 0;
   while bytesreceived < BUFFSIZE do
   begin
-    if (BytesUntilMeta = 0) then
-    begin // METADATA IS HERE =D
-      BytesUntilMeta := MetaInterval;
-      metalength := FHTTP.RecvByte(MaxInt) * 16;
+    //if (BytesUntilMeta = 0) then
+    if BytesRead = MetaInterval then
+    begin
+      //BytesUntilMeta := MetaInterval;
+      BytesRead := 0;
+      metalength := FHTTP.RecvByte(MaxInt);
       if metalength = 0 then Continue;
-      ParseMetaData(FHTTP.RecvBufferStr(metalength, MaxInt));
+      ParseMetaData(FHTTP.RecvBufferStr(metalength*16, MaxInt),MetaTitle);
     end
     else
     begin
       bytestoreceive := BUFFSIZE - bytesreceived;
-      if bytestoreceive > BytesUntilMeta then
-        bytestoreceive := BytesUntilMeta;
+      //if bytestoreceive > BytesUntilMeta then
+      //  bytestoreceive := BytesUntilMeta;
+      if bytestoreceive > MetaInterval - BytesRead then
+        bytestoreceive := MetaInterval - BytesRead;
 
       FHTTP.RecvBufferEx(@inbuffer[Feed, bytesreceived], bytestoreceive, MaxInt);
 
-      Dec(BytesUntilMeta, bytestoreceive);
+      //Dec(BytesUntilMeta, bytestoreceive);
+      Inc(BytesRead,bytestoreceive);
       Inc(bytesreceived, bytestoreceive);
     end;
   end;
@@ -207,6 +210,12 @@ begin
   inherited Create(True);
   FHTTP := TTCPBlockSocket.Create;
   Priority := tpTimeCritical;
+
+  Cursor := MaxInt; // para evitar que bloqueie
+  Feed := 0;
+  BuffFilled := 0;
+  MetaInterval := 0;
+  MetaBitrate := 0;
 end;
 
 destructor THTTPSTREAM.Destroy;
@@ -222,14 +231,14 @@ begin
   repeat
     if Cursor <> Feed then
       UpdateBuffer();
-    Sleep(5);
+    Sleep(10);
   until Terminated;
 end;
 
 function THTTPSTREAM.Open(const url: string): Boolean;
 var
   host, port, icyheader: string;
-  icy: string;
+  response: string;
 begin
   Result := False;
   ParseURL(url, host, port, icyheader);
@@ -237,22 +246,23 @@ begin
   FHTTP.Connect(host, port);
   FHTTP.SendString(icyheader);
 
-  icy := FHTTP.RecvTerminated(1000, #13#10#13#10);
+  response := FHTTP.RecvTerminated(1000, #13#10#13#10);
 
-  case ParseMetaHeader(icy, MetaInterval, MetaBitrate) of
+  case ParseMetaHeader(response, MetaInterval, MetaBitrate) of
     1:
       Result := True;
     0:
       Exit;
     -1:
-      Result := open(icy);
+      Result := Open(response);
   end;
 
-  Cursor := MaxInt; // para evitar que bloqueie
-  Feed := 0;
-  BuffFilled := 0;
-  BytesUntilMeta := MetaInterval;
-
+  if Result then
+  begin
+    //BytesUntilMeta := MetaInterval;
+    BytesRead := 0;
+    Resume;
+  end;
 end;
 
 procedure THTTPSTREAM.GetMetaInfo(out Atitle: string; out Aquality: Cardinal);
@@ -263,7 +273,7 @@ end;
 
 function THTTPSTREAM.GetBuffer: Pointer;
 begin
-  Result := @inbuffer[Cursor, 0];
+  Result := @inbuffer[Cursor];
 end;
 
 procedure THTTPSTREAM.NextBuffer;

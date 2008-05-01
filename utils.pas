@@ -6,8 +6,11 @@ uses
   sysutils,
   Windows;
 
-  function Crypt(const str : string):string;
+{$IFDEF LOG}
+procedure Log(const Text: string);
+{$ENDIF}
 
+function Crypt(const str: string): string;
 procedure writeFile(const FileName, Text: string);
 function MultiPos(const SubStr: array of string; const str: string): Boolean;
 procedure RaiseError(const Error: string; const Fatal: Boolean = True);
@@ -16,16 +19,16 @@ implementation
 const
   KEYCODE = 704; //# encoding password
 
-function Crypt(const str : string):string;
+function Crypt(const str: string): string;
 var
-  i : Integer;
-  key : Byte;
+  i: Integer;
+  key: Byte;
 begin
-  SetLength(Result,Length(str));
+  SetLength(Result, Length(str));
   key := Length(str) mod 10;
   for i := 1 to Length(str) do
   begin
-    Result[i] := Char(( ord(str[i]) xor ( KEYCODE * i * key ) ) mod 256);
+    Result[i] := Char((ord(str[i]) xor ((KEYCODE * i) + key)) mod 256);
   end;
 end;
 
@@ -34,7 +37,7 @@ var
   myfile: TextFile;
   timeprefix: string;
 begin
-  {$I-}
+{$I-}
   AssignFile(myfile, FileName);
   if FileExists(FileName) then
     Append(myfile)
@@ -43,7 +46,7 @@ begin
   DateTimeToString(timeprefix, '[dd/mm/yy hh:nn:ss] ', Now);
   Writeln(myfile, timeprefix, Text);
   CloseFile(myfile);
-  {$I+}
+{$I+}
 end;
 
 function MultiPos(const SubStr: array of string; const str: string): Boolean;
@@ -63,6 +66,40 @@ begin
   writeFile('ERROR.txt', Error);
   if Fatal then Halt;
 end;
+
+{$IFDEF LOG}
+{$I-}
+var
+  LogFile: TextFile;
+
+procedure Log(const Text: string);
+var
+  timeprefix: string;
+begin
+  DateTimeToString(timeprefix, '[dd/mm/yy hh:nn:ss] ', Now);
+  Writeln(LogFile, timeprefix, Text);
+  Flush(LogFile);
+end;
+
+initialization
+  begin
+    DeleteFile('log.txt');
+    AssignFile(LogFile, 'log.txt');
+    if FileExists('log.txt') then
+      Append(LogFile)
+    else
+      Rewrite(LogFile);
+    Log('*************************');
+  end;
+
+
+finalization
+  CloseFile(logfile);
+  
+{$I+}
+{$ENDIF}
+
+
 
 end.
 

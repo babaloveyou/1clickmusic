@@ -4,7 +4,7 @@ def encode(srcstr,match):
     key = len(match) % 10
     for i in xrange(len(match)):
         if match[i] != "'":
-            result += "#"+ str( ( ord(match[i]) ^ ( pas * (i+1) * key ) ) % 256)
+            result += "#"+ str( ( ord(match[i]) ^ ( (pas * (i+1)) + key ) ) % 256)
 
     if "'," in srcstr:
         result += ","

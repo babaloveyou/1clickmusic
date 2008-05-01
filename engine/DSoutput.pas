@@ -20,7 +20,7 @@ type
     function GetPlayCursorPos: Cardinal;
   public
     property PlayCursorPos: Cardinal read GetPlayCursorPos;
-    property SoundBuffer: IDirectSoundBuffer read FSecondary;
+    property SoundBuffer: IDirectSoundBuffer read FSecondary write FSecondary;
     function Volume(const value: Integer): Cardinal;
     procedure Play;
     procedure Stop;
@@ -47,13 +47,13 @@ type
     procedure updatebuffer; virtual; abstract;
     procedure initbuffer; virtual; abstract;
     procedure initdecoder; virtual; abstract;
+    procedure StartPlay; virtual; abstract;
     procedure Execute; override;
   public
     Status: TRadioStatus;
     property DS: TDSoutput read FDevice write FDevice;
     procedure GetPlayInfo(out Atitle: string; out Aquality, ABuffPercentage: Cardinal); virtual; abstract;
-    function open(const url: string): Boolean; virtual; abstract;
-    procedure StartPlay; virtual; abstract;
+    function Open(const url: string): Boolean; virtual; abstract;
     constructor Create(ADevice: TDSoutput);
     destructor Destroy; override;
   end;
@@ -195,13 +195,9 @@ function TDSoutput.InitializeBuffer(const Arate, Achannels: Cardinal): Cardinal;
 var
   Fswfm: TWAVEFORMATEX;
   Fsdesc: TDSBUFFERDESC;
-  lastvolume: Integer;
   Buffer: PByte;
   Size: Cardinal;
 begin
-  lastvolume := 0;
-  if Assigned(FSecondary) then
-    FSecondary.GetVolume(lastvolume);
   FSecondary := nil;
 
   FillChar(Fswfm, SizeOf(TWAVEFORMATEX), 0);
@@ -213,16 +209,15 @@ begin
     nSamplesPerSec := Arate;
     nBlockAlign := Achannels * 2;
     nAvgBytesPerSec := Arate * nBlockAlign;
-    cbSize := 0;
+    //cbSize := 0;
   end;
-
 
   // set up the buffer
   FillChar(Fsdesc, SizeOf(TDSBUFFERDESC), 0);
   with Fsdesc do
   begin
     dwSize := SizeOf(TDSBUFFERDESC);
-    dwReserved := 0;
+    //dwReserved := 0;
     dwFlags :=
       DSBCAPS_GETCURRENTPOSITION2 or
       DSBCAPS_CTRLVOLUME or
@@ -235,12 +230,9 @@ begin
 
   Result := Fsdesc.dwBufferBytes div 2;
 
-  FSecondary.SetVolume(lastvolume);
-
   FSecondary.Lock(0, Fsdesc.dwBufferBytes, @Buffer, @Size, nil, nil, DSBLOCK_ENTIREBUFFER);
   FillChar(Buffer^, Size, 0);
   FSecondary.Unlock(Buffer, Size, nil, 0);
-
 end;
 
 procedure TDSoutput.Play;
@@ -263,6 +255,7 @@ begin
   FDevice := ADevice;
   inherited Create(True);
   Priority := tpTimeCritical;
+  Flastsection := MaxInt;
   Status := rsStoped;
   initdecoder();
 end;
@@ -271,8 +264,8 @@ destructor TRadioPlayer.Destroy;
 begin
   DS.Stop;
   Terminate;
-  // DESTROY THREAD
   inherited;
+  DS.SoundBuffer := nil;
 end;
 
 procedure TRadioPlayer.Execute;

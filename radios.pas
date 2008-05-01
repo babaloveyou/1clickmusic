@@ -40,6 +40,7 @@ const
     'Club ( 1.fm )',
     'Dance ( 1.fm )',
     'Chillout ( 1.fm )',
+    'Trance ( 1.fm )',
     'Funky House ( rautemusik )',
     'Lounge ( rautemusik )',
     'Lounge ( smoothlounge )',
@@ -99,8 +100,7 @@ const
     'Dance ( frisky )',
     'Club ( RaveTrax )',
     'Dance ( FG Radio )',
-    'Dance ( ibizaglobal )',
-    'Dance ( fusion )'
+    'Dance ( ibizaglobal )'
     );
 
 const
@@ -119,6 +119,7 @@ const
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=6057&file=filename.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=6201&file=filename.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=6951&file=filename.pls',
+    'http://www.1.fm/trance.pls',
     'http://funky-office.rautemusik.de/listen.pls',
     'http://lounge-office.rautemusik.de/listen.pls',
     'http://www.smoothlounge.com/streams/smoothlounge_128.pls',
@@ -178,8 +179,7 @@ const
     'http://www.friskyradio.com/frisky.m3u',
     'http://ravetrax.com/mp3_hi.pls',
     'http://fg.impek.tv/listen.pls',
-    'http://s6.viastreaming.net:7010/listen.pls',
-    'http://streams.fusionchicago.com/128.pls'
+    'http://s6.viastreaming.net:7010/listen.pls'
     );
 
 const
@@ -227,7 +227,7 @@ const
     'http://extreme-office.rautemusik.de/listen.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=8591&file=filename.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=9592&file=filename.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=890786&file=filename.pls',
+    'http://www.1.fm/x.pls',
     'http://metal-only.de/listen.pls',
     'http://www.kinkfm.com/streams/kink_aardschok.m3u',
     'http://82.134.68.36:7999/listen.pls',
@@ -257,7 +257,7 @@ const
     'http://www.radioparadise.com/musiclinks/rp_128-1.m3u',
     'http://www.enjoystation.net/player/mp3.m3u',
     'http://www.sky.fm/mp3/tophits.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=6567&file=filename.pls',
+    'http://www.1.fm/top40.pls',
     'http://www.977music.com/tunein/web/hitz.asx',
     'http://streams.frequence3.fr/mp3-192.m3u',
     'http://www.181.fm/winamp.pls?station=181-power&bitrate=hi',
@@ -331,9 +331,9 @@ const
     'http://www.977music.com/tunein/web/90s.asx',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=6422&file=filename.pls',
     'http://www.sky.fm/mp3/classical.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=4899&file=filename.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=285260&file=filename.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=7790&file=filename.pls',
+    'http://www.1.fm/baroque.pls',
+    'http://www.1.fm/opera.pls',
+    'http://www.1.fm/classical.pls',
     'http://www.atlanticsoundfactory.com/asfbb.pls',
     'http://www.chaos-radio.net/stream/listen.m3u'
     );
@@ -419,14 +419,14 @@ const
     'http://somafm.com/bootliquor.pls',
     'http://www.977music.com/tunein/web/country.asx',
     'http://www.swissgroove.ch/listen.m3u',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=3654&file=filename.pls',
+    'http://www.1.fm/jazz.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=1042&file=filename.pls',
     'http://www.181.fm/winamp.pls?station=181-breeze&bitrate=hi',
     'http://www.181.fm/winamp.pls?station=181-heart&bitrate=hi',
     'http://www.181.fm/winamp.pls?station=181-kickincountry&bitrate=hi',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=5835&file=filename.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=1973&file=filename.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=1876&file=filename.pls',
+    'http://www.1.fm/country.pls',
+    'http://www.1.fm/blues.pls',
+    'http://www.1.fm/reggae.pls',
     'http://www.sky.fm/mp3/rootsreggae.pls',
     'http://www.sky.fm/mp3/lovemusic.pls',
     'http://www.sky.fm/mp3/beatles.pls',

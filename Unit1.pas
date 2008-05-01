@@ -29,11 +29,11 @@ Dialogs;
 type
 {$IF Defined(KOL_MCK)}
 {$I MCKfakeClasses.inc}
-{$IFDEF KOLCLASSES}{$I TForm1class.inc}{$ELSE OBJECTS}PForm1 = ^TForm1; {$ENDIF CLASSES/OBJECTS}
-{$IFDEF KOLCLASSES}{$I TForm1.inc}{$ELSE}TForm1 = object(TObj){$ENDIF}
+  {$IFDEF KOLCLASSES} {$I TForm1class.inc} {$ELSE OBJECTS} PForm1 = ^TForm1; {$ENDIF CLASSES/OBJECTS}
+  {$IFDEF KOLCLASSES}{$I TForm1.inc}{$ELSE} TForm1 = object(TObj) {$ENDIF}
     Form: PControl;
 {$ELSE not_KOL_MCK}
-    TForm1 = class(TForm)
+  TForm1 = class(TForm)
 {$IFEND KOL_MCK}
       KOLProject1: TKOLProject;
       lbltrack: TKOLLabel;
@@ -59,6 +59,7 @@ type
     private
     { Private declarations }
     public
+      ITrayBlue, ITrayGreen, ITrayRed: HICON;
       popupmenu: PMenu;
       Thread: PThread;
       LastFMThread: PThread;
@@ -91,9 +92,6 @@ uses
   main,
   utils;
 
-var
-  ITrayBlue, ITrayGreen, ITrayRed: HICON;
-
 
 {$IF Defined(KOL_MCK)}{$ELSE}{$R *.DFM}{$IFEND}
 
@@ -103,61 +101,64 @@ var
 
 procedure Tform1.LoadConfig;
 var
-  ini: PIniFile;
   i: Integer;
 begin
-  ini := OpenIniFile('oneclickmusic.ini');
-  ini.Mode := ifmRead;
-  ini.Section := 'options';
-  trayiconcolor_enabled := ini.ValueBoolean('trayiconcolor_enabled', True);
-  traypopups_enabled := ini.ValueBoolean('traypopups_enabled', True);
-  firstrun_enabled := ini.ValueBoolean('firstrun_enabled', True);
-  msn_enabled := ini.ValueBoolean('msn_enabled', False);
-  msn_iconi := ini.ValueInteger('msn_iconi', 0);
-  msn_icons := ini.ValueString('msn_icons', 'Music');
-  list_enabled := ini.ValueBoolean('list_enabled', False);
-  list_file := ini.ValueString('list_file', 'lista.txt');
-  clipboard_enabled := ini.ValueBoolean('clipboard_enabled', False);
-  lastfm_enabled := ini.ValueBoolean('lastfm_enabled', False);
-  lastfm_user := ini.ValueString('lastfm_user', '');
-  lastfm_pass := Crypt(ini.ValueString('lastfm_pass', ''));
-
-  ini.Section := 'hotkeys';
-  ini.Mode := ifmRead;
-  for i := 1 to 12 do
+  with OpenIniFile('oneclickmusic.ini')^ do
   begin
-    hotkeys[i] := radiolist.getpos(ini.ValueString(IntToStr(i), ''));
-    PopupMenu.ItemText[i - 1] := 'Ctrl+F' + IntToStr(i) + ' :' + #9 + channeltree.TVItemText[hotkeys[i]];
+    Mode := ifmRead;
+    Section := 'options';
+    trayiconcolor_enabled := ValueBoolean('trayiconcolor_enabled', True);
+    traypopups_enabled := ValueBoolean('traypopups_enabled', True);
+    firstrun_enabled := ValueBoolean('firstrun_enabled', True);
+    msn_enabled := ValueBoolean('msn_enabled', False);
+    msn_iconi := ValueInteger('msn_iconi', 0);
+    msn_icons := ValueString('msn_icons', 'Music');
+    list_enabled := ValueBoolean('list_enabled', False);
+    list_file := ValueString('list_file', 'lista.txt');
+    clipboard_enabled := ValueBoolean('clipboard_enabled', False);
+    lastfm_enabled := ValueBoolean('lastfm_enabled', False);
+    lastfm_user := ValueString('lastfm_user', '');
+    lastfm_pass := Crypt(ValueString('lastfm_pass', ''));
+
+    Section := 'hotkeys';
+    Mode := ifmRead;
+    for i := 1 to 12 do
+    begin
+      hotkeys[i] := radiolist.getpos(ValueString(IntToStr(i), ''));
+      PopupMenu.ItemText[i - 1] := 'Ctrl+F' + IntToStr(i) + ' :' + #9 + channeltree.TVItemText[hotkeys[i]];
     //PopupMenu.ItemText[i - 1] := 'Ctrl+F' + IntToStr(i) + ' :' + #9 + radiolist.getname(hotkeys[i]);
+    end;
+    Free;
   end;
-  ini.Free;
 end;
 
 procedure Tform1.SaveConfig;
 var
-  ini: PIniFile;
   i: Integer;
 begin
-  ini := OpenIniFile('oneclickmusic.ini');
-  ini.Mode := ifmWrite;
-  ini.Section := 'options';
-  ini.ValueBoolean('trayiconcolor_enabled', trayiconcolor_enabled);
-  ini.ValueBoolean('traypopups_enabled', traypopups_enabled);
-  ini.ValueBoolean('firstrun_enabled', False);
-  ini.ValueBoolean('msn_enabled', msn_enabled);
-  ini.ValueInteger('msn_iconi', msn_iconi);
-  ini.ValueString('msn_icons', msn_icons);
-  ini.ValueBoolean('list_enabled', list_enabled);
-  ini.ValueString('list_file', list_file);
-  ini.ValueBoolean('clipboard_enabled', clipboard_enabled);
-  ini.ValueBoolean('lastfm_enabled', lastfm_enabled);
-  ini.ValueString('lastfm_user', lastfm_user);
-  ini.ValueString('lastfm_pass', Crypt(lastfm_pass));
+  with OpenIniFile('oneclickmusic.ini')^ do
+  begin
+    Mode := ifmWrite;
+    Section := 'options';
+    ValueBoolean('trayiconcolor_enabled', trayiconcolor_enabled);
+    ValueBoolean('traypopups_enabled', traypopups_enabled);
+    ValueBoolean('firstrun_enabled', False);
+    ValueBoolean('msn_enabled', msn_enabled);
+    ValueInteger('msn_iconi', msn_iconi);
+    ValueString('msn_icons', msn_icons);
+    ValueBoolean('list_enabled', list_enabled);
+    ValueString('list_file', list_file);
+    ValueBoolean('clipboard_enabled', clipboard_enabled);
+    ValueBoolean('lastfm_enabled', lastfm_enabled);
+    ValueString('lastfm_user', lastfm_user);
+    ValueString('lastfm_pass', Crypt(lastfm_pass));
 
-  ini.Section := 'hotkeys';
-  for i := 1 to 12 do
-    ini.ValueString(IntToStr(i), radiolist.getname(hotkeys[i]));
-  ini.Free;
+    Section := 'hotkeys';
+    for i := 1 to 12 do
+      ValueString(IntToStr(i), radiolist.getname(hotkeys[i]));
+
+    Free;
+  end;
 end;
 
 procedure TimerProc(Wnd: HWnd; Mesg, TimerID, SysTime: Longint); stdcall;
@@ -276,8 +277,10 @@ begin
     //# Lets Try to play
     if OpenRadio(radiolist.getpls(channeltree.TVItemText[channeltree.TVSelected]), chn, DS) then
     begin
+      //# apply the current vol
+      DS.Volume(curVolume);
+      //# update window info
       TimerExecute;
-      chn.Resume
     end
     else
     begin
@@ -431,10 +434,8 @@ begin
   Thread := NewThread;
   Thread.OnExecute := ThreadExecute;
 
-  //# KOL puro jah que a mck nao que funfar
-  PopupMenu := NewMenu(channeltree, 0, ['Ctrl+F1', 'Ctrl+F2', 'Ctrl+F3', 'Ctrl+F4', 'Ctrl+F5', 'Ctrl+F6', 'Ctrl+F7', 'Ctrl+F8', 'Ctrl+F9', 'Ctrl+F10', 'Ctrl+F11', 'Ctrl+F12', 'Clear Hotkeys'], nil);
-  for i := 0 to 12 do
-    PopupMenu.AssignEvents(i, [popupproc]);
+  //# KOL puro Menu
+  PopupMenu := NewMenu(channeltree, 0, ['Ctrl+F1', 'Ctrl+F2', 'Ctrl+F3', 'Ctrl+F4', 'Ctrl+F5', 'Ctrl+F6', 'Ctrl+F7', 'Ctrl+F8', 'Ctrl+F9', 'Ctrl+F10', 'Ctrl+F11', 'Ctrl+F12', 'Clear Hotkeys'], popupproc);
   //# define o popup da channeltree
   channeltree.SetAutoPopupMenu(PopupMenu);
 
@@ -442,70 +443,73 @@ begin
   Radiolist := NewRadioList;
 
   //# inicializa os canais
-  for i := 0 to High(genrelist) do
-    genreid[i] := channeltree.TVInsert(0, 0, genrelist[i]);
+  with channeltree^ do
+  begin
+    for i := 0 to High(genrelist) do
+      genreid[i] := TVInsert(0, 0, genrelist[i]);
 
-  for i := 0 to High(chn_eletronic) do
-    radiolist.Add(
-      channeltree.TVInsert(genreid[ELETRONIC], 0, chn_eletronic[i]),
-      chn_eletronic[i],
-      Crypt(pls_eletronic[i])
-      );
+    for i := 0 to High(chn_eletronic) do
+      radiolist.Add(
+        TVInsert(genreid[ELETRONIC], 0, chn_eletronic[i]),
+        chn_eletronic[i],
+        Crypt(pls_eletronic[i])
+        );
 
-  for i := 0 to High(chn_rockmetal) do
-    radiolist.Add(
-      channeltree.TVInsert(genreid[ROCKMETAL], 0, chn_rockmetal[i]),
-      chn_rockmetal[i],
-      Crypt(pls_rockmetal[i])
-      );
+    for i := 0 to High(chn_rockmetal) do
+      radiolist.Add(
+        TVInsert(genreid[ROCKMETAL], 0, chn_rockmetal[i]),
+        chn_rockmetal[i],
+        Crypt(pls_rockmetal[i])
+        );
 
-  for i := 0 to High(chn_ecletic) do
-    radiolist.Add(
-      channeltree.TVInsert(genreid[ECLETIC], 0, chn_ecletic[i]),
-      chn_ecletic[i],
-      Crypt(pls_ecletic[i])
-      );
+    for i := 0 to High(chn_ecletic) do
+      radiolist.Add(
+        TVInsert(genreid[ECLETIC], 0, chn_ecletic[i]),
+        chn_ecletic[i],
+        Crypt(pls_ecletic[i])
+        );
 
-  for i := 0 to High(chn_hiphop) do
-    radiolist.Add(
-      channeltree.TVInsert(genreid[HIPHOP], 0, chn_hiphop[i]),
-      chn_hiphop[i],
-      Crypt(pls_hiphop[i])
-      );
+    for i := 0 to High(chn_hiphop) do
+      radiolist.Add(
+        TVInsert(genreid[HIPHOP], 0, chn_hiphop[i]),
+        chn_hiphop[i],
+        Crypt(pls_hiphop[i])
+        );
 
-  for i := 0 to High(chn_oldmusic) do
-    radiolist.Add(
-      channeltree.TVInsert(genreid[OLDMUSIC], 0, chn_oldmusic[i]),
-      chn_oldmusic[i],
-      Crypt(pls_oldmusic[i])
-      );
+    for i := 0 to High(chn_oldmusic) do
+      radiolist.Add(
+        TVInsert(genreid[OLDMUSIC], 0, chn_oldmusic[i]),
+        chn_oldmusic[i],
+        Crypt(pls_oldmusic[i])
+        );
 
-  for i := 0 to High(chn_industrial) do
-    radiolist.Add(
-      channeltree.TVInsert(genreid[INDUSTRIAL], 0, chn_industrial[i]),
-      chn_industrial[i],
-      Crypt(pls_industrial[i])
-      );
+    for i := 0 to High(chn_industrial) do
+      radiolist.Add(
+        TVInsert(genreid[INDUSTRIAL], 0, chn_industrial[i]),
+        chn_industrial[i],
+        Crypt(pls_industrial[i])
+        );
 
-  for i := 0 to High(chn_misc) do
-    radiolist.Add(
-      channeltree.TVInsert(genreid[MISC], 0, chn_misc[i]),
-      chn_misc[i],
-      Crypt(pls_misc[i])
-      );
+    for i := 0 to High(chn_misc) do
+      radiolist.Add(
+        TVInsert(genreid[MISC], 0, chn_misc[i]),
+        chn_misc[i],
+        Crypt(pls_misc[i])
+        );
 
-  for i := 0 to High(chn_brasil) do
-    radiolist.Add(
-      channeltree.TVInsert(genreid[BRASIL], 0, chn_brasil[i]),
-      chn_brasil[i],
-      Crypt(pls_brasil[i])
-      );
+    for i := 0 to High(chn_brasil) do
+      radiolist.Add(
+        TVInsert(genreid[BRASIL], 0, chn_brasil[i]),
+        chn_brasil[i],
+        Crypt(pls_brasil[i])
+        );
 
   //# Sort Radio List
-  for i := 0 to High(genreid) do
-    channeltree.TVSort(genreid[i]);
+    for i := 0 to High(genreid) do
+      TVSort(genreid[i]);
 
-  channeltree.TVSelected := channeltree.TVRoot;
+    TVSelected := TVRoot;
+  end;
 
   //# Load .INI Config
   LoadConfig;
@@ -610,4 +614,5 @@ begin
 end;
 
 end.
+
 
