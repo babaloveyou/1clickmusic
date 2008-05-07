@@ -48,20 +48,20 @@ begin
 end;
 
 procedure TMP3.initbuffer;
+var
+  r : Integer;
 begin
   repeat
-    mpg123_decode(Fhandle, FStream.GetBuffer, BUFFSIZE, nil, 0, nil);
+    r := mpg123_decode(Fhandle, FStream.GetBuffer, BUFFSIZE, nil, 0, nil);
     FStream.NextBuffer;
-    mpg123_getformat(Fhandle, @Frate, @Fchannels, @Fencoding);
-  until (Fchannels <> 0) or (FStream.BuffFilled < 50);
+  until (r = MPG123_NEW_FORMAT) or (FStream.BuffFilled < 50);
 
+  mpg123_getformat(Fhandle, @Frate, @Fchannels, @Fencoding);
   if Fchannels = 0 then
     RaiseError('ERRO, tentando descobrir o formato do audio');
   {$IFDEF LOG}
   Log('buffers remaining '+IntToStr(FStream.BuffFilled));
   {$ENDIF}
-  mpg123_format_none(Fhandle);
-  mpg123_format(Fhandle, Frate, Fchannels, Fencoding);
 
   Fbuffersize := DS.InitializeBuffer(Frate, Fchannels);
 end;
@@ -70,7 +70,7 @@ procedure TMP3.initdecoder;
 begin
   if mpg123_init <> MPG123_OK then
     RaiseError('ERRO, criando instancia do decodificador MPEG');
-  Fhandle := mpg123_new('mmx', nil);
+  Fhandle := mpg123_new('sse', nil);
   if Fhandle = nil then
     RaiseError('ERRO, inicializando o decodificador MPEG');
   mpg123_open_feed(Fhandle);
@@ -120,7 +120,7 @@ begin
   {$IFDEF LOG}
   Log('lock->buffer');
   {$ENDIF}
-  DS.SoundBuffer.Lock(section, Fbuffersize, @buffer, @Size, nil, nil, 0);
+  DSERROR(DS.SoundBuffer.Lock(section, Fbuffersize, @buffer, @Size, nil, nil, 0),'ERRO, locking buffer');
 
   if (FStream.BuffFilled > BUFFMIN) then
   begin
@@ -161,7 +161,7 @@ begin
   Log('lock->buffer');
   {$ENDIF}
 
-  DS.SoundBuffer.Unlock(buffer, Size, nil, 0);
+  DSERROR(DS.SoundBuffer.Unlock(buffer, Size, nil, 0),'ERRO, unlocking buffer');
 
   Flastsection := section;
 end;

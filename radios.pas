@@ -25,7 +25,7 @@ const
     );
 
 const
-  chn_eletronic: array[0..74] of string = (
+  chn_eletronic: array[0..76] of string = (
     'Minimal ( deepmix )',
     'Trance ( afterhours )',
     'Club ( blitz )',
@@ -45,6 +45,8 @@ const
     'Lounge ( rautemusik )',
     'Lounge ( smoothlounge )',
     'Progressive ( soma )',
+    'Ambient ( agent.soma )',
+    'Ambient ( cliqhop.soma )',
     'Ambient ( groove.soma )',
     'Ambient ( space.soma )',
     'Ambient ( drone.soma )',
@@ -104,7 +106,7 @@ const
     );
 
 const
-  pls_eletronic: array[0..74] of string = (
+  pls_eletronic: array[0..76] of string = (
     'http://85.21.79.5:8040/listen.pls',
     'http://stats.ah.fm/dynamicplaylist.m3u?quality=96',
     'http://blitz-stream.de/stream/stream.m3u',
@@ -124,6 +126,8 @@ const
     'http://lounge-office.rautemusik.de/listen.pls',
     'http://www.smoothlounge.com/streams/smoothlounge_128.pls',
     'http://somafm.com/tagstrance.pls',
+    'http://somafm.com/secretagent.pls',
+    'http://somafm.com/cliqhop.pls',
     'http://somafm.com/groovesalad.pls',
     'http://somafm.com/spacestation.pls',
     'http://somafm.com/dronezone.pls',

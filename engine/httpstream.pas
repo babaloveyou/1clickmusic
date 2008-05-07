@@ -9,7 +9,7 @@ uses
   _DirectSound;
 
 const // CONFIGURATION
-  BUFFSIZE = 800;
+  BUFFSIZE = 1024;
   BUFFCOUNT = 100;
   BUFFTOTALSIZE = BUFFSIZE * BUFFCOUNT;
 
@@ -39,7 +39,7 @@ type
     //# Get ShoutCast info
     procedure GetMetaInfo(out Atitle: string; out Aquality: Cardinal);
     //# Read the Buffer
-    function GetBuffer: Pointer;
+    function GetBuffer: PByte;
     procedure NextBuffer;
     //# Open stream
     function Open(const url: string): Boolean;
@@ -58,8 +58,8 @@ begin
   p := Pos(':', data);
   if p > 0 then
   begin
-    field := Copy(data, 1, p - 1);
-    value := Copy(data, p + 1, Length(data) - p)
+    field := Trim(Copy(data, 1, p - 1));
+    value := Trim(Copy(data, p + 1, Length(data) - p));
   end;
 end;
 
@@ -75,6 +75,7 @@ const
 var
   i: Integer;
 begin
+  url := LowerCase(url);
   if Pos('http://', url) > 0 then
     Delete(url, 1, 7); // delete http://
   i := Pos(':', url);
@@ -124,13 +125,13 @@ begin
 
   if Pos('200', MetaData[0]) > 0 then
   begin
-    Result := 1;
     for i := 1 to MetaData.Count - 1 do
     begin
       SplitValue(MetaData[i], field, value);
 
       if field = 'icy-metaint' then MetaInterval := StrToInt(value)
       else if field = 'icy-br' then MetaBitrate := StrToInt(value)
+      else if value = 'audio/mpeg' then Result := 1;
         //else if field='icy-description' then StreamInfo.Desc:=Value
         //else if field='icy-genre' then StreamInfo.Genre:=Value
         //else if field= 'icy-name' then StreamInfo.Name := value
@@ -145,24 +146,27 @@ begin
     if MultiPos(['302', '303', '301'], MetaData[0]) then
     begin
       for i := 1 to MetaData.Count - 1 do
-        if Pos('Location:', MetaData[i]) > 0 then
+      begin
+        SplitValue(MetaData[i], field, value);
+        if field = 'Location' then
         begin
           Result := -1;
-          Meta := Trim(Copy(MetaData[i], Length('Location:') + 1, Length(MetaData[i])));
+          Meta := value;
           break;
         end;
+      end;
     end;
 
   MetaData.Free;
 end;
 
 class procedure THTTPSTREAM.ParseMetaData(meta: string; out MetaTitle : string);
-const
-  field = 'StreamTitle=''';
-  fieldlen = Length(field);
+//const
+  //field = 'StreamTitle=''';
+  //fieldlen = Length(field); = 13
 begin
   if meta = '' then Exit;
-  Delete(meta, 1, fieldlen);
+  Delete(meta, 1, 13);
   MetaTitle := Copy(meta, 1, Pos('''', meta) - 1);
 end;
 
@@ -260,7 +264,7 @@ begin
   Aquality := MetaBitrate;
 end;
 
-function THTTPSTREAM.GetBuffer: Pointer;
+function THTTPSTREAM.GetBuffer: PByte;
 begin
   Result := @inbuffer[Cursor];
 end;

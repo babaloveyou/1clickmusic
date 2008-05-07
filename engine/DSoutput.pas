@@ -17,6 +17,7 @@ type
     FDS: IDirectSound;
     FPrimary: IDirectSoundBuffer;
     FSecondary: IDirectSoundBuffer;
+    Fvolume : Integer;
     function GetPlayCursorPos: Cardinal;
   public
     property PlayCursorPos: Cardinal read GetPlayCursorPos;
@@ -163,32 +164,30 @@ begin
 end;
 
 function TDSoutput.Volume(const value: Integer): Cardinal;
-var
-  vol: integer;
 begin
   Result := 0;
   if not Assigned(FSecondary) then Exit;
 
   if value >= 100 then
   begin
-    vol := DSBVOLUME_MAX;
+    Fvolume := DSBVOLUME_MAX;
     Result := 100;
   end
   else
     if value <= 0 then
     begin
-      vol := DSBVOLUME_MIN;
+      Fvolume := DSBVOLUME_MIN;
       Result := 0;
     end
     else
     begin
-      vol := Round(
+      Fvolume := Round(
         ((100 - value) * DSBVOLUME_MIN) / 500
         );
       Result := value;
     end;
 
-  FSecondary.SetVolume(vol);
+  FSecondary.SetVolume(Fvolume);
 end;
 
 function TDSoutput.InitializeBuffer(const Arate, Achannels: Cardinal): Cardinal;
@@ -227,6 +226,8 @@ begin
   end;
 
   DSERROR(FDS.CreateSoundBuffer(Fsdesc, Fsecondary, nil), 'ERRO, criando o buffer secundario');
+
+  FSecondary.SetVolume(Fvolume);
 
   Result := Fsdesc.dwBufferBytes div 2;
 

@@ -77,21 +77,36 @@ begin
 
   if section = Flastsection then Exit;
 
-  DS.SoundBuffer.Lock(section, Fbuffersize, @buffer, @Size, nil, nil, 0);
+  DSERROR(DS.SoundBuffer.Lock(section, Fbuffersize, @buffer, @Size, nil, nil, 0),'ERRO, locking buffer');
 
   tmpbuffersize := Size;
   bufferPos := buffer;
   TotalDecoded := 0;
-  
-  repeat
-    lwma_async_reader_get_data(Fhandle, tmpbuffer, tmpbuffersize);
-    Move(tmpbuffer^,bufferPos^,tmpbuffersize);
-    Inc(bufferPos, tmpbuffersize);
-    Inc(TotalDecoded, tmpbuffersize);
-    tmpbuffersize := Size - TotalDecoded;
-  until TotalDecoded >= Size;
 
-  DS.SoundBuffer.Unlock(buffer, Size, nil, 0);
+  if (Fhandle.BlockList.Count > 1) then
+  begin
+    repeat
+      lwma_async_reader_get_data(Fhandle, tmpbuffer, tmpbuffersize);
+      Move(tmpbuffer^,bufferPos^,tmpbuffersize);
+      Inc(bufferPos, tmpbuffersize);
+      Inc(TotalDecoded, tmpbuffersize);
+      tmpbuffersize := Size - TotalDecoded;
+    until TotalDecoded >= Size;
+  end
+  else
+  begin
+    Status := rsRecovering;
+    DS.Stop;
+    repeat
+      Sleep(50);
+      if Terminated then Exit;
+    until Fhandle.BlockList.Count > 2;
+    DS.Play;
+    Status := rsPlaying;
+  end;  
+
+  DSERROR(DS.SoundBuffer.Unlock(buffer, Size, nil, 0),'ERRO, unlocking buffer');
+
   Flastsection := section;
 end;
 
