@@ -70,7 +70,7 @@ procedure TMP3.initdecoder;
 begin
   if mpg123_init <> MPG123_OK then
     RaiseError('ERRO, criando instancia do decodificador MPEG');
-  Fhandle := mpg123_new('sse', nil);
+  Fhandle := mpg123_new('i586', nil);
   if Fhandle = nil then
     RaiseError('ERRO, inicializando o decodificador MPEG');
   mpg123_open_feed(Fhandle);

@@ -111,7 +111,7 @@ const
     'http://stats.ah.fm/dynamicplaylist.m3u?quality=96',
     'http://blitz-stream.de/stream/stream.m3u',
     'http://www.playdio.se/bredband.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=2882&file=filename.pls',
+    'http://stream.xtcradio.com:8069/listen.pls',
     'http://listen.to.techno4ever.net/dsl/mp3',
     'http://www.pulsradio.com/pls/puls-adsl.m3u',
     'http://dsl.technobase.eu/listen-dsl.pls',
@@ -180,18 +180,19 @@ const
     'http://88.191.38.140:8014/listen.pls',
     'http://www.triplag.com/webradio/darkpsy/triplag-darkpsy.php',
     'http://www.triplag.com/webradio/chilltrip/triplag-chilltrip.php',
-    'http://www.friskyradio.com/frisky.m3u',
+    'http://friskyradio.com/frisky.m3u',
     'http://ravetrax.com/mp3_hi.pls',
     'http://fg.impek.tv/listen.pls',
     'http://s6.viastreaming.net:7010/listen.pls'
     );
 
 const
-  chn_rockmetal: array[0..21] of string = (
+  chn_rockmetal: array[0..22] of string = (
     'Indie Rock ( soma )',
     'Punk Rock ( idobi )',
     'Classic Rock ( 977music )',
     'Alternative ( 977music )',
+    'Rock/Metal ( 977music )',
     'Rock/Metal ( edge )',
     'Rock/Metal ( 525 )',
     'Rock/Metal ( cxraggression )',
@@ -213,10 +214,11 @@ const
     );
 
 const
-  pls_rockmetal: array[0..21] of string = (
+  pls_rockmetal: array[0..22] of string = (
     'http://somafm.com/indiepop.pls',
     'http://www.idobi.com/radio/iradio.pls',
     'http://www.977music.com/tunein/web/classicrock.asx',
+    'http://www.977music.com/tunein/web/mix.asx',
     'http://www.977music.com/tunein/web/rock.asx',
     'http://edge-radio.net/edgeradio/edge.m3u',
     'http://64.62.252.134:6670/listen.pls',
@@ -230,8 +232,8 @@ const
     'http://www.181.fm/winamp.pls?station=181-eagle&bitrate=hi',
     'http://extreme-office.rautemusik.de/listen.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=8591&file=filename.pls',
+	'http://www.1.fm/x.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=9592&file=filename.pls',
-    'http://www.1.fm/x.pls',
     'http://metal-only.de/listen.pls',
     'http://www.kinkfm.com/streams/kink_aardschok.m3u',
     'http://82.134.68.36:7999/listen.pls',

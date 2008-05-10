@@ -31,14 +31,14 @@ uses
 destructor TMMS.Destroy;
 begin
   inherited;
-  if Assigned(Fhandle.reader) then
+  if Fhandle.reader <> nil then
     lwma_async_reader_free(Fhandle);
 end;
 
 procedure TMMS.initdecoder;
 begin
   lwma_async_reader_init(Fhandle);
-  if not Assigned(Fhandle.reader) then
+  if Fhandle.reader = nil then
     RaiseError('ERRO, inicializando o decodificador wma (mms)');
 end;
 

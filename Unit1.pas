@@ -169,7 +169,7 @@ end;
 
 procedure TForm1.TimerExecute();
 begin
-  if (not Assigned(chn)) or
+  if (chn = nil) or
     (chn.Status = rsStoped) then
     Exit;
 
@@ -207,7 +207,7 @@ begin
         Text2Clipboard(curTitle);
 
       if lastfm_enabled then
-        if Assigned(LastFMThread) then
+        if LastFMThread <> nil then
           LastFMThread.Resume
         else
           LastFMThread := NewThreadEx(LastFMThreadExecute);
@@ -310,7 +310,7 @@ procedure TForm1.StopChannel;
 begin
   if msn_enabled then
     updateMSN(False);
-  if Assigned(chn) then
+  if chn <> nil then
     FreeAndNil(chn);
 
   KillTimer(appwinHANDLE, 1);
@@ -339,17 +339,17 @@ begin
   begin
     case Msg.wParam of
       1001, 3001:
-        if Assigned(chn) then
+        if chn <> nil then
           curVolume := DS.Volume(curVolume + 2);
       1002, 3002:
-        if Assigned(chn) then
+        if chn <> nil then
         begin
           curVolume := DS.Volume(curVolume - 2);
         end;
       1003, 3003:
         StopChannel;
       1004, 3004:
-        if not Assigned(chn) then
+        if chn = nil then
           PlayChannel;
       2001..2012:
         if hotkeys[Msg.wParam - 2000] > 0 then
@@ -372,7 +372,7 @@ begin
   if msn_enabled then
     updateMSN(False);
 
-  if Assigned(LastFMThread) then
+  if LastFMThread <> nil then
   begin
     LastFMThread.Terminate;
     LastFMThread.Free;
@@ -384,7 +384,7 @@ begin
   Thread.Terminate;
   Thread.Free;
 
-  if Assigned(chn) then
+  if chn <> nil then
     chn.Free;
 
   DS.Free;
@@ -600,7 +600,7 @@ end;
 procedure TForm1.btplayClick(Sender: PObj);
 begin
   if channeltree.Enabled then
-    if not Assigned(chn) then
+    if chn = nil then
       PlayChannel
     else
       StopChannel;

@@ -5,15 +5,15 @@ TRAYGREEN ICON "res/traygreen.ico"
 TRAYRED ICON "res/trayred.ico"
 
 VER VERSIONINFO
-FILEVERSION 0,1,8,4
-PRODUCTVERSION 0,1,8,4
+FILEVERSION 0,1,8,5
+PRODUCTVERSION 0,1,8,5
 BEGIN
   BLOCK "StringFileInfo"
   BEGIN
     BLOCK "040904E4"
     BEGIN
-      VALUE "FileVersion", "1.8.4\000"
-      VALUE "ProductVersion", "1.8.4\000"
+      VALUE "FileVersion", "1.8.5\000"
+      VALUE "ProductVersion", "1.8.5\000"
       VALUE "ProductName", "1ClickMusic\000"
       VALUE "FileDescription", "por arthurprs\000"
       VALUE "LegalCopyright", "arthurprs@gmail.com\000"

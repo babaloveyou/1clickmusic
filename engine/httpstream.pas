@@ -244,7 +244,7 @@ begin
   FHTTP.Connect(host, port);
   FHTTP.SendString(icyheader);
 
-  response := FHTTP.RecvTerminated(1000, #13#10#13#10);
+  response := FHTTP.RecvTerminated(2500, #13#10#13#10);
 
   case ParseMetaHeader(response, MetaInterval, MetaBitrate) of
     1:

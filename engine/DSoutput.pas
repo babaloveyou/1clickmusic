@@ -102,7 +102,7 @@ end;
 function DSEnumOutputCallback(lpGuid: PGUID; lpcstrDescription: PChar;
   lpcstrModule: PChar; lpContext: Pointer): BOOL; stdcall;
 begin
-  if Assigned(lpGuid) then
+  if lpGuid <> nil then
   begin
     CopyMemory(lpContext, lpGuid, SizeOf(TGUID));
     Result := False;
@@ -159,14 +159,14 @@ end;
 
 function TDSoutput.GetPlayCursorPos: Cardinal;
 begin
-  if Assigned(FSecondary) then
+  if FSecondary <> nil then
     FSecondary.GetCurrentPosition(@Result, nil);
 end;
 
 function TDSoutput.Volume(const value: Integer): Cardinal;
 begin
   Result := 0;
-  if not Assigned(FSecondary) then Exit;
+  if FSecondary = nil then Exit;
 
   if value >= 100 then
   begin
@@ -238,13 +238,13 @@ end;
 
 procedure TDSoutput.Play;
 begin
-  if Assigned(FSecondary) then
+  if FSecondary <> nil then
     FSecondary.Play(0, 0, DSBPLAY_LOOPING);
 end;
 
 procedure TDSoutput.Stop;
 begin
-  if Assigned(FSecondary) then
+  if FSecondary <> nil then
     FSecondary.Stop;
 end;
 
@@ -274,7 +274,7 @@ begin
   StartPlay;
   repeat
     UpdateBuffer();
-    Sleep(25);
+    Sleep(50);
   until Terminated;
 end;
 
