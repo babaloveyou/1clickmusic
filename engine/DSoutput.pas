@@ -165,7 +165,7 @@ end;
 
 function TDSoutput.Volume(const value: Integer): Cardinal;
 begin
-  Result := 0;
+  Result := Fvolume;
   if FSecondary = nil then Exit;
 
   if value >= 100 then
@@ -194,8 +194,8 @@ function TDSoutput.InitializeBuffer(const Arate, Achannels: Cardinal): Cardinal;
 var
   Fswfm: TWAVEFORMATEX;
   Fsdesc: TDSBUFFERDESC;
-  Buffer: PByte;
-  Size: Cardinal;
+  //Buffer: PByte;
+  //Size: Cardinal;
 begin
   FSecondary := nil;
 
@@ -208,7 +208,6 @@ begin
     nSamplesPerSec := Arate;
     nBlockAlign := Achannels * 2;
     nAvgBytesPerSec := Arate * nBlockAlign;
-    //cbSize := 0;
   end;
 
   // set up the buffer
@@ -216,7 +215,6 @@ begin
   with Fsdesc do
   begin
     dwSize := SizeOf(TDSBUFFERDESC);
-    //dwReserved := 0;
     dwFlags :=
       DSBCAPS_GETCURRENTPOSITION2 or
       DSBCAPS_CTRLVOLUME or
@@ -231,9 +229,9 @@ begin
 
   Result := Fsdesc.dwBufferBytes div 2;
 
-  FSecondary.Lock(0, Fsdesc.dwBufferBytes, @Buffer, @Size, nil, nil, DSBLOCK_ENTIREBUFFER);
+  {FSecondary.Lock(0, Fsdesc.dwBufferBytes, @Buffer, @Size, nil, nil, DSBLOCK_ENTIREBUFFER);
   FillChar(Buffer^, Size, 0);
-  FSecondary.Unlock(Buffer, Size, nil, 0);
+  FSecondary.Unlock(Buffer, Size, nil, 0); }
 end;
 
 procedure TDSoutput.Play;
@@ -263,6 +261,7 @@ end;
 
 destructor TRadioPlayer.Destroy;
 begin
+  Status := rsStoped;
   DS.Stop;
   Terminate;
   inherited;
@@ -272,10 +271,11 @@ end;
 procedure TRadioPlayer.Execute;
 begin
   StartPlay;
-  repeat
+  while not Terminated do
+  begin
     UpdateBuffer();
     Sleep(50);
-  until Terminated;
+  end;
 end;
 
 end.

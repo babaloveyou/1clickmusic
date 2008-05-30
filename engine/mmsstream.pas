@@ -112,6 +112,8 @@ end;
 
 function TMMS.Open(const url: string): Boolean;
 begin
+  if proxy_enabled then
+    lwma_async_reader_set_proxy(Fhandle,'mms',proxy_host,StrToInt(proxy_port));
   lwma_async_reader_open(Fhandle, url);
   Result := Fhandle.has_audio;
   if Result then

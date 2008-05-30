@@ -1,7 +1,6 @@
 { KOL MCK } // Do not remove this line!
 program oneclick;
 {$R 'resources.res' 'resources.rc'}
-
 uses
 KOL,
   Unit1 in 'Unit1.pas' {Form1},

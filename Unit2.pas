@@ -46,12 +46,19 @@ type
     ckbxballons: TKOLCheckBox;
     lblversion: TKOLLabel;
     ckbxtraycolors: TKOLCheckBox;
+    tabs: TKOLTabControl;
+    edtproxyhost: TKOLEditBox;
+    edtproxyport: TKOLEditBox;
+    ckbxproxyenabled: TKOLCheckBox;
+    lblproxyhost: TKOLLabel;
+    lblproxyport: TKOLLabel;
     procedure ckbxlistenabledClick(Sender: PObj);
     procedure ckbxmsnenabledClick(Sender: PObj);
     procedure ckbxlastfmClick(Sender: PObj);
     procedure KOLForm1FormCreate(Sender: PObj);
     procedure btapplyClick(Sender: PObj);
     procedure btupdateClick(Sender: PObj);
+    procedure ckbxproxyenabledClick(Sender: PObj);
   private
     { Private declarations }
   public
@@ -93,29 +100,58 @@ end;
 
 procedure TForm2.KOLForm1FormCreate(Sender: PObj);
 begin
+  tabs.TC_Insert(0,'Tray',0);
+  tabs.TC_Insert(1,'Messenger',0);
+  tabs.TC_Insert(2,'Last.FM',0);
+  tabs.TC_Insert(3,'Track List',0);
+  tabs.TC_Insert(4,'Proxy',0);
+
   lblversion.Caption := 'version:'+appversionstr+
   #13#10 + 'by arthurprs, arthurprs@gmail.com';
   //
+  ckbxballons.Parent := tabs.TC_Pages[0];
   ckbxballons.Checked := traypopups_enabled;
+  ckbxtraycolors.Parent := tabs.TC_Pages[0];
   ckbxtraycolors.Checked := trayiconcolor_enabled;
   //
+  ckbxmsnenabled.Parent := tabs.TC_Pages[1];
   ckbxmsnenabled.Checked := msn_enabled;
+  cmbxmsnicon.Parent := tabs.TC_Pages[1];
   cmbxmsnicon.CurIndex := msn_iconi;
   //
+  ckbxlistenabled.Parent := tabs.TC_Pages[3];
   ckbxlistenabled.Checked := list_enabled;
+  edtlistname.Parent := tabs.TC_Pages[3];
   edtlistname.Text := list_file;
   //
+  ckbxclipboard.Parent := tabs.TC_Pages[3];
   ckbxclipboard.Checked := clipboard_enabled;
   //
+  ckbxlastfm.Parent := tabs.TC_Pages[2];
   ckbxlastfm.Checked := lastfm_enabled;
+  lbluser.Parent := tabs.TC_Pages[2];
+  edtuser.Parent := tabs.TC_Pages[2];
   edtuser.Text := lastfm_user;
+  lblpass.Parent := tabs.TC_Pages[2];
+  edtpass.Parent := tabs.TC_Pages[2];
   edtpass.Text := lastfm_pass;
+  //
+  ckbxproxyenabled.Parent := tabs.TC_Pages[4];
+  ckbxproxyenabled.Checked := proxy_enabled;
+  lblproxyhost.Parent := tabs.TC_Pages[4];
+  lblproxyport.Parent := tabs.TC_Pages[4];
+  edtproxyhost.Parent := tabs.TC_Pages[4];
+  edtproxyhost.Text := proxy_host;
+  edtproxyport.Parent := tabs.TC_Pages[4];
+  edtproxyport.Text := proxy_port;
 
   // configure controls acording to config
   edtlistname.Enabled := ckbxlistenabled.Checked;
   cmbxmsnicon.Enabled := ckbxmsnenabled.Checked;
   edtuser.Enabled := ckbxlastfm.Checked;
   edtpass.Enabled := ckbxlastfm.Checked;
+  edtproxyhost.Enabled := ckbxproxyenabled.Checked;
+  edtproxyport.Enabled := ckbxproxyenabled.Checked;
   //
 end;
 
@@ -142,6 +178,10 @@ begin
   lastfm_user := edtuser.Text;
   lastfm_pass := edtpass.Text;
 
+  proxy_enabled := ckbxproxyenabled.Checked;
+  proxy_host := edtproxyhost.Text;
+  proxy_port := edtproxyport.Text;
+
   Form1.SaveConfig;
 end;
 
@@ -155,6 +195,12 @@ begin
     Halt;
   end;
   btupdate.Enabled := True;
+end;
+
+procedure TForm2.ckbxproxyenabledClick(Sender: PObj);
+begin
+  edtproxyhost.Enabled := ckbxproxyenabled.Checked;
+  edtproxyport.Enabled := ckbxproxyenabled.Checked;
 end;
 
 end.

@@ -14,6 +14,7 @@ function Crypt(const str: string): string;
 procedure writeFile(const FileName, Text: string);
 function MultiPos(const SubStr: array of string; const str: string): Boolean;
 procedure RaiseError(const Error: string; const Fatal: Boolean = True);
+
 implementation
 
 const

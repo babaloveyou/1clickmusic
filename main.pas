@@ -33,7 +33,7 @@ var
   lastTitle, curTitle: string;
   //
   undermouse: Cardinal;
-  genreid: array[0..7] of Cardinal;
+  genreid: array[0..8] of Cardinal;
   radiolist: PRadioList;
 
   //# OPTIONS
@@ -54,6 +54,9 @@ var
   // lastfm plugin
   lastfm_enabled: Boolean;
   lastfm_user, lastfm_pass: string;
+  // proxy
+  proxy_enabled : Boolean;
+  proxy_host, proxy_port, proxy_pass : string;
 
 procedure updateMSN(write: Boolean);
 procedure LastFMexecute;
@@ -68,16 +71,19 @@ procedure updateMSN(write: Boolean);
 var
   msndata: CopyDataStruct;
   msnwindow: HWND;
-  utf16buffer: WideString;
+  buffer: WideString;
 begin
-  utf16buffer := WideFormat('1ClickMusic\0%s\0%d\0{0}\0%s\0\0\0\0\0', [msn_icons, Integer(write), curTitle]);
+  buffer := WideFormat('1ClickMusic\0%s\0%d\0{0}\0%s\0\0\0\0\0', [msn_icons, Integer(write), curTitle]);
   msndata.dwData := $547;
-  msndata.cbData := (Length(utf16buffer) * 2) + 2;
-  msndata.lpData := Pointer(utf16buffer);
-  msnwindow := 0;
-  msnwindow := FindWindowEx(0, msnwindow, 'MsnMsgrUIManager', nil);
-  if msnwindow <> 0 then
+  msndata.cbData := (Length(buffer) * 2) + 2;
+  msndata.lpData := Pointer(buffer);
+
+  msnwindow := FindWindowEx(0, 0, 'MsnMsgrUIManager', nil);;
+  while msnwindow <> 0 do
+  begin
     SendMessage(msnwindow, WM_COPYDATA, 0, Integer(@msndata));
+    msnwindow := FindWindowEx(0, msnwindow, 'MsnMsgrUIManager', nil);
+  end;
 end;
 
 procedure LastFMexecute;

@@ -119,6 +119,9 @@ begin
     lastfm_enabled := ValueBoolean('lastfm_enabled', False);
     lastfm_user := ValueString('lastfm_user', '');
     lastfm_pass := Crypt(ValueString('lastfm_pass', ''));
+    proxy_enabled := ValueBoolean('proxy_enabled', False);
+    proxy_host := ValueString('proxy_host', '');
+    proxy_port := ValueString('proxy_port', '');
 
     Section := 'hotkeys';
     Mode := ifmRead;
@@ -126,7 +129,7 @@ begin
     begin
       hotkeys[i] := radiolist.getpos(ValueString(IntToStr(i), ''));
       PopupMenu.ItemText[i - 1] := 'Ctrl+F' + IntToStr(i) + ' :' + #9 + channeltree.TVItemText[hotkeys[i]];
-    //PopupMenu.ItemText[i - 1] := 'Ctrl+F' + IntToStr(i) + ' :' + #9 + radiolist.getname(hotkeys[i]);
+      //PopupMenu.ItemText[i - 1] := 'Ctrl+F' + IntToStr(i) + ' :' + #9 + radiolist.getname(hotkeys[i]);
     end;
     Free;
   end;
@@ -152,6 +155,9 @@ begin
     ValueBoolean('lastfm_enabled', lastfm_enabled);
     ValueString('lastfm_user', lastfm_user);
     ValueString('lastfm_pass', Crypt(lastfm_pass));
+    ValueBoolean('proxy_enabled', proxy_enabled);
+    ValueString('proxy_host', proxy_host);
+    ValueString('proxy_port', proxy_port);
 
     Section := 'hotkeys';
     for i := 1 to 12 do
@@ -254,7 +260,6 @@ begin
   Result := 1;
   repeat //# JUST BEFORE TRY PLAY!
     channeltree.Enabled := False;
-
     StopChannel;
 
     btplay.Caption := 'Stop';
@@ -364,7 +369,14 @@ begin
     begin
       form.Hide;
       Result := True;
-    end;
+    end
+    {else
+      if (Msg.message = WM_USER) and
+        (chn <> nil) then
+      begin
+        writeFile('log.txt', IntToStr(Msg.lParam));
+        PlayChannel;
+      end;}
 end;
 
 procedure TForm1.KOLForm1Destroy(Sender: PObj);
@@ -452,6 +464,13 @@ begin
         TVInsert(genreid[ELETRONIC], 0, chn_eletronic[i]),
         chn_eletronic[i],
         Crypt(pls_eletronic[i])
+        );
+
+    for i := 0 to High(chn_downtempo) do
+      radiolist.Add(
+        TVInsert(genreid[DOWNTEMPO], 0, chn_downtempo[i]),
+        chn_downtempo[i],
+        Crypt(pls_downtempo[i])
         );
 
     for i := 0 to High(chn_rockmetal) do

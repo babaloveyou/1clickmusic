@@ -6,8 +6,8 @@ uses
   SysUtils,
   Windows,
   Classes,
-  DSoutput,
   mpg123,
+  DSoutput,
   httpstream;
 
 type
@@ -43,7 +43,6 @@ destructor TMP3.Destroy;
 begin
   inherited;
   mpg123_close(Fhandle);
-  mpg123_exit;
   FStream.Free;
 end;
 
@@ -52,8 +51,8 @@ var
   r : Integer;
 begin
   repeat
-    r := mpg123_decode(Fhandle, FStream.GetBuffer, BUFFSIZE, nil, 0, nil);
-    FStream.NextBuffer;
+    r := mpg123_decode(Fhandle, FStream.GetBuffer(), BUFFSIZE, nil, 0, nil);
+    FStream.NextBuffer();
   until (r = MPG123_NEW_FORMAT) or (FStream.BuffFilled < 50);
 
   mpg123_getformat(Fhandle, @Frate, @Fchannels, @Fencoding);
@@ -68,8 +67,6 @@ end;
 
 procedure TMP3.initdecoder;
 begin
-  if mpg123_init <> MPG123_OK then
-    RaiseError('ERRO, criando instancia do decodificador MPEG');
   Fhandle := mpg123_new('i586', nil);
   if Fhandle = nil then
     RaiseError('ERRO, inicializando o decodificador MPEG');
@@ -134,8 +131,8 @@ begin
       {$IFDEF LOG}
       Log('decoding-> ' + IntToStr(Integer(FStream.GetBuffer)));
       {$ENDIF}
-      r := mpg123_decode(Fhandle, FStream.GetBuffer, BUFFSIZE, bufferPos, Size - TotalDecoded, @SizeDecoded);
-      FStream.NextBuffer;
+      r := mpg123_decode(Fhandle, FStream.GetBuffer(), BUFFSIZE, bufferPos, Size - TotalDecoded, @SizeDecoded);
+      FStream.NextBuffer();
       {$IFDEF LOG}
       Log('decoded-> ' + IntToStr(SizeDecoded) + ' ' + IntToStr(r));
       {$ENDIF}
@@ -165,6 +162,13 @@ begin
 
   Flastsection := section;
 end;
+
+initialization
+  if mpg123_init <> MPG123_OK then
+    RaiseError('ERRO, criando instancia do decodificador MPEG');
+
+finalization
+  mpg123_exit;
 
 end.
 

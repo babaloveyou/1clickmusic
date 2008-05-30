@@ -15,7 +15,7 @@ const // CONFIGURATION
 
   BUFFMIN = 8; // PERCENT TO TRIGER BUFF RECOVER?
   BUFFRESTORE = 50; // PERCENT TO RECOVER
-  BUFFPRE = 85; // 85% PREBUFFER
+  BUFFPRE = 80; // 80% PREBUFFER
 
 type
   THTTPSTREAM = class(TThread)
@@ -27,7 +27,7 @@ type
 
     inbuffer: array[0..BUFFCOUNT - 1] of array[0..BUFFSIZE - 1] of Byte;
     procedure UpdateBuffer;
-    class procedure ParseMetaData(meta: string; out MetaTitle : string);
+    class procedure ParseMetaData(meta: string; out MetaTitle: string);
     class function ParseMetaHeader(var meta: string; out MetaInterval, MetaBitrate: Cardinal): Integer;
     class procedure ParseURL(url: string; out host, port, icyheader: string);
   protected
@@ -49,7 +49,7 @@ type
 
 implementation
 
-uses utils;
+uses utils, main, Messages;
 
 procedure SplitValue(const data: string; out field, value: string);
 var
@@ -137,7 +137,7 @@ begin
         //else if field= 'icy-name' then StreamInfo.Name := value
         //else if field='icy-pub' then StreamInfo.Pub:=Value
         //else if field='icy-url' then StreamInfo.URL:=Value
-        ;
+      ;
     end;
     if (MetaInterval = 0) or (MetaBitrate = 0) then
       Result := 0;
@@ -160,7 +160,7 @@ begin
   MetaData.Free;
 end;
 
-class procedure THTTPSTREAM.ParseMetaData(meta: string; out MetaTitle : string);
+class procedure THTTPSTREAM.ParseMetaData(meta: string; out MetaTitle: string);
 //const
   //field = 'StreamTitle=''';
   //fieldlen = Length(field); = 13
@@ -185,7 +185,7 @@ begin
       BytesUntilMeta := MetaInterval;
       metalength := FHTTP.RecvByte(MaxInt);
       if metalength = 0 then Continue;
-      ParseMetaData(FHTTP.RecvBufferStr(metalength*16, MaxInt),MetaTitle);
+      ParseMetaData(FHTTP.RecvBufferStr(metalength * 16, MaxInt), MetaTitle);
     end
     else
     begin
@@ -194,6 +194,11 @@ begin
         bytestoreceive := BytesUntilMeta;
 
       FHTTP.RecvBufferEx(@inbuffer[Feed, bytesreceived], bytestoreceive, MaxInt);
+      {if (FHTTP.LastError <> 0) and
+        (not Terminated) then
+      begin
+        PostMessage(appwinHANDLE, WM_USER, Integer(chn), FHTTP.LastError);
+      end;}
 
       Dec(BytesUntilMeta, bytestoreceive);
       Inc(bytesreceived, bytestoreceive);
@@ -218,8 +223,8 @@ end;
 
 destructor THTTPSTREAM.Destroy;
 begin
-  FHTTP.CloseSocket;
   Terminate;
+  FHTTP.CloseSocket;
   FHTTP.Free;
   inherited;
 end;
@@ -241,10 +246,19 @@ begin
   Result := False;
   ParseURL(url, host, port, icyheader);
   FHTTP.CloseSocket;
+  if proxy_enabled then
+  begin
+    FHTTP.HTTPTunnelTimeout := 2500;
+    FHTTP.HTTPTunnelIP := proxy_host;
+    FHTTP.HTTPTunnelPort := proxy_port;
+  end;
+  
   FHTTP.Connect(host, port);
+  if FHTTP.LastError <> 0 then
+    Exit;
   FHTTP.SendString(icyheader);
 
-  response := FHTTP.RecvTerminated(2500, #13#10#13#10);
+  response := FHTTP.RecvTerminated(5000, #13#10#13#10);
 
   case ParseMetaHeader(response, MetaInterval, MetaBitrate) of
     1:
