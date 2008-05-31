@@ -370,13 +370,13 @@ begin
       form.Hide;
       Result := True;
     end
-    {else
+    else
       if (Msg.message = WM_USER) and
-        (chn <> nil) then
+        (Msg.wParam = Integer(chn)) then
       begin
-        writeFile('log.txt', IntToStr(Msg.lParam));
-        PlayChannel;
-      end;}
+        StopChannel;
+        lblstatus.Text := 'Disconected!';
+      end;
 end;
 
 procedure TForm1.KOLForm1Destroy(Sender: PObj);
@@ -413,7 +413,7 @@ begin
   //# Inicializa o SOM
   curVolume := 100;
   chn := nil;
-  DS := TDSoutput.Create(appwinHANDLE);
+  DS := TDSoutput.Create;
 
   ITrayBlue := LoadIcon(HInstance, 'TRAYBLUE');
   ITrayGreen := LoadIcon(HInstance, 'TRAYGREEN');
@@ -522,7 +522,7 @@ begin
         Crypt(pls_brasil[i])
         );
 
-  //# Sort Radio List
+    //# Sort Radio List
     for i := 0 to High(genreid) do
       TVSort(genreid[i]);
 

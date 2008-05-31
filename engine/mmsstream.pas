@@ -11,7 +11,7 @@ type
   private
     Fhandle: wma_async_reader;
   protected
-    procedure updatebuffer; override;
+    procedure updatebuffer(const offset: Cardinal); override;
     procedure initdecoder; override;
     procedure initbuffer; override;
     procedure StartPlay; override;
@@ -44,7 +44,7 @@ end;
 
 procedure TMMS.initbuffer;
 begin
-  Fbuffersize := DS.InitializeBuffer(Frate, Fchannels);
+  Fhalfbuffersize := DS.InitializeBuffer(Frate, Fchannels);
 end;
 
 procedure TMMS.StartPlay;
@@ -56,28 +56,20 @@ begin
   until Fhandle.BlockList.Count > 5;
   initbuffer();
 
-  updatebuffer();
+  updatebuffer(0);
 
   Resume;
   DS.Play;
   Status := rsPlaying;
 end;
 
-procedure TMMS.updatebuffer;
+procedure TMMS.updatebuffer(const offset: Cardinal);
 var
   buffer, bufferPos: PByte;
   tmpbuffer: Pointer;
   Size, TotalDecoded, tmpbuffersize: Cardinal;
-  section: Cardinal;
 begin
-  if DS.PlayCursorPos > Fbuffersize then
-    section := 0
-  else
-    section := Fbuffersize;
-
-  if section = Flastsection then Exit;
-
-  DSERROR(DS.SoundBuffer.Lock(section, Fbuffersize, @buffer, @Size, nil, nil, 0),'ERRO, locking buffer');
+  DSERROR(DS.SoundBuffer.Lock(offset, Fhalfbuffersize, @buffer, @Size, nil, nil, 0), 'ERRO, locking buffer');
 
   tmpbuffersize := Size;
   bufferPos := buffer;
@@ -87,7 +79,7 @@ begin
   begin
     repeat
       lwma_async_reader_get_data(Fhandle, tmpbuffer, tmpbuffersize);
-      Move(tmpbuffer^,bufferPos^,tmpbuffersize);
+      Move(tmpbuffer^, bufferPos^, tmpbuffersize);
       Inc(bufferPos, tmpbuffersize);
       Inc(TotalDecoded, tmpbuffersize);
       tmpbuffersize := Size - TotalDecoded;
@@ -103,17 +95,15 @@ begin
     until Fhandle.BlockList.Count > 2;
     DS.Play;
     Status := rsPlaying;
-  end;  
+  end;
 
-  DSERROR(DS.SoundBuffer.Unlock(buffer, Size, nil, 0),'ERRO, unlocking buffer');
-
-  Flastsection := section;
+  DS.SoundBuffer.Unlock(buffer, Size, nil, 0);
 end;
 
 function TMMS.Open(const url: string): Boolean;
 begin
   if proxy_enabled then
-    lwma_async_reader_set_proxy(Fhandle,'mms',proxy_host,StrToInt(proxy_port));
+    lwma_async_reader_set_proxy(Fhandle, 'mms', proxy_host, StrToInt(proxy_port));
   lwma_async_reader_open(Fhandle, url);
   Result := Fhandle.has_audio;
   if Result then

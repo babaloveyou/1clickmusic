@@ -162,12 +162,11 @@ const
 
 
 const
-  chn_downtempo: array[0..23] of string = (
+  chn_downtempo: array[0..21] of string = (
     'Minimal ( deepmix )',
     'Chillout ( 1.fm )',
     'Lounge ( rautemusik )',
     'Lounge ( smoothlounge )',
-    'Progressive ( soma )',
     'Ambient Mysterious ( soma )',
     'Ambient IDM ( soma )',
     'Chillout ( soma )',
@@ -180,7 +179,6 @@ const
     'New Age ( DI )',
     'Minimal ( DI )',
     'Chillout ( DI )',
-    'Progressive ( DI )',
     'Lounge ( DI )',
     'Lounge Datempo ( sky )',
     'Ambient ( DI )',
@@ -190,12 +188,11 @@ const
     );
 
 const
-  pls_downtempo: array[0..23] of string = (
+  pls_downtempo: array[0..21] of string = (
     'http://85.21.79.5:8040/listen.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=6951&file=filename.pls',
     'http://lounge-office.rautemusik.de/listen.pls',
     'http://www.smoothlounge.com/streams/smoothlounge_128.pls',
-    'http://somafm.com/tagstrance.pls',
     'http://somafm.com/secretagent.pls',
     'http://somafm.com/cliqhop.pls',
     'http://somafm.com/groovesalad.pls',
@@ -208,7 +205,6 @@ const
     'http://www.sky.fm/mp3/newage.pls',
     'http://www.di.fm/mp3/minimal.pls',
     'http://www.di.fm/mp3/chillout.pls',
-    'http://www.di.fm/mp3/progressive.pls',
     'http://www.di.fm/mp3/lounge.pls',
     'http://www.sky.fm/mp3/datempolounge.pls',
     'http://www.di.fm/mp3/ambient.pls',

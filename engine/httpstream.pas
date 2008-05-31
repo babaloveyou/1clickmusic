@@ -194,11 +194,12 @@ begin
         bytestoreceive := BytesUntilMeta;
 
       FHTTP.RecvBufferEx(@inbuffer[Feed, bytesreceived], bytestoreceive, MaxInt);
-      {if (FHTTP.LastError <> 0) and
+      if (FHTTP.LastError <> 0) and
         (not Terminated) then
       begin
-        PostMessage(appwinHANDLE, WM_USER, Integer(chn), FHTTP.LastError);
-      end;}
+        Terminate;
+        PostMessage(appwinHANDLE, WM_USER, Integer(chn), 0);
+      end;
 
       Dec(BytesUntilMeta, bytestoreceive);
       Inc(bytesreceived, bytestoreceive);
@@ -252,7 +253,7 @@ begin
     FHTTP.HTTPTunnelIP := proxy_host;
     FHTTP.HTTPTunnelPort := proxy_port;
   end;
-  
+
   FHTTP.Connect(host, port);
   if FHTTP.LastError <> 0 then
     Exit;
