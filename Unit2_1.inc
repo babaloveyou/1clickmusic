@@ -150,7 +150,7 @@ begin
     Result.ckbxlastfm.Font.FontName := 'Arial';
     Result.ckbxlastfm.Font.FontPitch := fpFixed;
     // Result.ckbxproxyenabled.TabOrder = 6
-    Result.ckbxproxyenabled := NewCheckBox( Result.Form, 'Use http proxy' ).SetPosition( 8, 24 ).SetSize( 273, 0 );
+    Result.ckbxproxyenabled := NewCheckBox( Result.Form, 'Use http proxy (beta)' ).SetPosition( 8, 24 ).SetSize( 273, 0 );
    {$IFDEF USE_NAMES}
     Result.ckbxproxyenabled.SetName( Result.Form, 'ckbxproxyenabled' ); 
    {$ENDIF}
@@ -216,18 +216,18 @@ begin
     Result.tabs.TabStop := FALSE;
     Result.tabs.Font.FontHeight := 15;
     Result.tabs.Font.FontName := 'Arial';
-      Result.ckbxmsnenabled.OnClick := Result.ckbxmsnenabledClick;
+    Result.edtpass.Color := TColor(clWindow);
+    Result.edtuser.Color := TColor(clWindow);
+      Result.ckbxlastfm.OnClick := Result.ckbxlastfmClick;
       Result.ckbxlistenabled.OnClick := Result.ckbxlistenabledClick;
     Result.edtlistname.Color := TColor(clWindow);
-      Result.ckbxlastfm.OnClick := Result.ckbxlastfmClick;
-      Result.ckbxproxyenabled.OnClick := Result.ckbxproxyenabledClick;
+      Result.ckbxmsnenabled.OnClick := Result.ckbxmsnenabledClick;
+      Result.btupdate.OnClick := Result.btupdateClick;
     Result.edtproxyhost.Color := TColor(clWindow);
-    Result.edtuser.Color := TColor(clWindow);
-    Result.edtpass.Color := TColor(clWindow);
     Result.edtproxyport.Color := TColor(clWindow);
+      Result.ckbxproxyenabled.OnClick := Result.ckbxproxyenabledClick;
       Result.btapply.OnClick := Result.btapplyClick;
     Result.btapply.DefaultBtn := TRUE;
-      Result.btupdate.OnClick := Result.btupdateClick;
     Result.Form.CenterOnParent.CanResize := False;
     Result.Form.Perform( WM_INITMENU, 0, 0 );
     Result.KOLForm1FormCreate( Result );

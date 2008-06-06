@@ -17,17 +17,18 @@ const
   genrelist: array[0..8] of string = (
     'Eletronic',
     'Downtempo',
-    'Rock / Metal',
+    'Rock/Metal',
     'Ecletic',
     'Hip-Hop',
-    '80''s / 90''s / Classic',
+    'Old/Classical',
     'Industrial',
     'Others',
     'Brasileiras'
     );
 
 const
-  chn_eletronic: array[0..62] of string = (
+  chn_eletronic: array[0..65] of string = (
+	'House Funky ( kif )',
     'Hardstyle ( hard.fm )',
     'Hardstyle ( hardbase )',
     'House Eletro ( housetime )',
@@ -47,6 +48,8 @@ const
     'Trance ( 1.fm )',
     'House Funky ( rautemusik )',
     'Progressive ( soma )',
+	'IDM ( soma )',
+	'House Deep ( soma )',
     'Psy ( philosomatika )',
     'Psy ( psyradio )',
     'Psy Prog ( psyradio )',
@@ -94,7 +97,8 @@ const
     );
 
 const
-  pls_eletronic: array[0..62] of string = (
+  pls_eletronic: array[0..65] of string = (
+	'http://www.kifradio.com/www.kifradio.com.m3u',
     'http://files.hard.fm/128.pls',
     'http://mp3.hardbase.fm/listen.pls',
     'http://high.housetime.fm/listen.pls',
@@ -114,6 +118,8 @@ const
     'http://www.1.fm/trance.pls',
     'http://funky-office.rautemusik.de/listen.pls',
     'http://somafm.com/tagstrance.pls',
+	'http://somafm.com/cliqhop.pls',
+	'http://somafm.com/beatblender.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=1712&file=filename.pls',
     'http://streamer.psyradio.org:8030/listen.pls',
     'http://streamer.psyradio.org:8010/listen.pls',
@@ -162,18 +168,21 @@ const
 
 
 const
-  chn_downtempo: array[0..21] of string = (
+  chn_downtempo: array[0..24] of string = (
+	'Dream Pop ( soma )',
+	'Post Rock ( soma )',
+    'Ambient ( bluemars )',
+	'Ambient Space ( bluemars )',
+	'Ambient Drone ( bluemars )',
     'Minimal ( deepmix )',
     'Chillout ( 1.fm )',
     'Lounge ( rautemusik )',
     'Lounge ( smoothlounge )',
-    'Ambient Mysterious ( soma )',
-    'Ambient IDM ( soma )',
     'Chillout ( soma )',
     'Ambient Industrial ( soma )',
     'Ambient Space ( soma )',
     'Ambient Drone ( soma )',
-    'Ambient House ( soma )',
+	'Lounge Exotica ( soma )',
     'Chillout ( psyradio )',
     'Minimal ( psyradio )',
     'New Age ( DI )',
@@ -188,18 +197,21 @@ const
     );
 
 const
-  pls_downtempo: array[0..21] of string = (
+  pls_downtempo: array[0..24] of string = (
+	'http://somafm.com/lush.pls',
+	'http://somafm.com/digitalis.pls',
+    'http://207.200.96.225:8024/listen.pls',
+	'http://207.200.96.225:8020/listen.pls',
+	'http://207.200.96.225:8022/listen.pls',
     'http://85.21.79.5:8040/listen.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=6951&file=filename.pls',
     'http://lounge-office.rautemusik.de/listen.pls',
     'http://www.smoothlounge.com/streams/smoothlounge_128.pls',
-    'http://somafm.com/secretagent.pls',
-    'http://somafm.com/cliqhop.pls',
     'http://somafm.com/groovesalad.pls',
     'http://somafm.com/doomed.pls',
     'http://somafm.com/spacestation.pls',
     'http://somafm.com/dronezone.pls',
-    'http://somafm.com/beatblender.pls',
+	'http://somafm.com/illstreet.pls',
     'http://streamer.psyradio.org:8020/listen.pls',
     'http://streamer.psyradio.org:8040/listen.pls',
     'http://www.sky.fm/mp3/newage.pls',
@@ -214,7 +226,7 @@ const
     );
 
 const
-  chn_rockmetal: array[0..23] of string = (
+  chn_rockmetal: array[0..24] of string = (
     'Indie Rock ( soma )',
     'Punk Rock ( hifipunk )',
     'Punk Rock ( idobi )',
@@ -238,11 +250,12 @@ const
     'Rock/Metal ( kinkfm )',
     'Rock/Metal ( gothmetal )',
     'Rock/Metal ( rocky )',
+    'Classic Rock ( rock radio1 )',
     'Classic Rock ( rock&rollfm )'
     );
 
 const
-  pls_rockmetal: array[0..23] of string = (
+  pls_rockmetal: array[0..24] of string = (
     'http://somafm.com/indiepop.pls',
     'http://128.hifipunk.com:8000/listen.pls',
     'http://www.idobi.com/radio/iradio.pls',
@@ -266,6 +279,7 @@ const
     'http://www.kinkfm.com/streams/kink_aardschok.m3u',
     'http://82.134.68.36:7999/listen.pls',
     'http://www.rockyfm.de/listen.pls',
+    'http://www.rockradio1.com/listen.pls',
     'http://tunein.swcast.net/launch.cgi/dade921/hi-band.pls'
     );
 
@@ -336,28 +350,30 @@ const
     );
 
 const
-  chn_oldmusic: array[0..16] of string = (
+  chn_oldmusic: array[0..18] of string = (
     '60''s ( sky )',
     '70''s ( sky )',
     '80''s ( sky )',
     '90''s ( star.181.fm )',
-    '60''s - 70''s ( oldies.181.fm )',
+    '60''s-70''s ( oldies.181.fm )',
     '80''s ( awesome.181.fm )',
     '80''s ( lite.181.fm )',
     '90''s ( 181.fm )',
     '80''s ( 977music )',
     '90''s ( 977music )',
-    '50''s - 80''s ( rautemusik )',
-    'Oldies ( sky )',
+    '50''s-80''s ( rautemusik )',
+    'Classical ( sky )',
     'Baroque ( 1.fm )',
     'Opera ( 1.fm )',
     'Classical ( 1.fm )',
+	'Disco ( 1.fm )',
+	'80''s ( flashback )',
     '80''s ( asf )',
     '80''s ( chaos )'
     );
 
 const
-  pls_oldmusic: array[0..16] of string = (
+  pls_oldmusic: array[0..18] of string = (
     'http://www.sky.fm/mp3/oldies.pls',
     'http://www.sky.fm/mp3/hit70s.pls',
     'http://www.sky.fm/mp3/the80s.pls',
@@ -373,14 +389,16 @@ const
     'http://www.1.fm/baroque.pls',
     'http://www.1.fm/opera.pls',
     'http://www.1.fm/classical.pls',
+	'http://www.1.fm/disco.pls',
+	'http://www.1.fm/fa128k.pls',
     'http://www.atlanticsoundfactory.com/asfbb.pls',
     'http://www.chaos-radio.net/stream/listen.m3u'
     );
 
 const
   chn_industrial: array[0..9] of string = (
-     //'Post Industrial ( darksection )',
-     //'Post Industrial ( dunkle )',
+     // 'Post Industrial ( darksection )',
+     // 'Post Industrial ( dunkle )',
     'Post Industrial ( darkness )',
     'Post Industrial ( tormented )',
     'Post Industrial ( digitalgunfire )',
@@ -410,10 +428,11 @@ const
     );
 
 const
-  chn_misc: array[0..34] of string = (
+  chn_misc: array[0..35] of string = (
     'Folk ( liveireland )',
-    'Jazz Experimental ( sonic.soma )',
-    'Country ( boot.soma )',
+	'Jazz Acid ( soma )',
+    'Jazz Nu ( soma )',
+    'Country ( soma )',
     'Country ( 977music )',
     'Jazz Smooth ( swissgroove )',
     'Jazz Smooth ( 1.fm )',
@@ -425,20 +444,22 @@ const
     'Country ( 1.fm )',
     'Blues ( 1.fm )',
     'Reggae ( 1.fm )',
+ // 'Reggae Roots( bigup )',
+ // 'Reggae Dancehall ( bigup )',
     'Reggae ( sky )',
     'Lovesongs ( sky )',
     'Beatles tribute ( sky )',
     'Jazz Smooth ( sky )',
     'Jazz Uptempo ( sky )',
     'Flamenco ( sky )',
-    'Solo piano ( sky )',
+    'Piano Solo ( sky )',
     'World ( sky )',
     'Jazz Piano ( sky )',
     'Bossanova ( sky )',
     'Soundtracks ( sky )',
     'Gospel ( sky )',
     'Salsa ( sky )',
-    'Jazz Experimental ( sky )',
+    'Jazz Nu ( sky )',
     'Japan/Anime ( kawaii )',
     'Japan/Anime ( armitage''s )',
     'Japan/Anime ( Anime Academy )',
@@ -449,8 +470,9 @@ const
     );
 
 const
-  pls_misc: array[0..34] of string = (
+  pls_misc: array[0..35] of string = (
     'http://www.liveireland.com/live.pls',
+	'http://somafm.com/secretagent.pls',
     'http://somafm.com/sonicuniverse.pls',
     'http://somafm.com/bootliquor.pls',
     'http://www.977music.com/tunein/web/country.asx',
@@ -464,6 +486,8 @@ const
     'http://www.1.fm/country.pls',
     'http://www.1.fm/blues.pls',
     'http://www.1.fm/reggae.pls',
+ // 'http://radio.bigupradio.com:8005/listen.pls',
+ // 'http://radio.bigupradio.com:8000/listen.pls',
     'http://www.sky.fm/mp3/rootsreggae.pls',
     'http://www.sky.fm/mp3/lovemusic.pls',
     'http://www.sky.fm/mp3/beatles.pls',

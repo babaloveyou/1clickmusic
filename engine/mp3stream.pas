@@ -19,10 +19,10 @@ type
     procedure updatebuffer(const offset: Cardinal); override;
     procedure initdecoder; override;
     procedure initbuffer; override;
+    procedure prebuffer; override;
   public
     procedure GetPlayInfo(out Atitle: string; out Aquality, ABuffPercentage: Cardinal); override;
     function Open(const url: string): Boolean; override;
-    procedure StartPlay; override;
     destructor Destroy; override;
   end;
 
@@ -58,16 +58,13 @@ begin
   mpg123_getformat(Fhandle, @Frate, @Fchannels, @Fencoding);
   if Fchannels = 0 then
     RaiseError('ERRO, tentando descobrir o formato do audio');
-{$IFDEF LOG}
-  Log('buffers remaining ' + IntToStr(FStream.BuffFilled));
-{$ENDIF}
 
   Fhalfbuffersize := DS.InitializeBuffer(Frate, Fchannels);
 end;
 
 procedure TMP3.initdecoder;
 begin
-  Fhandle := mpg123_new('i586', nil);//i586
+  Fhandle := mpg123_new('i586', nil); //i586
   if Fhandle = nil then
     RaiseError('ERRO, inicializando o decodificador MPEG');
   mpg123_open_feed(Fhandle);
@@ -84,21 +81,13 @@ begin
   end;
 end;
 
-procedure TMP3.StartPlay;
+procedure TMP3.prebuffer;
 begin
   // WAIT TO PREBUFFER!
   repeat
     Sleep(50);
     if Terminated then Exit;
   until FStream.BuffFilled > BUFFPRE;
-  FStream.Cursor := 0;
-  initbuffer();
-
-  updatebuffer(0);
-
-  Resume;
-  DS.Play;
-  Status := rsPlaying;
 end;
 
 procedure TMP3.updatebuffer(const offset: Cardinal);
@@ -107,49 +96,35 @@ var
   Size, SizeDecoded, TotalDecoded: Cardinal;
   r: Integer;
 begin
-{$IFDEF LOG}
-  Log('lock->buffer');
-{$ENDIF}
   DSERROR(DS.SoundBuffer.Lock(offset, Fhalfbuffersize, @buffer, @Size, nil, nil, 0), 'ERRO, locking buffer');
 
-  if (FStream.BuffFilled > BUFFMIN) then
-  begin
-{$IFDEF LOG}
-    Log('filling->buffer ' + IntToStr(Integer(buffer^)) + ' ' + IntToStr(Integer(Pointer(Integer(buffer) + 300)^)));
-{$ENDIF}
-    SizeDecoded := 0;
-    TotalDecoded := 0;
-    bufferPos := buffer;
-    repeat
-{$IFDEF LOG}
-      Log('decoding-> ' + IntToStr(Integer(FStream.GetBuffer)));
-{$ENDIF}
+  SizeDecoded := 0;
+  TotalDecoded := 0;
+  bufferPos := buffer;
+  r := MPG123_NEED_MORE;
+  
+  repeat
+  // Repeat code that fills the DS buffer
+    if (FStream.BuffFilled > 0) then
+    begin
       r := mpg123_decode(Fhandle, FStream.GetBuffer(), BUFFSIZE, bufferPos, Size - TotalDecoded, @SizeDecoded);
       FStream.NextBuffer();
-{$IFDEF LOG}
-      Log('decoded-> ' + IntToStr(SizeDecoded) + ' ' + IntToStr(r));
-{$ENDIF}
       Inc(bufferPos, SizeDecoded);
       Inc(TotalDecoded, SizeDecoded);
-    until r <> MPG123_NEED_MORE;
-  end
-  else
-  begin
-{$IFDEF LOG}
-    Log('recovering');
-{$ENDIF}
-    Status := rsRecovering;
-    DS.Stop;
-    repeat
-      Sleep(50);
-      if Terminated then Exit;
-    until FStream.BuffFilled > BUFFRESTORE;
-    DS.Play;
-    Status := rsPlaying;
-  end;
-{$IFDEF LOG}
-  Log('lock->buffer');
-{$ENDIF}
+    end
+    else
+    begin
+      Status := rsRecovering;
+      DS.Stop;
+      repeat
+        Sleep(99);
+        if Terminated then Exit;
+      until FStream.BuffFilled > BUFFRESTORE;
+      DS.Play;
+      Status := rsPlaying;
+    end;
+  until (r <> MPG123_NEED_MORE) or (Terminated);
+  // Until don't need to fill more or thread terminated
 
   DS.SoundBuffer.Unlock(buffer, Size, nil, 0);
 end;

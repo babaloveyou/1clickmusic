@@ -16,7 +16,8 @@ KOL,
 
 begin // PROGRAM START HERE -- Please do not remove this comment
 
-{$IFDEF KOL_MCK}{$I oneclick_0.inc}{$ELSE}
+{$IFDEF KOL_MCK} {$I oneclick_0.inc} {$ELSE}
+
   Application.Initialize;
   Application.CreateForm(TForm1, Form1);
   Application.Run;

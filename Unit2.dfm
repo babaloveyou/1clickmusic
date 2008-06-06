@@ -1048,7 +1048,7 @@ object Form2: TForm2
     DoubleBuffered = False
     Align = caNone
     CenterOnParent = False
-    Caption = 'Use http proxy'
+    Caption = 'Use http proxy (beta)'
     Ctl3D = True
     Color = clBtnFace
     parentColor = True

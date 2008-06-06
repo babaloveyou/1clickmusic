@@ -47,7 +47,7 @@ type
     procedure updatebuffer(const offset: Cardinal); virtual; abstract;
     procedure initbuffer; virtual; abstract;
     procedure initdecoder; virtual; abstract;
-    procedure StartPlay; virtual; abstract;
+    procedure prebuffer; virtual; abstract;
     procedure Execute; override;
   public
     Status: TRadioStatus;
@@ -245,8 +245,15 @@ procedure TRadioPlayer.Execute;
 var
   section, lastsection: Cardinal;
 begin
-  lastsection := MaxInt;
-  StartPlay;
+  prebuffer();
+  if Terminated then Exit;
+
+  initbuffer();
+  updatebuffer(0);
+  lastsection := 0;
+  Resume;
+  DS.Play;
+  Status := rsPlaying;
   while not Terminated do
   begin
     if DS.GetPlayCursorPos > Fhalfbuffersize then

@@ -11,11 +11,8 @@ uses
 const // CONFIGURATION
   BUFFSIZE = 1024;
   BUFFCOUNT = 100;
-  BUFFTOTALSIZE = BUFFSIZE * BUFFCOUNT;
-
-  BUFFMIN = 8; // PERCENT TO TRIGER BUFF RECOVER?
   BUFFRESTORE = 50; // PERCENT TO RECOVER
-  BUFFPRE = 80; // 80% PREBUFFER
+  BUFFPRE = 85; // 85% PREBUFFER
 
 type
   THTTPSTREAM = class(TThread)
@@ -24,7 +21,7 @@ type
     FHTTP: TTCPBlockSocket;
     MetaInterval, MetaBitrate: Cardinal;
     MetaTitle: string;
-
+    Cursor, Feed: Cardinal;
     inbuffer: array[0..BUFFCOUNT - 1] of array[0..BUFFSIZE - 1] of Byte;
     procedure UpdateBuffer;
     class procedure ParseMetaData(meta: string; out MetaTitle: string);
@@ -33,7 +30,6 @@ type
   protected
     procedure Execute; override;
   public
-    Cursor, Feed: Cardinal;
     //# % of buffer that is filled
     BuffFilled: Cardinal;
     //# Get ShoutCast info
@@ -215,7 +211,7 @@ begin
   FHTTP := TTCPBlockSocket.Create;
   Priority := tpTimeCritical;
 
-  Cursor := MaxInt; // para evitar que bloqueie
+  Cursor := 0;
   Feed := 0;
   BuffFilled := 0;
   MetaInterval := 0;
@@ -233,9 +229,11 @@ end;
 procedure THTTPSTREAM.Execute;
 begin
   repeat
-    if Cursor <> Feed then
-      UpdateBuffer();
-    Sleep(10);
+    //# if we have a free buffer lets fill it
+    if BuffFilled < 100 then
+      UpdateBuffer()
+    else
+      Sleep(10);
   until Terminated;
 end;
 
@@ -249,7 +247,7 @@ begin
   FHTTP.CloseSocket;
   if proxy_enabled then
   begin
-    FHTTP.HTTPTunnelTimeout := 2500;
+    FHTTP.HTTPTunnelTimeout := 5000;
     FHTTP.HTTPTunnelIP := proxy_host;
     FHTTP.HTTPTunnelPort := proxy_port;
   end;

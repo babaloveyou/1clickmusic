@@ -14,7 +14,7 @@ type
     procedure updatebuffer(const offset: Cardinal); override;
     procedure initdecoder; override;
     procedure initbuffer; override;
-    procedure StartPlay; override;
+    procedure prebuffer; override;
   public
     procedure GetPlayInfo(out Atitle: string; out Aquality, ABuffPercentage: Cardinal); override;
     function Open(const url: string): Boolean; override;
@@ -47,20 +47,13 @@ begin
   Fhalfbuffersize := DS.InitializeBuffer(Frate, Fchannels);
 end;
 
-procedure TMMS.StartPlay;
+procedure TMMS.prebuffer;
 begin
   // WAIT TO PREBUFFER!
   repeat
     Sleep(50);
     if Terminated then Exit;
   until Fhandle.BlockList.Count > 5;
-  initbuffer();
-
-  updatebuffer(0);
-
-  Resume;
-  DS.Play;
-  Status := rsPlaying;
 end;
 
 procedure TMMS.updatebuffer(const offset: Cardinal);

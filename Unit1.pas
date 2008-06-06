@@ -260,6 +260,8 @@ begin
   Result := 1;
   repeat //# JUST BEFORE TRY PLAY!
     channeltree.Enabled := False;
+    btplay.Enabled := False;
+
     StopChannel;
 
     btplay.Caption := 'Stop';
@@ -298,6 +300,7 @@ begin
       lblstatus.caption := 'Error.:';
     end;
     channeltree.Enabled := True;
+    btplay.Enabled := True;
     Sender.Suspend;
   until Sender.Terminated;
 end;
@@ -450,6 +453,9 @@ begin
   //# define o popup da channeltree
   channeltree.SetAutoPopupMenu(PopupMenu);
 
+  btplay.LikeSpeedButton;
+  btoptions.LikeSpeedButton;
+
   //# Cria lista de radios
   Radiolist := NewRadioList;
 
@@ -584,9 +590,9 @@ begin
   NewForm2(Form2, Form);
   Form2.Form.ShowModal;
   //# get rid of it and set alpha back to 255
+  Form.AlphaBlend := 255;
   Form2.Form.Free;
   Form2 := nil;
-  Form.AlphaBlend := 255;
 end;
 
 function TForm1.LastFMThreadExecute(Sender: PThread): Integer;
@@ -618,16 +624,15 @@ end;
 
 procedure TForm1.btplayClick(Sender: PObj);
 begin
-  if channeltree.Enabled then
-    if chn = nil then
-      PlayChannel
-    else
-      StopChannel;
+  if chn = nil then
+    PlayChannel
+  else
+    StopChannel;
 end;
 
 procedure TForm1.ChangeTrayIcon(const NewIcon: HICON);
 begin
-  if (Tray.Icon <> NewIcon) and (trayiconcolor_enabled) then
+  if (trayiconcolor_enabled) and (Tray.Icon <> NewIcon) then
     Tray.Icon := NewIcon;
 end;
 

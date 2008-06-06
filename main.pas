@@ -111,8 +111,8 @@ end;
 
 function AutoUpdate: Boolean;
 const
-  updateurl = 'http://thehardwaresxtreme.com/nye/arthurprs/update.txt';
-  updatefile = 'http://thehardwaresxtreme.com/nye/arthurprs/oneclick.exe';
+  updateurl = 'http://arthurprs.srcom.org/update.txt';
+  updatefile = 'http://arthurprs.srcom.org/oneclick.exe';
 var
   Text: TStringlist;
   newfile: TFileStream;
