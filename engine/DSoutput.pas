@@ -6,6 +6,7 @@ uses
   SysUtils,
   Classes,
   Windows,
+  Messages,
   MMSystem,
   _DirectSound;
 
@@ -30,8 +31,6 @@ type
     destructor Destroy; override;
   end;
 
-  // ESQUELETO PARA OS PLAYERS
-
 type
   TRadioStatus = (rsStoped, rsPrebuffering, rsPlaying, rsRecovering);
 
@@ -52,13 +51,15 @@ type
   public
     Status: TRadioStatus;
     property DS: TDSoutput read FDevice write FDevice;
-    procedure GetPlayInfo(out Atitle: string; out Aquality, ABuffPercentage: Cardinal); virtual; abstract;
+    procedure GetProgress(out ABuffPercentage : Cardinal); virtual; abstract;
+    procedure GetInfo(out Atitle: string; out Aquality: Cardinal); virtual; abstract;
     function Open(const url: string): Boolean; virtual; abstract;
     constructor Create(ADevice: TDSoutput);
     destructor Destroy; override;
   end;
 
 procedure DSERROR(const value: HResult; const Error: string);
+procedure NotifyForm(const AlParam : Integer);
 
 implementation
 
@@ -69,31 +70,15 @@ uses
 
 
 procedure DSERROR(const value: HResult; const Error: string);
-var
-  ErrorStr: string;
 begin
-  if value = DS_OK then Exit;
-  case Value of
-    DSERR_ALLOCATED: ErrorStr := 'DSERR_ALLOCATED';
-    DSERR_ALREADYINITIALIZED: ErrorStr := 'DSERR_ALREADYINITIALIZED';
-    DSERR_BADFORMAT: ErrorStr := 'DSERR_BADFORMAT';
-    DSERR_BUFFERLOST: ErrorStr := 'DSERR_BUFFERLOST';
-    DSERR_CONTROLUNAVAIL: ErrorStr := 'DSERR_CONTROLUNAVAIL';
-    DSERR_GENERIC: ErrorStr := 'DSERR_GENERIC';
-    DSERR_INVALIDCALL: ErrorStr := 'DSERR_INVALIDCALL';
-    DSERR_INVALIDPARAM: ErrorStr := 'DSERR_INVALIDPARAM';
-    DSERR_NOAGGREGATION: ErrorStr := 'DSERR_NOAGGREGATION';
-    DSERR_NODRIVER: ErrorStr := 'DSERR_NODRIVER';
-    DSERR_NOINTERFACE: ErrorStr := 'DSERR_NOINTERFACE';
-    DSERR_OTHERAPPHASPRIO: ErrorStr := 'DSERR_OTHERAPPHASPRIO';
-    DSERR_OUTOFMEMORY: ErrorStr := 'DSERR_OUTOFMEMORY';
-    DSERR_PRIOLEVELNEEDED: ErrorStr := 'DSERR_PRIOLEVELNEEDED';
-    DSERR_UNINITIALIZED: ErrorStr := 'DSERR_UNINITIALIZED';
-    DSERR_UNSUPPORTED: ErrorStr := 'DSERR_UNSUPPORTED';
-  else ErrorStr := 'DSERR_UNKNOW';
-  end;
-  RaiseError('DIRECTSOUND ERROR, [' + ErrorStr + '] : ' + Error);
+  if value <> DS_OK then
+    RaiseError('DIRECTSOUND ERROR, [' + IntToStr(value) + '] : ' + Error);
 end;
+
+procedure NotifyForm(const AlParam : Integer);
+begin
+  PostMessage(appwinHANDLE,WM_USER,Integer(chn),AlParam);
+end;  
 
 constructor TDSoutput.Create;
 var
@@ -240,20 +225,20 @@ begin
   inherited;
   DS.SoundBuffer := nil;
 end;
-
+  
 procedure TRadioPlayer.Execute;
 var
   section, lastsection: Cardinal;
 begin
+  NotifyForm(1);
   prebuffer();
   if Terminated then Exit;
-
   initbuffer();
   updatebuffer(0);
   lastsection := 0;
-  Resume;
   DS.Play;
   Status := rsPlaying;
+  NotifyForm(1);
   while not Terminated do
   begin
     if DS.GetPlayCursorPos > Fhalfbuffersize then

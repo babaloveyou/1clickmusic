@@ -21,7 +21,8 @@ type
     procedure initbuffer; override;
     procedure prebuffer; override;
   public
-    procedure GetPlayInfo(out Atitle: string; out Aquality, ABuffPercentage: Cardinal); override;
+    procedure GetProgress(out ABuffPercentage : Cardinal); override;
+    procedure GetInfo(out Atitle: string; out Aquality: Cardinal); override;
     function Open(const url: string): Boolean; override;
     destructor Destroy; override;
   end;
@@ -33,9 +34,14 @@ uses
 
 { TMP3 }
 
-procedure TMP3.GetPlayInfo(out Atitle: string; out Aquality, ABuffPercentage: Cardinal);
+
+procedure TMP3.GetProgress(out ABuffPercentage : Cardinal);
 begin
   ABuffPercentage := FStream.BuffFilled;
+end;  
+
+procedure TMP3.GetInfo(out Atitle: string; out Aquality: Cardinal);
+begin
   FStream.GetMetaInfo(Atitle, Aquality);
 end;
 
@@ -77,7 +83,7 @@ begin
   if Result then
   begin
     Status := rsPrebuffering;
-    FStream.Resume;
+    Resume;
   end;
 end;
 
@@ -115,11 +121,13 @@ begin
     else
     begin
       Status := rsRecovering;
+      NotifyForm(1);
       DS.Stop;
       repeat
         Sleep(99);
         if Terminated then Exit;
       until FStream.BuffFilled > BUFFRESTORE;
+      NotifyForm(1);
       DS.Play;
       Status := rsPlaying;
     end;

@@ -6,7 +6,7 @@ uses
   Classes,
   Windows,
   blcksock,
-  _DirectSound;
+  DSoutput;
 
 const // CONFIGURATION
   BUFFSIZE = 1024;
@@ -45,7 +45,7 @@ type
 
 implementation
 
-uses utils, main, Messages;
+uses utils, main;
 
 procedure SplitValue(const data: string; out field, value: string);
 var
@@ -182,6 +182,7 @@ begin
       metalength := FHTTP.RecvByte(MaxInt);
       if metalength = 0 then Continue;
       ParseMetaData(FHTTP.RecvBufferStr(metalength * 16, MaxInt), MetaTitle);
+      NotifyForm(1);
     end
     else
     begin
@@ -194,7 +195,7 @@ begin
         (not Terminated) then
       begin
         Terminate;
-        PostMessage(appwinHANDLE, WM_USER, Integer(chn), 0);
+        NotifyForm(0);
       end;
 
       Dec(BytesUntilMeta, bytestoreceive);
@@ -261,14 +262,15 @@ begin
 
   case ParseMetaHeader(response, MetaInterval, MetaBitrate) of
     1:
-      Result := True;
-    0:
-      Exit;
+      begin
+        BytesUntilMeta := MetaInterval;
+        Resume;
+        Result := True;
+      end;
     -1:
       Result := Open(response);
   end;
-
-  BytesUntilMeta := MetaInterval;
+  
 end;
 
 procedure THTTPSTREAM.GetMetaInfo(out Atitle: string; out Aquality: Cardinal);

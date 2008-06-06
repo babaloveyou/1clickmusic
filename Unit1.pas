@@ -29,11 +29,11 @@ Dialogs;
 type
 {$IF Defined(KOL_MCK)}
 {$I MCKfakeClasses.inc}
-  {$IFDEF KOLCLASSES} {$I TForm1class.inc} {$ELSE OBJECTS} PForm1 = ^TForm1; {$ENDIF CLASSES/OBJECTS}
-  {$IFDEF KOLCLASSES}{$I TForm1.inc}{$ELSE} TForm1 = object(TObj) {$ENDIF}
+{$IFDEF KOLCLASSES}{$I TForm1class.inc}{$ELSE OBJECTS}PForm1 = ^TForm1; {$ENDIF CLASSES/OBJECTS}
+{$IFDEF KOLCLASSES}{$I TForm1.inc}{$ELSE}TForm1 = object(TObj){$ENDIF}
     Form: PControl;
 {$ELSE not_KOL_MCK}
-  TForm1 = class(TForm)
+    TForm1 = class(TForm)
 {$IFEND KOL_MCK}
       KOLProject1: TKOLProject;
       lbltrack: TKOLLabel;
@@ -63,7 +63,8 @@ type
       popupmenu: PMenu;
       Thread: PThread;
       LastFMThread: PThread;
-      procedure TimerExecute();
+      procedure ProgressExecute();
+      procedure UpdateExecute();
       function LastFMThreadExecute(Sender: PThread): Integer;
       function ThreadExecute(Sender: PThread): Integer;
       procedure ChangeTrayIcon(const NewIcon: HICON);
@@ -170,20 +171,40 @@ end;
 procedure TimerProc(Wnd: HWnd; Mesg, TimerID, SysTime: Longint); stdcall;
 begin
   if (TimerID = 1) then
-    Form1.TimerExecute();
+    Form1.ProgressExecute();
 end;
 
-procedure TForm1.TimerExecute();
+procedure TForm1.ProgressExecute();
 begin
-  if (chn = nil) or
-    (chn.Status = rsStoped) then
-    Exit;
+  // # GET INFO
+  chn.GetProgress(curProgress);
+  case curProgress of
+    //# skip 0 because of the mms streams
+    1..40:
+      begin
+        ChangeTrayIcon(ITrayRed);
+        pgrbuffer.ProgressBkColor := clRed;
+      end;
+    41..75:
+      begin
+        ChangeTrayIcon(ITrayGreen);
+        pgrbuffer.ProgressBkColor := clGreen;
+      end;
+  else
+    begin
+      ChangeTrayIcon(ITrayBlue);
+      pgrbuffer.ProgressBkColor := $00E39C5A;
+    end;
+  end;
+  pgrbuffer.Progress := 100 - curProgress;
+end;
 
+procedure TForm1.UpdateExecute();
+begin
   Form.BeginUpdate;
 
-  // # GET INFO
-  chn.GetPlayInfo(curTitle, curBitrate, curProgress);
-
+  chn.GetInfo(curTitle,curBitrate);
+  
   Tray.Tooltip := curTitle;
 
   if curTitle = '' then
@@ -223,26 +244,6 @@ begin
   // # REFRESH GUI INFORMATION
   lbltrack.caption := curTitle;
 
-  case curProgress of
-    //# skip 0 because of the mms streams
-    1..40:
-      begin
-        ChangeTrayIcon(ITrayRed);
-        pgrbuffer.ProgressBkColor := clRed;
-      end;
-    41..75:
-      begin
-        ChangeTrayIcon(ITrayGreen);
-        pgrbuffer.ProgressBkColor := clGreen;
-      end;
-  else
-    begin
-      ChangeTrayIcon(ITrayBlue);
-      pgrbuffer.ProgressBkColor := $00E39C5A;
-    end;
-  end;
-  pgrbuffer.Progress := 100 - curProgress;
-
   lblbuffer.Caption := IntToStr(curBitrate) + 'kbps' +
     #13#10 + 'vol:' + IntToStr(curVolume) + '%';
 
@@ -265,7 +266,7 @@ begin
     StopChannel;
 
     btplay.Caption := 'Stop';
-    //# Init timer that refresh GUI info, 500ms interval
+    //# Init timer that refresh the progress bar, 500ms interval
     SetTimer(appwinHANDLE, 1, 500, @TimerProc);
 
     pgrbuffer.Progress := 100;
@@ -282,13 +283,7 @@ begin
     end;
 
     //# Lets Try to play
-    if OpenRadio(radiolist.getpls(channeltree.TVItemText[channeltree.TVSelected]), chn, DS) then
-    begin
-      chn.Resume;
-      //# update window info
-      TimerExecute;
-    end
-    else
+    if not OpenRadio(radiolist.getpls(channeltree.TVItemText[channeltree.TVSelected]), chn, DS) then
     begin
       if traypopups_enabled then
       begin
@@ -334,7 +329,6 @@ begin
   lbltrack.Caption := '';
   Tray.ToolTip := '';
   Form.Caption := '1ClickMusic';
-
   ChangeTrayIcon(Form.Icon);
 end;
 
@@ -377,8 +371,13 @@ begin
       if (Msg.message = WM_USER) and
         (Msg.wParam = Integer(chn)) then
       begin
-        StopChannel;
-        lblstatus.Text := 'Disconected!';
+        if Msg.lParam <> 0 then // We have new content!
+          UpdateExecute()
+        else
+        begin
+          StopChannel;
+          lblstatus.Text := 'Disconected!';
+        end;
       end;
 end;
 
@@ -614,7 +613,6 @@ begin
     else
     begin
       Form.Show;
-      TimerExecute(); //# Refresh GUI INFO
       Form.Focused := True;
     end;
   end
@@ -637,5 +635,4 @@ begin
 end;
 
 end.
-
 
