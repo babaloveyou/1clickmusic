@@ -5,8 +5,7 @@ interface
 uses
   Classes,
   SysUtils,
-  httpsend,
-  KOL;
+  httpsend;
 
 type
   TPlaylist = class
@@ -94,8 +93,8 @@ begin
     ParseASX(urls);
   end
   else
-  //# php cuz of some dynamic generated playlists ex: triplag
-    if multipos(['.pls', '.m3u', '.php'], plsurl) then
+  //# php cuz of triplag and some others
+    if multipos(['.pls', '.m3u', '.php', '.wmx'], plsurl) then
     begin
       HttpGetText(plsurl, urls);
       ParsePLS(urls);

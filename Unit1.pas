@@ -29,11 +29,11 @@ Dialogs;
 type
 {$IF Defined(KOL_MCK)}
 {$I MCKfakeClasses.inc}
-{$IFDEF KOLCLASSES}{$I TForm1class.inc}{$ELSE OBJECTS}PForm1 = ^TForm1; {$ENDIF CLASSES/OBJECTS}
-{$IFDEF KOLCLASSES}{$I TForm1.inc}{$ELSE}TForm1 = object(TObj){$ENDIF}
+  {$IFDEF KOLCLASSES} {$I TForm1class.inc} {$ELSE OBJECTS} PForm1 = ^TForm1; {$ENDIF CLASSES/OBJECTS}
+  {$IFDEF KOLCLASSES}{$I TForm1.inc}{$ELSE} TForm1 = object(TObj) {$ENDIF}
     Form: PControl;
 {$ELSE not_KOL_MCK}
-    TForm1 = class(TForm)
+  TForm1 = class(TForm)
 {$IFEND KOL_MCK}
       KOLProject1: TKOLProject;
       lbltrack: TKOLLabel;
@@ -59,7 +59,7 @@ type
     private
     { Private declarations }
     public
-      ITrayBlue, ITrayGreen, ITrayRed: HICON;
+      ITRAY, ITrayBlue, ITrayGreen, ITrayRed: HICON;
       popupmenu: PMenu;
       Thread: PThread;
       LastFMThread: PThread;
@@ -175,12 +175,15 @@ begin
 end;
 
 procedure TForm1.ProgressExecute();
+var
+  progress : Cardinal;
 begin
   // # GET INFO
-  chn.GetProgress(curProgress);
-  case curProgress of
-    //# skip 0 because of the mms streams
-    1..40:
+  chn.GetProgress(progress);
+  if progress = curProgress then Exit;
+
+  case progress of
+    0..40:
       begin
         ChangeTrayIcon(ITrayRed);
         pgrbuffer.ProgressBkColor := clRed;
@@ -196,15 +199,16 @@ begin
       pgrbuffer.ProgressBkColor := $00E39C5A;
     end;
   end;
-  pgrbuffer.Progress := 100 - curProgress;
+  pgrbuffer.Progress := 100 - progress;
+  curProgress := progress;
 end;
 
 procedure TForm1.UpdateExecute();
 begin
   Form.BeginUpdate;
 
-  chn.GetInfo(curTitle,curBitrate);
-  
+  chn.GetInfo(curTitle, curBitrate);
+
   Tray.Tooltip := curTitle;
 
   if curTitle = '' then
@@ -292,7 +296,7 @@ begin
         Tray.ShowBalloon(NIIF_ERROR, 3);
       end;
       StopChannel;
-      lblstatus.caption := 'Error.:';
+      lblstatus.caption := 'Error Connecting';
     end;
     channeltree.Enabled := True;
     btplay.Enabled := True;
@@ -329,7 +333,7 @@ begin
   lbltrack.Caption := '';
   Tray.ToolTip := '';
   Form.Caption := '1ClickMusic';
-  ChangeTrayIcon(Form.Icon);
+  ChangeTrayIcon(ITRAY);
 end;
 
 function TForm1.KOLForm1Message(var Msg: tagMSG;
@@ -342,11 +346,15 @@ begin
     case Msg.wParam of
       1001, 3001:
         if chn <> nil then
+        begin
           curVolume := DS.Volume(curVolume + 2);
+          UpdateExecute();
+        end;
       1002, 3002:
         if chn <> nil then
         begin
           curVolume := DS.Volume(curVolume - 2);
+          UpdateExecute();
         end;
       1003, 3003:
         StopChannel;
@@ -417,12 +425,13 @@ begin
   chn := nil;
   DS := TDSoutput.Create;
 
+  ITRAY := LoadIcon(HInstance, 'TRAY'); // gray icon
   ITrayBlue := LoadIcon(HInstance, 'TRAYBLUE');
   ITrayGreen := LoadIcon(HInstance, 'TRAYGREEN');
   ITrayRed := LoadIcon(HInstance, 'TRAYRED');
 
-
-  Tray.Icon := Form1.form.Icon;
+  Form.Icon := ITRAY;
+  Tray.Icon := ITRAY;
   Tray.Active := True;
 
   //# HOTKEYS
@@ -452,6 +461,7 @@ begin
   //# define o popup da channeltree
   channeltree.SetAutoPopupMenu(PopupMenu);
 
+  //# proibit our buttons from getting focus
   btplay.LikeSpeedButton;
   btoptions.LikeSpeedButton;
 
@@ -606,7 +616,7 @@ end;
 
 procedure TForm1.TrayMouseUp(Sender: PControl; var Mouse: TMouseEventData);
 begin
-  if (Mouse.Button = mbRight) or (Mouse.Button = mbLeft) then
+  if (Mouse.Button = mbLeft) then
   begin
     if Form.Visible then
       Form.Hide
@@ -635,4 +645,5 @@ begin
 end;
 
 end.
+
 

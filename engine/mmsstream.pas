@@ -116,7 +116,7 @@ end;
 
 procedure TMMS.GetProgress(out ABuffPercentage : Cardinal);
 begin
-
+  ABuffPercentage := 0;
 end;  
 
 end.

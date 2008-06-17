@@ -536,7 +536,6 @@ object Form1: TForm1
   end
   object KOLForm1: TKOLForm
     Tag = 0
-    Icon = 'TRAY'
     ForceIcon16x16 = False
     Caption = '1ClickMusic'
     Visible = True

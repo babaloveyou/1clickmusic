@@ -162,8 +162,7 @@ class procedure THTTPSTREAM.ParseMetaData(meta: string; out MetaTitle: string);
   //fieldlen = Length(field); = 13
 begin
   if meta = '' then Exit;
-  Delete(meta, 1, 13);
-  MetaTitle := Copy(meta, 1, Pos('''', meta) - 1);
+  MetaTitle := Copy(meta, 14, Pos(''';', meta) - 14);
 end;
 
 { THTTPSTREAM }

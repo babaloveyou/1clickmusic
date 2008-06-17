@@ -38,18 +38,20 @@ type
   TRadioPlayer = class(TThread)
   private
     FDevice: TDSoutput;
+    procedure SetStatus(const Value: TRadioStatus);
   protected
     Frate: Integer;
     Fchannels: Integer;
     Fencoding: Integer;
     Fhalfbuffersize: Cardinal;
+    FStatus: TRadioStatus;
     procedure updatebuffer(const offset: Cardinal); virtual; abstract;
     procedure initbuffer; virtual; abstract;
     procedure initdecoder; virtual; abstract;
     procedure prebuffer; virtual; abstract;
     procedure Execute; override;
   public
-    Status: TRadioStatus;
+    property Status : TRadioStatus read FStatus write SetStatus;
     property DS: TDSoutput read FDevice write FDevice;
     procedure GetProgress(out ABuffPercentage : Cardinal); virtual; abstract;
     procedure GetInfo(out Atitle: string; out Aquality: Cardinal); virtual; abstract;
@@ -59,7 +61,7 @@ type
   end;
 
 procedure DSERROR(const value: HResult; const Error: string);
-procedure NotifyForm(const AlParam : Integer);
+procedure NotifyForm(const lParam : Integer);
 
 implementation
 
@@ -75,9 +77,9 @@ begin
     RaiseError('DIRECTSOUND ERROR, [' + IntToStr(value) + '] : ' + Error);
 end;
 
-procedure NotifyForm(const AlParam : Integer);
+procedure NotifyForm(const lParam : Integer);
 begin
-  PostMessage(appwinHANDLE,WM_USER,Integer(chn),AlParam);
+  PostMessage(appwinHANDLE,WM_USER,Integer(chn),lParam);
 end;  
 
 constructor TDSoutput.Create;
@@ -213,13 +215,13 @@ begin
   FDevice := ADevice;
   inherited Create(True);
   Priority := tpTimeCritical;
-  Status := rsStoped;
+  FStatus := rsStoped;
   initdecoder();
 end;
 
 destructor TRadioPlayer.Destroy;
 begin
-  Status := rsStoped;
+  FStatus := rsStoped;
   DS.Stop;
   Terminate;
   inherited;
@@ -230,7 +232,6 @@ procedure TRadioPlayer.Execute;
 var
   section, lastsection: Cardinal;
 begin
-  NotifyForm(1);
   prebuffer();
   if Terminated then Exit;
   initbuffer();
@@ -238,7 +239,6 @@ begin
   lastsection := 0;
   DS.Play;
   Status := rsPlaying;
-  NotifyForm(1);
   while not Terminated do
   begin
     if DS.GetPlayCursorPos > Fhalfbuffersize then
@@ -252,6 +252,12 @@ begin
     end;
     Sleep(50);
   end;
+end;
+
+procedure TRadioPlayer.SetStatus(const Value: TRadioStatus);
+begin
+  FStatus := Value;
+  NotifyForm(1);
 end;
 
 end.

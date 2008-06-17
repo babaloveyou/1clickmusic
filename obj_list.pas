@@ -53,6 +53,8 @@ constructor TRadioList.Create;
 begin
   inherited Create;
   FList := NewList;
+  //# change capacity to allow lesses realocations of mem
+  FList.Capacity := 250;
 end;
 
 destructor TRadioList.Destroy;

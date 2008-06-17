@@ -6,7 +6,7 @@
 unit wmfintf;
 
 (* Unit: wmfintf.pas
-    Delphi headers for Windows Media related stuff. Contains the bits from the 
+    Delphi headers for Windows Media related stuff. Contains the bits from the
     Windows Media SDK header files relevant to encoding/decoding data. *)
 
 interface
@@ -15,116 +15,116 @@ uses
 
 const
 
-  IID_IWMReader                 : TGUID = '{96406bd6-2b2b-11d3-b36b-00c04f6108ff}';
-  {$EXTERNALSYM IID_IWMReader}
-  IID_IWMSyncReader             : TGUID = '{9397f121-7705-4dc9-b049-98b698188414}';
-  {$EXTERNALSYM IID_IWMSyncReader}
-  IID_IWMOutputMediaProps       : TGUID = '{96406bd7-2b2b-11d3-b36b-00c04f6108ff}';
-  {$EXTERNALSYM IID_IWMOutputMediaProps}
-  IID_IWMHeaderInfo             : TGUID = '{96406bda-2b2b-11d3-b36b-00c04f6108ff}';
-  {$EXTERNALSYM IID_IWMHeaderInfo}
-  IID_IWMWriterFileSink         : TGUID = '{96406be5-2b2b-11d3-b36b-00c04f6108ff}';
-  {$EXTERNALSYM IID_IWMWriterFileSink}
-  IID_IWMWriter                 : TGUID = '{96406bd4-2b2b-11d3-b36b-00c04f6108ff}';
-  {$EXTERNALSYM IID_IWMWriter}
-  IID_IWMWriterSink             : TGUID = '{96406be4-2b2b-11d3-b36b-00c04f6108ff}';
-  {$EXTERNALSYM IID_IWMWriterSink}
-  IID_IWMWriterAdvanced         : TGUID = '{96406be3-2b2b-11d3-b36b-00c04f6108ff}';
-  {$EXTERNALSYM IID_IWMWriterAdvanced}
-  IID_IWMProfile                : TGUID = '{96406bdb-2b2b-11d3-b36b-00c04f6108ff}';
-  {$EXTERNALSYM IID_IWMProfile}
-  IID_IWMProfileManager         : TGUID = '{d16679f2-6ca0-472d-8d31-2f5d55aee155}';
-  {$EXTERNALSYM IID_IWMProfileManager}
-  IID_IWMInputMediaProps        : TGUID = '{96406bd5-2b2b-11d3-b36b-00c04f6108ff}';
-  {$EXTERNALSYM IID_IWMInputMediaProps}
-  IID_IWMCodecInfo              : TGUID = '{a970f41e-34de-4a98-b3ba-e4b3ca7528f0}';
-  {$EXTERNALSYM IID_IWMCodecInfo}
-  IID_IWMCodecInfo2             : TGUID = '{aa65e273-b686-4056-91ec-dd768d4df710}';
-  {$EXTERNALSYM IID_IWMCodecInfo2}
-  IID_IWMCodecInfo3             : TGUID = '{7e51f487-4d93-4f98-8ab4-27d0565adc51}';
-  {$EXTERNALSYM IID_IWMCodecInfo3}
-  IID_IWMReaderCallback         : TGUID = '{96406bd8-2b2b-11d3-b36b-00c04f6108ff}';
-  {$EXTERNALSYM IID_IWMReaderCallback}
+  IID_IWMReader: TGUID = '{96406bd6-2b2b-11d3-b36b-00c04f6108ff}';
+{$EXTERNALSYM IID_IWMReader}
+  IID_IWMSyncReader: TGUID = '{9397f121-7705-4dc9-b049-98b698188414}';
+{$EXTERNALSYM IID_IWMSyncReader}
+  IID_IWMOutputMediaProps: TGUID = '{96406bd7-2b2b-11d3-b36b-00c04f6108ff}';
+{$EXTERNALSYM IID_IWMOutputMediaProps}
+  IID_IWMHeaderInfo: TGUID = '{96406bda-2b2b-11d3-b36b-00c04f6108ff}';
+{$EXTERNALSYM IID_IWMHeaderInfo}
+  IID_IWMWriterFileSink: TGUID = '{96406be5-2b2b-11d3-b36b-00c04f6108ff}';
+{$EXTERNALSYM IID_IWMWriterFileSink}
+  IID_IWMWriter: TGUID = '{96406bd4-2b2b-11d3-b36b-00c04f6108ff}';
+{$EXTERNALSYM IID_IWMWriter}
+  IID_IWMWriterSink: TGUID = '{96406be4-2b2b-11d3-b36b-00c04f6108ff}';
+{$EXTERNALSYM IID_IWMWriterSink}
+  IID_IWMWriterAdvanced: TGUID = '{96406be3-2b2b-11d3-b36b-00c04f6108ff}';
+{$EXTERNALSYM IID_IWMWriterAdvanced}
+  IID_IWMProfile: TGUID = '{96406bdb-2b2b-11d3-b36b-00c04f6108ff}';
+{$EXTERNALSYM IID_IWMProfile}
+  IID_IWMProfileManager: TGUID = '{d16679f2-6ca0-472d-8d31-2f5d55aee155}';
+{$EXTERNALSYM IID_IWMProfileManager}
+  IID_IWMInputMediaProps: TGUID = '{96406bd5-2b2b-11d3-b36b-00c04f6108ff}';
+{$EXTERNALSYM IID_IWMInputMediaProps}
+  IID_IWMCodecInfo: TGUID = '{a970f41e-34de-4a98-b3ba-e4b3ca7528f0}';
+{$EXTERNALSYM IID_IWMCodecInfo}
+  IID_IWMCodecInfo2: TGUID = '{aa65e273-b686-4056-91ec-dd768d4df710}';
+{$EXTERNALSYM IID_IWMCodecInfo2}
+  IID_IWMCodecInfo3: TGUID = '{7e51f487-4d93-4f98-8ab4-27d0565adc51}';
+{$EXTERNALSYM IID_IWMCodecInfo3}
+  IID_IWMReaderCallback: TGUID = '{96406bd8-2b2b-11d3-b36b-00c04f6108ff}';
+{$EXTERNALSYM IID_IWMReaderCallback}
 
 
-  WMMEDIASUBTYPE_WMAudioV9        : TGUID = '{00000162-0000-0010-8000-00AA00389B71}';
-  {$EXTERNALSYM WMMEDIASUBTYPE_WMAudioV9}
-  WMMEDIASUBTYPE_WMAudio_Lossless : TGUID = '{00000163-0000-0010-8000-00AA00389B71}';
-  {$EXTERNALSYM WMMEDIASUBTYPE_WMAudio_Lossless}
-  WMMEDIASUBTYPE_WMSP1            : TGUID = '{0000000A-0000-0010-8000-00AA00389B71}';
-  {$EXTERNALSYM WMMEDIASUBTYPE_WMSP1}
-  WMMEDIASUBTYPE_WMAudioV8 : TGUID = '{00000161-0000-0010-8000-00AA00389B71}';
-  {$EXTERNALSYM WMMEDIASUBTYPE_WMAudioV8}
-  WMMEDIASUBTYPE_WMAudioV7 : TGUID = '{00000161-0000-0010-8000-00AA00389B71}';
-  {$EXTERNALSYM WMMEDIASUBTYPE_WMAudioV7}
-  WMMEDIASUBTYPE_WMAudioV2 : TGUID = '{00000161-0000-0010-8000-00AA00389B71}';
-  {$EXTERNALSYM WMMEDIASUBTYPE_WMAudioV2}
+  WMMEDIASUBTYPE_WMAudioV9: TGUID = '{00000162-0000-0010-8000-00AA00389B71}';
+{$EXTERNALSYM WMMEDIASUBTYPE_WMAudioV9}
+  WMMEDIASUBTYPE_WMAudio_Lossless: TGUID = '{00000163-0000-0010-8000-00AA00389B71}';
+{$EXTERNALSYM WMMEDIASUBTYPE_WMAudio_Lossless}
+  WMMEDIASUBTYPE_WMSP1: TGUID = '{0000000A-0000-0010-8000-00AA00389B71}';
+{$EXTERNALSYM WMMEDIASUBTYPE_WMSP1}
+  WMMEDIASUBTYPE_WMAudioV8: TGUID = '{00000161-0000-0010-8000-00AA00389B71}';
+{$EXTERNALSYM WMMEDIASUBTYPE_WMAudioV8}
+  WMMEDIASUBTYPE_WMAudioV7: TGUID = '{00000161-0000-0010-8000-00AA00389B71}';
+{$EXTERNALSYM WMMEDIASUBTYPE_WMAudioV7}
+  WMMEDIASUBTYPE_WMAudioV2: TGUID = '{00000161-0000-0010-8000-00AA00389B71}';
+{$EXTERNALSYM WMMEDIASUBTYPE_WMAudioV2}
 
 
 
-  WMProfile_V70_6VoiceAudio            : TGUID = '{EABA9FBF-B64F-49b3-AA0C-73FBDD150AD0}';
-  {$EXTERNALSYM WMProfile_V70_6VoiceAudio}
-  WMProfile_V70_64Audio                : TGUID = '{B29CFFC6-F131-41db-B5E8-99D8B0B945F4}';
-  {$EXTERNALSYM WMProfile_V70_64Audio}
-  WMProfile_V70_96Audio                : TGUID = '{A9D4B819-16CC-4a59-9F37-693DBB0302D6}';
-  {$EXTERNALSYM WMProfile_V70_96Audio}
-  WMProfile_V70_128Audio               : TGUID = '{C64CF5DA-DF45-40d3-8027-DE698D68DC66}';
-  {$EXTERNALSYM WMProfile_V70_128Audio}
+  WMProfile_V70_6VoiceAudio: TGUID = '{EABA9FBF-B64F-49b3-AA0C-73FBDD150AD0}';
+{$EXTERNALSYM WMProfile_V70_6VoiceAudio}
+  WMProfile_V70_64Audio: TGUID = '{B29CFFC6-F131-41db-B5E8-99D8B0B945F4}';
+{$EXTERNALSYM WMProfile_V70_64Audio}
+  WMProfile_V70_96Audio: TGUID = '{A9D4B819-16CC-4a59-9F37-693DBB0302D6}';
+{$EXTERNALSYM WMProfile_V70_96Audio}
+  WMProfile_V70_128Audio: TGUID = '{C64CF5DA-DF45-40d3-8027-DE698D68DC66}';
+{$EXTERNALSYM WMProfile_V70_128Audio}
 
-  WMMEDIATYPE_Audio               : TGUID = '{73647561-0000-0010-8000-00AA00389B71}'; // 'auds'
-  {$EXTERNALSYM WMMEDIATYPE_Audio}
-  WMFORMAT_WaveFormatEx    : TGUID = '{05589f81-c356-11ce-bf01-00aa0055595a}';
-  {$EXTERNALSYM WMFORMAT_WaveFormatEx}
+  WMMEDIATYPE_Audio: TGUID = '{73647561-0000-0010-8000-00AA00389B71}'; // 'auds'
+{$EXTERNALSYM WMMEDIATYPE_Audio}
+  WMFORMAT_WaveFormatEx: TGUID = '{05589f81-c356-11ce-bf01-00aa0055595a}';
+{$EXTERNALSYM WMFORMAT_WaveFormatEx}
 
   WM_START_CURRENTPOSITION = Int64(-1);
-  {$EXTERNALSYM WM_START_CURRENTPOSITION}
+{$EXTERNALSYM WM_START_CURRENTPOSITION}
 
-  g_dwWMSpecialAttributes       = LongWord(20);
-  {$EXTERNALSYM g_dwWMSpecialAttributes}
-  g_wszWMDuration               = WideString('Duration');
-  {$EXTERNALSYM g_wszWMDuration}
-  g_wszWMBitrate                = WideString('Bitrate');
-  {$EXTERNALSYM g_wszWMBitrate}
-  g_wszWMSeekable               = WideString('Seekable');
-  {$EXTERNALSYM g_wszWMSeekable}
-  g_wszWMStridable              = WideString('Stridable');
-  {$EXTERNALSYM g_wszWMStridable}
-  g_wszWMBroadcast              = WideString('Broadcast');
-  {$EXTERNALSYM g_wszWMBroadcast}
-  g_wszWMProtected              = WideString('Is_Protected');
-  {$EXTERNALSYM g_wszWMProtected}
-  g_wszWMTrusted                = WideString('Is_Trusted');
-  {$EXTERNALSYM g_wszWMTrusted}
-  g_wszWMSignature_Name         = WideString('Signature_Name');
-  {$EXTERNALSYM g_wszWMSignature_Name}
-  g_wszWMHasAudio               = WideString('HasAudio');
-  {$EXTERNALSYM g_wszWMHasAudio}
-  g_wszWMHasImage               = WideString('HasImage');
-  {$EXTERNALSYM g_wszWMHasImage}
-  g_wszWMHasScript              = WideString('HasScript');
-  {$EXTERNALSYM g_wszWMHasScript}
-  g_wszWMHasVideo               = WideString('HasVideo');
-  {$EXTERNALSYM g_wszWMHasVideo}
-  g_wszWMCurrentBitrate         = WideString('CurrentBitrate');
-  {$EXTERNALSYM g_wszWMCurrentBitrate}
-  g_wszWMOptimalBitrate         = WideString('OptimalBitrate');
-  {$EXTERNALSYM g_wszWMOptimalBitrate}
-  g_wszWMHasAttachedImages      = WideString('HasAttachedImages');
-  {$EXTERNALSYM g_wszWMHasAttachedImages}
-  g_wszWMSkipBackward           = WideString('Can_Skip_Backward');
-  {$EXTERNALSYM g_wszWMSkipBackward}
-  g_wszWMSkipForward            = WideString('Can_Skip_Forward');
-  {$EXTERNALSYM g_wszWMSkipForward}
-  g_wszWMNumberOfFrames         = WideString('NumberOfFrames');
-  {$EXTERNALSYM g_wszWMNumberOfFrames}
-  g_wszWMFileSize               = WideString('FileSize');
-  {$EXTERNALSYM g_wszWMFileSize}
+  g_dwWMSpecialAttributes = LongWord(20);
+{$EXTERNALSYM g_dwWMSpecialAttributes}
+  g_wszWMDuration = WideString('Duration');
+{$EXTERNALSYM g_wszWMDuration}
+  g_wszWMBitrate = WideString('Bitrate');
+{$EXTERNALSYM g_wszWMBitrate}
+  g_wszWMSeekable = WideString('Seekable');
+{$EXTERNALSYM g_wszWMSeekable}
+  g_wszWMStridable = WideString('Stridable');
+{$EXTERNALSYM g_wszWMStridable}
+  g_wszWMBroadcast = WideString('Broadcast');
+{$EXTERNALSYM g_wszWMBroadcast}
+  g_wszWMProtected = WideString('Is_Protected');
+{$EXTERNALSYM g_wszWMProtected}
+  g_wszWMTrusted = WideString('Is_Trusted');
+{$EXTERNALSYM g_wszWMTrusted}
+  g_wszWMSignature_Name = WideString('Signature_Name');
+{$EXTERNALSYM g_wszWMSignature_Name}
+  g_wszWMHasAudio = WideString('HasAudio');
+{$EXTERNALSYM g_wszWMHasAudio}
+  g_wszWMHasImage = WideString('HasImage');
+{$EXTERNALSYM g_wszWMHasImage}
+  g_wszWMHasScript = WideString('HasScript');
+{$EXTERNALSYM g_wszWMHasScript}
+  g_wszWMHasVideo = WideString('HasVideo');
+{$EXTERNALSYM g_wszWMHasVideo}
+  g_wszWMCurrentBitrate = WideString('CurrentBitrate');
+{$EXTERNALSYM g_wszWMCurrentBitrate}
+  g_wszWMOptimalBitrate = WideString('OptimalBitrate');
+{$EXTERNALSYM g_wszWMOptimalBitrate}
+  g_wszWMHasAttachedImages = WideString('HasAttachedImages');
+{$EXTERNALSYM g_wszWMHasAttachedImages}
+  g_wszWMSkipBackward = WideString('Can_Skip_Backward');
+{$EXTERNALSYM g_wszWMSkipBackward}
+  g_wszWMSkipForward = WideString('Can_Skip_Forward');
+{$EXTERNALSYM g_wszWMSkipForward}
+  g_wszWMNumberOfFrames = WideString('NumberOfFrames');
+{$EXTERNALSYM g_wszWMNumberOfFrames}
+  g_wszWMFileSize = WideString('FileSize');
+{$EXTERNALSYM g_wszWMFileSize}
   g_wszWMHasArbitraryDataStream = WideString('HasArbitraryDataStream');
-  {$EXTERNALSYM g_wszWMHasArbitraryDataStream}
-  g_wszWMHasFileTransferStream  = WideString('HasFileTransferStream');
-  {$EXTERNALSYM g_wszWMHasFileTransferStream}
-  g_wszWMContainerFormat        = WideString('WM/ContainerFormat');
-  {$EXTERNALSYM g_wszWMContainerFormat}
+{$EXTERNALSYM g_wszWMHasArbitraryDataStream}
+  g_wszWMHasFileTransferStream = WideString('HasFileTransferStream');
+{$EXTERNALSYM g_wszWMHasFileTransferStream}
+  g_wszWMContainerFormat = WideString('WM/ContainerFormat');
+{$EXTERNALSYM g_wszWMContainerFormat}
 
 ////////////////////////////////////////////////////////////////
 //
@@ -132,53 +132,53 @@ const
 //
 
   g_dwWMContentAttributes = LongWord(5);
-  {$EXTERNALSYM g_dwWMContentAttributes}
-  g_wszWMTitle        = WideString('Title');
-  {$EXTERNALSYM g_wszWMTitle}
-  g_wszWMAuthor       = WideString('Author');
-  {$EXTERNALSYM g_wszWMAuthor}
-  g_wszWMDescription  = WideString('Description');
-  {$EXTERNALSYM g_wszWMDescription}
-  g_wszWMRating       = WideString('Rating');
-  {$EXTERNALSYM g_wszWMRating}
-  g_wszWMCopyright    = WideString('Copyright');
-  {$EXTERNALSYM g_wszWMCopyright}
+{$EXTERNALSYM g_dwWMContentAttributes}
+  g_wszWMTitle = WideString('Title');
+{$EXTERNALSYM g_wszWMTitle}
+  g_wszWMAuthor = WideString('Author');
+{$EXTERNALSYM g_wszWMAuthor}
+  g_wszWMDescription = WideString('Description');
+{$EXTERNALSYM g_wszWMDescription}
+  g_wszWMRating = WideString('Rating');
+{$EXTERNALSYM g_wszWMRating}
+  g_wszWMCopyright = WideString('Copyright');
+{$EXTERNALSYM g_wszWMCopyright}
 
 ////////////////////////////////////////////////////////////////
 //
 // These attributes are used to configure and query DRM settings in the reader and writer.
 //
 
-  g_wszWMUse_DRM                   = WideString('Use_DRM');
-  {$EXTERNALSYM g_wszWMUse_DRM}
-  g_wszWMDRM_Flags                 = WideString('DRM_Flags');
-  {$EXTERNALSYM g_wszWMDRM_Flags}
-  g_wszWMDRM_Level                 = WideString('DRM_Level');
-  {$EXTERNALSYM g_wszWMDRM_Level}
-  g_wszWMUse_Advanced_DRM          = WideString('Use_Advanced_DRM');
-  {$EXTERNALSYM g_wszWMUse_Advanced_DRM}
-  g_wszWMDRM_KeySeed               = WideString('DRM_KeySeed');
-  {$EXTERNALSYM g_wszWMDRM_KeySeed}
-  g_wszWMDRM_KeyID                 = WideString('DRM_KeyID');
-  {$EXTERNALSYM g_wszWMDRM_KeyID}
-  g_wszWMDRM_ContentID             = WideString('DRM_ContentID');
-  {$EXTERNALSYM g_wszWMDRM_ContentID}
+  g_wszWMUse_DRM = WideString('Use_DRM');
+{$EXTERNALSYM g_wszWMUse_DRM}
+  g_wszWMDRM_Flags = WideString('DRM_Flags');
+{$EXTERNALSYM g_wszWMDRM_Flags}
+  g_wszWMDRM_Level = WideString('DRM_Level');
+{$EXTERNALSYM g_wszWMDRM_Level}
+  g_wszWMUse_Advanced_DRM = WideString('Use_Advanced_DRM');
+{$EXTERNALSYM g_wszWMUse_Advanced_DRM}
+  g_wszWMDRM_KeySeed = WideString('DRM_KeySeed');
+{$EXTERNALSYM g_wszWMDRM_KeySeed}
+  g_wszWMDRM_KeyID = WideString('DRM_KeyID');
+{$EXTERNALSYM g_wszWMDRM_KeyID}
+  g_wszWMDRM_ContentID = WideString('DRM_ContentID');
+{$EXTERNALSYM g_wszWMDRM_ContentID}
   g_wszWMDRM_IndividualizedVersion = WideString('DRM_IndividualizedVersion');
-  {$EXTERNALSYM g_wszWMDRM_IndividualizedVersion}
-  g_wszWMDRM_LicenseAcqURL         = WideString('DRM_LicenseAcqURL');
-  {$EXTERNALSYM g_wszWMDRM_LicenseAcqURL}
-  g_wszWMDRM_V1LicenseAcqURL       = WideString('DRM_V1LicenseAcqURL');
-  {$EXTERNALSYM g_wszWMDRM_V1LicenseAcqURL}
-  g_wszWMDRM_HeaderSignPrivKey     = WideString('DRM_HeaderSignPrivKey');
-  {$EXTERNALSYM g_wszWMDRM_HeaderSignPrivKey}
-  g_wszWMDRM_LASignaturePrivKey    = WideString('DRM_LASignaturePrivKey');
-  {$EXTERNALSYM g_wszWMDRM_LASignaturePrivKey}
-  g_wszWMDRM_LASignatureCert       = WideString('DRM_LASignatureCert');
-  {$EXTERNALSYM g_wszWMDRM_LASignatureCert}
+{$EXTERNALSYM g_wszWMDRM_IndividualizedVersion}
+  g_wszWMDRM_LicenseAcqURL = WideString('DRM_LicenseAcqURL');
+{$EXTERNALSYM g_wszWMDRM_LicenseAcqURL}
+  g_wszWMDRM_V1LicenseAcqURL = WideString('DRM_V1LicenseAcqURL');
+{$EXTERNALSYM g_wszWMDRM_V1LicenseAcqURL}
+  g_wszWMDRM_HeaderSignPrivKey = WideString('DRM_HeaderSignPrivKey');
+{$EXTERNALSYM g_wszWMDRM_HeaderSignPrivKey}
+  g_wszWMDRM_LASignaturePrivKey = WideString('DRM_LASignaturePrivKey');
+{$EXTERNALSYM g_wszWMDRM_LASignaturePrivKey}
+  g_wszWMDRM_LASignatureCert = WideString('DRM_LASignatureCert');
+{$EXTERNALSYM g_wszWMDRM_LASignatureCert}
   g_wszWMDRM_LASignatureLicSrvCert = WideString('DRM_LASignatureLicSrvCert');
-  {$EXTERNALSYM g_wszWMDRM_LASignatureLicSrvCert}
-  g_wszWMDRM_LASignatureRootCert   = WideString('DRM_LASignatureRootCert');
-  {$EXTERNALSYM g_wszWMDRM_LASignatureRootCert}
+{$EXTERNALSYM g_wszWMDRM_LASignatureLicSrvCert}
+  g_wszWMDRM_LASignatureRootCert = WideString('DRM_LASignatureRootCert');
+{$EXTERNALSYM g_wszWMDRM_LASignatureRootCert}
 
 ////////////////////////////////////////////////////////////////
 //
@@ -186,40 +186,40 @@ const
 // namespace that give information about the content.
 //
 
-  g_wszWMAlbumTitle    = WideString('WM/AlbumTitle');
-  {$EXTERNALSYM g_wszWMAlbumTitle}
-  g_wszWMTrack         = WideString('WM/Track');
-  {$EXTERNALSYM g_wszWMTrack}
-  g_wszWMPromotionURL  = WideString('WM/PromotionURL');
-  {$EXTERNALSYM g_wszWMPromotionURL}
+  g_wszWMAlbumTitle = WideString('WM/AlbumTitle');
+{$EXTERNALSYM g_wszWMAlbumTitle}
+  g_wszWMTrack = WideString('WM/Track');
+{$EXTERNALSYM g_wszWMTrack}
+  g_wszWMPromotionURL = WideString('WM/PromotionURL');
+{$EXTERNALSYM g_wszWMPromotionURL}
   g_wszWMAlbumCoverURL = WideString('WM/AlbumCoverURL');
-  {$EXTERNALSYM g_wszWMAlbumCoverURL}
-  g_wszWMGenre         = WideString('WM/Genre');
-  {$EXTERNALSYM g_wszWMGenre}
-  g_wszWMYear          = WideString('WM/Year');
-  {$EXTERNALSYM g_wszWMYear}
-  g_wszWMGenreID       = WideString('WM/GenreID');
-  {$EXTERNALSYM g_wszWMGenreID}
-  g_wszWMMCDI          = WideString('WM/MCDI');
-  {$EXTERNALSYM g_wszWMMCDI}
-  g_wszWMComposer      = WideString('WM/Composer');
-  {$EXTERNALSYM g_wszWMComposer}
-  g_wszWMLyrics        = WideString('WM/Lyrics');
-  {$EXTERNALSYM g_wszWMLyrics}
-  g_wszWMTrackNumber   = WideString('WM/TrackNumber');
-  {$EXTERNALSYM g_wszWMTrackNumber}
-  g_wszWMToolName      = WideString('WM/ToolName');
-  {$EXTERNALSYM g_wszWMToolName}
-  g_wszWMToolVersion   = WideString('WM/ToolVersion');
-  {$EXTERNALSYM g_wszWMToolVersion}
-  g_wszWMIsVBR         = WideString('IsVBR');
-  {$EXTERNALSYM g_wszWMIsVBR}
+{$EXTERNALSYM g_wszWMAlbumCoverURL}
+  g_wszWMGenre = WideString('WM/Genre');
+{$EXTERNALSYM g_wszWMGenre}
+  g_wszWMYear = WideString('WM/Year');
+{$EXTERNALSYM g_wszWMYear}
+  g_wszWMGenreID = WideString('WM/GenreID');
+{$EXTERNALSYM g_wszWMGenreID}
+  g_wszWMMCDI = WideString('WM/MCDI');
+{$EXTERNALSYM g_wszWMMCDI}
+  g_wszWMComposer = WideString('WM/Composer');
+{$EXTERNALSYM g_wszWMComposer}
+  g_wszWMLyrics = WideString('WM/Lyrics');
+{$EXTERNALSYM g_wszWMLyrics}
+  g_wszWMTrackNumber = WideString('WM/TrackNumber');
+{$EXTERNALSYM g_wszWMTrackNumber}
+  g_wszWMToolName = WideString('WM/ToolName');
+{$EXTERNALSYM g_wszWMToolName}
+  g_wszWMToolVersion = WideString('WM/ToolVersion');
+{$EXTERNALSYM g_wszWMToolVersion}
+  g_wszWMIsVBR = WideString('IsVBR');
+{$EXTERNALSYM g_wszWMIsVBR}
 
 //
 // WM/AlbumArtist is a potentially different value than Author
 //
   g_wszWMAlbumArtist = WideString('WM/AlbumArtist');
-  {$EXTERNALSYM g_wszWMAlbumArtist}
+{$EXTERNALSYM g_wszWMAlbumArtist}
 
 ////////////////////////////////////////////////////////////////
 //
@@ -228,41 +228,41 @@ const
 //
 
   g_wszWMBannerImageType = WideString('BannerImageType');
-  {$EXTERNALSYM g_wszWMBannerImageType}
+{$EXTERNALSYM g_wszWMBannerImageType}
   g_wszWMBannerImageData = WideString('BannerImageData');
-  {$EXTERNALSYM g_wszWMBannerImageData}
-  g_wszWMBannerImageURL  = WideString('BannerImageURL');
-  {$EXTERNALSYM g_wszWMBannerImageURL}
-  g_wszWMCopyrightURL    = WideString('CopyrightURL');
-  {$EXTERNALSYM g_wszWMCopyrightURL}
+{$EXTERNALSYM g_wszWMBannerImageData}
+  g_wszWMBannerImageURL = WideString('BannerImageURL');
+{$EXTERNALSYM g_wszWMBannerImageURL}
+  g_wszWMCopyrightURL = WideString('CopyrightURL');
+{$EXTERNALSYM g_wszWMCopyrightURL}
 
-  g_wszComplexityMax     = WideString('_COMPLEXITYEXMAX');
-  {$EXTERNALSYM g_wszComplexityMax}
+  g_wszComplexityMax = WideString('_COMPLEXITYEXMAX');
+{$EXTERNALSYM g_wszComplexityMax}
   g_wszComplexityOffline = WideString('_COMPLEXITYEXOFFLINE');
-  {$EXTERNALSYM g_wszComplexityOffline}
-  g_wszComplexityLive    = WideString('_COMPLEXITYEXLIVE');
-  {$EXTERNALSYM g_wszComplexityLive}
-  g_wszIsVBRSupported    = WideString('_ISVBRSUPPORTED');
-  {$EXTERNALSYM g_wszIsVBRSupported}
-  g_wszVBREnabled         = WideString('_VBRENABLED');
-  g_wszVBRBitrateMax      = WideString('_RMAX');
+{$EXTERNALSYM g_wszComplexityOffline}
+  g_wszComplexityLive = WideString('_COMPLEXITYEXLIVE');
+{$EXTERNALSYM g_wszComplexityLive}
+  g_wszIsVBRSupported = WideString('_ISVBRSUPPORTED');
+{$EXTERNALSYM g_wszIsVBRSupported}
+  g_wszVBREnabled = WideString('_VBRENABLED');
+  g_wszVBRBitrateMax = WideString('_RMAX');
   g_wszVBRBufferWindowMax = WideString('_BMAX');
-  {$EXTERNALSYM g_wszVBREnabled}
-  g_wszVBRQuality         = WideString('_VBRQUALITY');
+{$EXTERNALSYM g_wszVBREnabled}
+  g_wszVBRQuality = WideString('_VBRQUALITY');
   g_wszNumPasses = WideString('_PASSESUSED');
-  {$EXTERNALSYM g_wszNumPasses}
+{$EXTERNALSYM g_wszNumPasses}
 
-    WMT_VER_4_0 = $00040000;
-    {$EXTERNALSYM WMT_VER_4_0}
-    WMT_VER_7_0 = $00070000;
-    {$EXTERNALSYM WMT_VER_7_0}
-    WMT_VER_8_0 = $00080000;
-    {$EXTERNALSYM WMT_VER_8_0}
-    WMT_VER_9_0 = $00090000;
-    {$EXTERNALSYM WMT_VER_9_0}
+  WMT_VER_4_0 = $00040000;
+{$EXTERNALSYM WMT_VER_4_0}
+  WMT_VER_7_0 = $00070000;
+{$EXTERNALSYM WMT_VER_7_0}
+  WMT_VER_8_0 = $00080000;
+{$EXTERNALSYM WMT_VER_8_0}
+  WMT_VER_9_0 = $00090000;
+{$EXTERNALSYM WMT_VER_9_0}
 
 
-  NS_E_PROTECTED_CONTENT           = HRESULT($C00D0BBD);
+  NS_E_PROTECTED_CONTENT = HRESULT($C00D0BBD);
 
   SPEAKER_FRONT_LEFT = $1;
   SPEAKER_FRONT_RIGHT = $2;
@@ -287,80 +287,80 @@ const
 
 type
   WMT_STATUS = (
-  WMT_ERROR                       = 0,
-  WMT_OPENED                      = 1,
-  WMT_BUFFERING_START             = 2,
-  WMT_BUFFERING_STOP              = 3,
-  WMT_EOF                         = 4,
-  WMT_END_OF_FILE                 = 4,
-  WMT_END_OF_SEGMENT              = 5,
-  WMT_END_OF_STREAMING            = 6,
-  WMT_LOCATING                    = 7,
-  WMT_CONNECTING                  = 8,
-  WMT_NO_RIGHTS                   = 9,
-  WMT_MISSING_CODEC               = 10,
-  WMT_STARTED                     = 11,
-  WMT_STOPPED                     = 12,
-  WMT_CLOSED                      = 13,
-  WMT_STRIDING                    = 14,
-  WMT_TIMER                       = 15,
-  WMT_INDEX_PROGRESS              = 16,
-  WMT_SAVEAS_START                = 17,
-  WMT_SAVEAS_STOP                = 18,
-  WMT_NEW_SOURCEFLAGS             = 19,
-  WMT_NEW_METADATA                = 20,
-  WMT_BACKUPRESTORE_BEGIN         = 21,
-  WMT_SOURCE_SWITCH               = 22,
-  WMT_ACQUIRE_LICENSE             = 23,
-  WMT_INDIVIDUALIZE               = 24,
-  WMT_NEEDS_INDIVIDUALIZATION     = 25,
-  WMT_NO_RIGHTS_EX                = 26,
-  WMT_BACKUPRESTORE_END           = 27,
-  WMT_BACKUPRESTORE_CONNECTING    = 28,
-  WMT_BACKUPRESTORE_DISCONNECTING = 29,
-  WMT_ERROR_WITHURL               = 30,
-  WMT_RESTRICTED_LICENSE          = 31,
-  WMT_CLIENT_CONNECT              = 32,
-  WMT_CLIENT_DISCONNECT           = 33,
-  WMT_NATIVE_OUTPUT_PROPS_CHANGED = 34,
-  WMT_RECONNECT_START             = 35,
-  WMT_RECONNECT_END               = 36,
-  WMT_CLIENT_CONNECT_EX           = 37,
-  WMT_CLIENT_DISCONNECT_EX        = 38,
-  WMT_SET_FEC_SPAN                = 39,
-  WMT_PREROLL_READY               = 40,
-  WMT_PREROLL_COMPLETE            = 41,
-  WMT_CLIENT_PROPERTIES           = 42,
-  WMT_LICENSEURL_SIGNATURE_STATE  = 43,
-  WMT_INIT_PLAYLIST_BURN          = 44,
-  WMT_TRANSCRYPTOR_INIT           = 45,
-  WMT_TRANSCRYPTOR_SEEKED         = 46,
-  WMT_TRANSCRYPTOR_READ           = 47,
-  WMT_TRANSCRYPTOR_CLOSED         = 48,
-  WMT_PROXIMITY_RESULT            = 49,
-  WMT_PROXIMITY_COMPLETED         = 50
-  );
-  {$EXTERNALSYM WMT_STATUS}
+    WMT_ERROR = 0,
+    WMT_OPENED = 1,
+    WMT_BUFFERING_START = 2,
+    WMT_BUFFERING_STOP = 3,
+    WMT_EOF = 4,
+    WMT_END_OF_FILE = 4,
+    WMT_END_OF_SEGMENT = 5,
+    WMT_END_OF_STREAMING = 6,
+    WMT_LOCATING = 7,
+    WMT_CONNECTING = 8,
+    WMT_NO_RIGHTS = 9,
+    WMT_MISSING_CODEC = 10,
+    WMT_STARTED = 11,
+    WMT_STOPPED = 12,
+    WMT_CLOSED = 13,
+    WMT_STRIDING = 14,
+    WMT_TIMER = 15,
+    WMT_INDEX_PROGRESS = 16,
+    WMT_SAVEAS_START = 17,
+    WMT_SAVEAS_STOP = 18,
+    WMT_NEW_SOURCEFLAGS = 19,
+    WMT_NEW_METADATA = 20,
+    WMT_BACKUPRESTORE_BEGIN = 21,
+    WMT_SOURCE_SWITCH = 22,
+    WMT_ACQUIRE_LICENSE = 23,
+    WMT_INDIVIDUALIZE = 24,
+    WMT_NEEDS_INDIVIDUALIZATION = 25,
+    WMT_NO_RIGHTS_EX = 26,
+    WMT_BACKUPRESTORE_END = 27,
+    WMT_BACKUPRESTORE_CONNECTING = 28,
+    WMT_BACKUPRESTORE_DISCONNECTING = 29,
+    WMT_ERROR_WITHURL = 30,
+    WMT_RESTRICTED_LICENSE = 31,
+    WMT_CLIENT_CONNECT = 32,
+    WMT_CLIENT_DISCONNECT = 33,
+    WMT_NATIVE_OUTPUT_PROPS_CHANGED = 34,
+    WMT_RECONNECT_START = 35,
+    WMT_RECONNECT_END = 36,
+    WMT_CLIENT_CONNECT_EX = 37,
+    WMT_CLIENT_DISCONNECT_EX = 38,
+    WMT_SET_FEC_SPAN = 39,
+    WMT_PREROLL_READY = 40,
+    WMT_PREROLL_COMPLETE = 41,
+    WMT_CLIENT_PROPERTIES = 42,
+    WMT_LICENSEURL_SIGNATURE_STATE = 43,
+    WMT_INIT_PLAYLIST_BURN = 44,
+    WMT_TRANSCRYPTOR_INIT = 45,
+    WMT_TRANSCRYPTOR_SEEKED = 46,
+    WMT_TRANSCRYPTOR_READ = 47,
+    WMT_TRANSCRYPTOR_CLOSED = 48,
+    WMT_PROXIMITY_RESULT = 49,
+    WMT_PROXIMITY_COMPLETED = 50
+    );
+{$EXTERNALSYM WMT_STATUS}
   TWMTStatus = WMT_STATUS;
 
- WAVEFORMATEXTENSIBLE = record
-   Format : TWAVEFORMATEX;
-   Samples : Word;
-   dwChannelMask : LongWord;
-   SubFormat : TGUID;
- end;
+  WAVEFORMATEXTENSIBLE = record
+    Format: TWAVEFORMATEX;
+    Samples: Word;
+    dwChannelMask: LongWord;
+    SubFormat: TGUID;
+  end;
 
- PWAVEFORMATEXTENSIBLE = ^WAVEFORMATEXTENSIBLE;
+  PWAVEFORMATEXTENSIBLE = ^WAVEFORMATEXTENSIBLE;
 
-  WMT_VERSION = {$IFDEF TYPE_IDENTITY}type {$ENDIF} LongWord;
+WMT_VERSION = {$IFDEF TYPE_IDENTITY}type{$ENDIF}LongWord;
 
   PWMTStreamSelection = ^TWMTStreamSelection;
   WMT_STREAM_SELECTION = (
     WMT_OFF,
     WMT_CLEANPOINT_ONLY,
     WMT_ON
-  );
-  {$EXTERNALSYM WMT_STREAM_SELECTION}
+    );
+{$EXTERNALSYM WMT_STREAM_SELECTION}
   TWMTStreamSelection = WMT_STREAM_SELECTION;
 
   WMT_ATTR_DATATYPE = (
@@ -371,57 +371,57 @@ type
     WMT_TYPE_QWORD,
     WMT_TYPE_WORD,
     WMT_TYPE_GUID
-  );
-  {$EXTERNALSYM WMT_ATTR_DATATYPE}
+    );
+{$EXTERNALSYM WMT_ATTR_DATATYPE}
   TWMTAttrDataType = WMT_ATTR_DATATYPE;
 
   PWMMediaType = ^TWMMediaType;
   _WMMediaType = packed record
-    majortype            : TGUID;
-    subtype              : TGUID;
-    bFixedSizeSamples    : BOOL;
-    bTemporalCompression : BOOL;
-    lSampleSize          : ULONG;
-    formattype           : TGUID;
-    pUnk                 : IUnknown;
-    cbFormat             : ULONG;
-    pbFormat             : PBYTE; // size_is(cbFormat)
+    majortype: TGUID;
+    subtype: TGUID;
+    bFixedSizeSamples: BOOL;
+    bTemporalCompression: BOOL;
+    lSampleSize: ULONG;
+    formattype: TGUID;
+    pUnk: IUnknown;
+    cbFormat: ULONG;
+    pbFormat: PBYTE; // size_is(cbFormat)
   end;
 
 
 
 
-  {$EXTERNALSYM _WMMediaType}
+{$EXTERNALSYM _WMMediaType}
   WM_MEDIA_TYPE = _WMMediaType;
-  {$EXTERNALSYM WM_MEDIA_TYPE}
+{$EXTERNALSYM WM_MEDIA_TYPE}
   TWMMediaType = _WMMediaType;
 
   PWMWriterStatistics = ^TWMWriterStatistics;
   _WMWriterStatistics = packed record
-    qwSampleCount        : Int64;
-    qwByteCount          : Int64;
+    qwSampleCount: Int64;
+    qwByteCount: Int64;
 
-    qwDroppedSampleCount : Int64;
-    qwDroppedByteCount   : Int64;
+    qwDroppedSampleCount: Int64;
+    qwDroppedByteCount: Int64;
 
-    dwCurrentBitrate     : LongWord;
-    dwAverageBitrate     : LongWord;
-    dwExpectedBitrate    : LongWord;
+    dwCurrentBitrate: LongWord;
+    dwAverageBitrate: LongWord;
+    dwExpectedBitrate: LongWord;
 
     //
     // Sample rates are given as 1000 * (samples / second).
     //
-    dwCurrentSampleRate  : LongWord;
-    dwAverageSampleRate  : LongWord;
-    dwExpectedSampleRate : LongWord;
+    dwCurrentSampleRate: LongWord;
+    dwAverageSampleRate: LongWord;
+    dwExpectedSampleRate: LongWord;
   end;
-  {$EXTERNALSYM _WMWriterStatistics}
+{$EXTERNALSYM _WMWriterStatistics}
   WM_WRITER_STATISTICS = _WMWriterStatistics;
-  {$EXTERNALSYM WM_WRITER_STATISTICS}
+{$EXTERNALSYM WM_WRITER_STATISTICS}
   TWMWriterStatistics = _WMWriterStatistics;
 
   INSSBuffer = interface(IUnknown)
-  ['{E1CD3524-03D7-11d2-9EED-006097D2D7CF}']
+    ['{E1CD3524-03D7-11d2-9EED-006097D2D7CF}']
   (*** INSSBuffer methods ***)
     function GetLength(out pdwLength: LongWord): HRESULT; stdcall;
     function SetLength(dwLength: LongWord): HRESULT; stdcall;
@@ -431,7 +431,7 @@ type
   end;
 
   IWMHeaderInfo = interface(IUnknown)
-  ['{96406BDA-2B2B-11d3-B36B-00C04F6108FF}']
+    ['{96406BDA-2B2B-11d3-B36B-00C04F6108FF}']
   (*** IWMHeaderInfo methods ***)
     // For attributes, the stream number passed in means:
     // -1 (0xffff) to specifies "any or no stream".
@@ -444,7 +444,7 @@ type
     function GetAttributeCount(wStreamNum: Word; out pcAttributes: Word): HRESULT; stdcall;
 
     function GetAttributeByIndex(wIndex: Word; var pwStreamNum: Word;
-      {out} pwszName: PWideChar; var pcchNameLen: Word;
+      {out}pwszName: PWideChar; var pcchNameLen: Word;
       out pType: TWMTAttrDataType; {out} pValue: PBYTE;
       var pcbLength: Word): HRESULT; stdcall;
 
@@ -481,7 +481,7 @@ type
 
 
   IWMMediaProps = interface(IUnknown)
-  ['{96406BCE-2B2B-11d3-B36B-00C04F6108FF}']
+    ['{96406BCE-2B2B-11d3-B36B-00C04F6108FF}']
   (*** IWMMediaProps methods ***)
     //
     // GetType is provided for convenience; it returns the same as the
@@ -489,23 +489,23 @@ type
     //
     function GetType(out pguidType: TGUID): HRESULT; stdcall;
     function GetMediaType(pType: PWMMediaType;
-                          var pcbType: LongWord): HRESULT; stdcall;
+      var pcbType: LongWord): HRESULT; stdcall;
     function SetMediaType(pType: PWMMediaType): HRESULT; stdcall;
   end;
 
   IWMOutputMediaProps = interface(IWMMediaProps)
-  ['{96406BD7-2B2B-11d3-B36B-00C04F6108FF}']
+    ['{96406BD7-2B2B-11d3-B36B-00C04F6108FF}']
   (*** IWMOutputMediaProps methods ***)
     //
     // A Stream Group and type together uniquely identify each output. (The
     // type is on IWMMediaProps).
     //
-    function GetStreamGroupName({out} pwszName: PWideChar; var pcchName: Word): HRESULT; stdcall;
-    function GetConnectionName({out} pwszName: PWideChar; var pcchName: Word): HRESULT; stdcall;
+    function GetStreamGroupName({out}pwszName: PWideChar; var pcchName: Word): HRESULT; stdcall;
+    function GetConnectionName({out}pwszName: PWideChar; var pcchName: Word): HRESULT; stdcall;
   end;
 
- IWMSyncReader = interface(IUnknown)
-  ['{9397F121-7705-4dc9-B049-98B698188414}']
+  IWMSyncReader = interface(IUnknown)
+    ['{9397F121-7705-4dc9-B049-98B698188414}']
   (*** IWMSyncReader methods ***)
     //
     // This interface can be QI'ed for IWMProfile, IWMHeaderInfo and
@@ -533,7 +533,7 @@ type
     // streams are synchronized to the same position based on time.
     // Also use cFramesToRead=0 to specify reading to end of file.
     //
-    function SetRangeByFrame(wStreamNum: Word; qwFrameNumber, cFramesToRead: Int64 ): HRESULT; stdcall;
+    function SetRangeByFrame(wStreamNum: Word; qwFrameNumber, cFramesToRead: Int64): HRESULT; stdcall;
 
     //
     // If a valid stream number is specified, next sample from that stream
@@ -612,8 +612,8 @@ type
     function OpenStream(pStream: IStream): HRESULT; stdcall;
   end;
 
-  {$HPPEMIT 'typedef System::DelphiInterface<IWMWriterSink> _di_IWMWriterSink;'}
-  {$EXTERNALSYM IWMWriterSink}
+{$HPPEMIT 'typedef System::DelphiInterface<IWMWriterSink> _di_IWMWriterSink;'}
+{$EXTERNALSYM IWMWriterSink}
   IWMWriterSink = interface(IUnknown)
     ['{96406BE4-2B2B-11D3-B36B-00C04F6108FF}']
     (*** IWMWriterSink methods ***)
@@ -627,29 +627,29 @@ type
   end;
 
 
-  {$HPPEMIT 'typedef System::DelphiInterface<IWMWriterFileSink> _di_IWMWriterFileSink;'}
-  {$EXTERNALSYM IWMWriterFileSink}
-    IWMWriterFileSink = interface(IWMWriterSink)
+{$HPPEMIT 'typedef System::DelphiInterface<IWMWriterFileSink> _di_IWMWriterFileSink;'}
+{$EXTERNALSYM IWMWriterFileSink}
+  IWMWriterFileSink = interface(IWMWriterSink)
     ['{96406BE5-2B2B-11D3-B36B-00C04F6108FF}']
     (*** IWMWriterFileSink methods ***)
     function Open(pwszFilename: PWideChar): HResult; stdcall;
   end;
 
-   {$HPPEMIT 'typedef System::DelphiInterface<IWMWriter> _di_IWMWriter;'}
-  {$EXTERNALSYM IWMWriter}
+{$HPPEMIT 'typedef System::DelphiInterface<IWMWriter> _di_IWMWriter;'}
+{$EXTERNALSYM IWMWriter}
 
 
   IWMStreamConfig = interface(IUnknown)
-  ['{96406BDC-2B2B-11d3-B36B-00C04F6108FF}']
+    ['{96406BDC-2B2B-11d3-B36B-00C04F6108FF}']
   (*** IWMStreamConfig methods ***)
     // This interface QI's for IWMMediaProps and one of it's inheritors.
     // (IWMVideoMediaProps, for instance).
     function GetStreamType(out pguidStreamType: TGUID): HRESULT; stdcall;
     function GetStreamNumber(out pwStreamNum: Word): HRESULT; stdcall;
     function SetStreamNumber(wStreamNum: Word): HRESULT; stdcall;
-    function GetStreamName({out} pwszStreamName: PWideChar; var pcchStreamName: Word): HRESULT; stdcall;
+    function GetStreamName({out}pwszStreamName: PWideChar; var pcchStreamName: Word): HRESULT; stdcall;
     function SetStreamName(pwszStreamName: PWideChar): HRESULT; stdcall;
-    function GetConnectionName({out} pwszInputName: PWideChar; var pcchInputName: Word): HRESULT; stdcall;
+    function GetConnectionName({out}pwszInputName: PWideChar; var pcchInputName: Word): HRESULT; stdcall;
     function SetConnectionName(pwszInputName: PWideChar): HRESULT; stdcall;
     function GetBitrate(out pdwBitrate: LongWord): HRESULT; stdcall;
     function SetBitrate(pdwBitrate: LongWord): HRESULT; stdcall;
@@ -664,58 +664,58 @@ type
   end;
 
   IWMStreamList = interface(IUnknown)
-  ['{96406BDD-2B2B-11d3-B36B-00C04F6108FF}']
+    ['{96406BDD-2B2B-11d3-B36B-00C04F6108FF}']
   (*** IWMStreamList methods ***)
-    function GetStreams({out} pwStreamNumArray: PWORD; var pcStreams: PWORD): HRESULT; stdcall;
+    function GetStreams({out}pwStreamNumArray: PWORD; var pcStreams: PWORD): HRESULT; stdcall;
     function AddStream(wStreamNum: Word): HRESULT; stdcall;
     function RemoveStream(wStreamNum: Word): HRESULT; stdcall;
   end;
 
-    {$HPPEMIT 'typedef System::DelphiInterface<IWMCodecInfo> _di_IWMCodecInfo;'}
-  {$EXTERNALSYM IWMCodecInfo}
+{$HPPEMIT 'typedef System::DelphiInterface<IWMCodecInfo> _di_IWMCodecInfo;'}
+{$EXTERNALSYM IWMCodecInfo}
   IWMCodecInfo = interface(IUnknown)
     ['{A970F41E-34DE-4A98-B3BA-E4B3CA7528F0}']
     (*** IWMCodecInfo methods ***)
     function GetCodecInfoCount(const guidType: TGUID; out pcCodecs: LongWord): HResult; stdcall;
     function GetCodecFormatCount(const guidType: TGUID; dwCodecIndex: LongWord; out pcFormat: LongWord): HResult; stdcall;
     function GetCodecFormat(const guidType: TGUID; dwCodecIndex: LongWord; dwFormatIndex: LongWord;
-                            out ppIStreamConfig: IWMStreamConfig): HResult; stdcall;
+      out ppIStreamConfig: IWMStreamConfig): HResult; stdcall;
   end;
 
-  {$HPPEMIT 'typedef System::DelphiInterface<IWMCodecInfo2> _di_IWMCodecInfo2;'}
-  {$EXTERNALSYM IWMCodecInfo2}
+{$HPPEMIT 'typedef System::DelphiInterface<IWMCodecInfo2> _di_IWMCodecInfo2;'}
+{$EXTERNALSYM IWMCodecInfo2}
   IWMCodecInfo2 = interface(IWMCodecInfo)
     ['{AA65E273-B686-4056-91EC-DD768D4DF710}']
     (*** IWMCodecInfo2 methods ***)
     function GetCodecName(const guidType: TGUID; dwCodecIndex: LongWord; {out} wszName: PWideChar;
-                          var pcchName: LongWord): HResult; stdcall;
+      var pcchName: LongWord): HResult; stdcall;
     function GetCodecFormatDesc(const guidType: TGUID; dwCodecIndex: LongWord;
-                                dwFormatIndex: LongWord; out ppIStreamConfig: IWMStreamConfig;
-                                {out} wszDesc: PWideChar; var pcchDesc: LongWord): HResult; stdcall;
+      dwFormatIndex: LongWord; out ppIStreamConfig: IWMStreamConfig;
+                                {out}wszDesc: PWideChar; var pcchDesc: LongWord): HResult; stdcall;
   end;
 
-  {$HPPEMIT 'typedef System::DelphiInterface<IWMCodecInfo3> _di_IWMCodecInfo3;'}
-  {$EXTERNALSYM IWMCodecInfo3}
+{$HPPEMIT 'typedef System::DelphiInterface<IWMCodecInfo3> _di_IWMCodecInfo3;'}
+{$EXTERNALSYM IWMCodecInfo3}
   IWMCodecInfo3 = interface(IWMCodecInfo2)
     ['{7E51F487-4D93-4F98-8AB4-27D0565ADC51}']
     (*** IWMCodecInfo3 methods ***)
     function GetCodecFormatProp(const guidType: TGUID; dwCodecIndex: LongWord;
-                                dwFormatIndex: LongWord; pszName: PWideChar;
-                                out pType: TWMTAttrDataType; {out} pValue: PByte;
-                                var pdwSize: LongWord): HResult; stdcall;
+      dwFormatIndex: LongWord; pszName: PWideChar;
+      out pType: TWMTAttrDataType; {out} pValue: PByte;
+      var pdwSize: LongWord): HResult; stdcall;
     function GetCodecProp(const guidType: TGUID; dwCodecIndex: LongWord; pszName: PWideChar;
-                          out pType: TWMTAttrDataType; {out} pValue: PByte; var pdwSize: LongWord): HResult; stdcall;
+      out pType: TWMTAttrDataType; {out} pValue: PByte; var pdwSize: LongWord): HResult; stdcall;
     function SetCodecEnumerationSetting(const guidType: TGUID; dwCodecIndex: LongWord;
-                                        pszName: PWideChar; Type_: TWMTAttrDataType;
-                                        {in} pValue: PByte; dwSize: LongWord): HResult; stdcall;
+      pszName: PWideChar; Type_: TWMTAttrDataType;
+                                        {in}pValue: PByte; dwSize: LongWord): HResult; stdcall;
     function GetCodecEnumerationSetting(const guidType: TGUID; dwCodecIndex: LongWord;
-                                        pszName: PWideChar; out pType: TWMTAttrDataType;
-                                        {out} pValue: PByte; var pdwSize: LongWord): HResult; stdcall;
+      pszName: PWideChar; out pType: TWMTAttrDataType;
+                                        {out}pValue: PByte; var pdwSize: LongWord): HResult; stdcall;
   end;
 
 
   IWMMutualExclusion = interface(IWMStreamList)
-  ['{96406BDE-2B2B-11d3-B36B-00C04F6108FF}']
+    ['{96406BDE-2B2B-11d3-B36B-00C04F6108FF}']
   (*** IWMMutualExclusion methods ***)
     // The possible types of mutual exclusion are defined in the ASF
     // header.
@@ -724,9 +724,9 @@ type
   end;
 
 
-  {$EXTERNALSYM IWMProfile}
+{$EXTERNALSYM IWMProfile}
   IWMProfile = interface(IUnknown)
-  ['{96406BDB-2B2B-11d3-B36B-00C04F6108FF}']
+    ['{96406BDB-2B2B-11d3-B36B-00C04F6108FF}']
   (*** IWMProfile methods ***)
     // By default, when the user creates a profile, it will use the latest
     // version of Windows Media. To create a backward-compatible profile,
@@ -736,10 +736,10 @@ type
 
     // Profiles have names and descriptions, for use when displaying lists
     // of profiles, etc.
-    function GetName({out} pwszName: PWideChar; var pcchName: LongWord): HRESULT; stdcall;
+    function GetName({out}pwszName: PWideChar; var pcchName: LongWord): HRESULT; stdcall;
     function SetName(pwszName: PWideChar): HRESULT; stdcall;
 
-    function GetDescription({out} pwszDescription: PWideChar;
+    function GetDescription({out}pwszDescription: PWideChar;
       var pcchDescription: LongWord): HRESULT; stdcall;
 
     function SetDescription(pwszDescription: PWideChar): HRESULT; stdcall;
@@ -782,9 +782,9 @@ type
     function CreateNewMutualExclusion(out ppME: IWMMutualExclusion): HRESULT; stdcall;
   end;
 
-   {$EXTERNALSYM IWMProfileManager}
+{$EXTERNALSYM IWMProfileManager}
   IWMProfileManager = interface(IUnknown)
-  ['{d16679f2-6ca0-472d-8d31-2f5d55aee155}']
+    ['{d16679f2-6ca0-472d-8d31-2f5d55aee155}']
   (*** IWMProfileManager methods ***)
     // Create a profile with nothing in it.
     function CreateEmptyProfile(dwVersion: WMT_VERSION; out ppProfile: IWMProfile): HRESULT; stdcall;
@@ -805,17 +805,17 @@ type
     function LoadSystemProfile(dwProfileIndex: LongWord; out ppProfile: IWMProfile): HRESULT; stdcall;
   end;
 
-  {$EXTERNALSYM IWMInputMediaProps}
+{$EXTERNALSYM IWMInputMediaProps}
   IWMInputMediaProps = interface(IWMMediaProps)
-  ['{96406BD5-2B2B-11d3-B36B-00C04F6108FF}']
+    ['{96406BD5-2B2B-11d3-B36B-00C04F6108FF}']
   (*** IWMInputMediaProps methods ***)
-    function GetConnectionName({out} pwszName: PWideChar; var pcchName: Word): HRESULT; stdcall;
-    function GetGroupName({out} pwszName: PWideChar; var pcchName: Word): HRESULT; stdcall;
+    function GetConnectionName({out}pwszName: PWideChar; var pcchName: Word): HRESULT; stdcall;
+    function GetGroupName({out}pwszName: PWideChar; var pcchName: Word): HRESULT; stdcall;
   end;
 
 
   IWMWriter = interface(IUnknown)
-  ['{96406BD4-2B2B-11d3-B36B-00C04F6108FF}']
+    ['{96406BD4-2B2B-11d3-B36B-00C04F6108FF}']
   (*** IWMWriter methods ***)
     // This interface QI's for IWMHeaderInfo, and IWMWriterAdvanced.
 
@@ -857,7 +857,7 @@ type
     function GetInputFormatCount(dwInputNumber: LongWord; out pcFormats: LongWord): HRESULT; stdcall;
 
     function GetInputFormat(dwInputNumber, dwFormatNumber: LongWord;
-       out pProps: IWMInputMediaProps): HRESULT; stdcall;
+      out pProps: IWMInputMediaProps): HRESULT; stdcall;
 
     //
     // You must call BeginWriting before sending any samples, and
@@ -890,8 +890,8 @@ type
 
   // The writer can be QI'd for this interface, which provides advanced writing
   // functionality.
-  {$HPPEMIT 'typedef System::DelphiInterface<IWMWriterAdvanced> _di_IWMWriterAdvanced;'}
-  {$EXTERNALSYM IWMWriterAdvanced}
+{$HPPEMIT 'typedef System::DelphiInterface<IWMWriterAdvanced> _di_IWMWriterAdvanced;'}
+{$EXTERNALSYM IWMWriterAdvanced}
   IWMWriterAdvanced = interface(IUnknown)
     ['{96406BE3-2B2B-11D3-B36B-00C04F6108FF}']
     (*** IWMWriterAdvanced methods ***)
@@ -905,8 +905,8 @@ type
     // into a MEB stream, etc. However, the user can use this interface to
     // put the samples directly into the ASF, with no compression etc.
     function WriteStreamSample(wStreamNum: Word; cnsSampleTime: Int64;
-                               msSampleSendTime: LongWord; cnsSampleDuration: Int64;
-                               dwFlags: LongWord; pSample: INSSBuffer): HResult; stdcall;
+      msSampleSendTime: LongWord; cnsSampleDuration: Int64;
+      dwFlags: LongWord; pSample: INSSBuffer): HResult; stdcall;
     // The writer may be running in real-time. If so, it's interesting to
     // get the current time from the writer.
     function SetLiveSource(fIsLiveSource: BOOL): HResult; stdcall;
@@ -926,26 +926,26 @@ type
   end;
 
   IWMStatusCallback = interface(IUnknown)
-  ['{6d7cdc70-9888-11d3-8edc-00c04f6109cf}']
+    ['{6d7cdc70-9888-11d3-8edc-00c04f6109cf}']
   (*** IWMStatusCallback methods ***)
     // The contents of pValue depends on the Status.
     function OnStatus(Status: TWMTStatus; hr: HRESULT; dwType: TWMTAttrDataType;
       pValue: PBYTE; pvContext: Pointer): HRESULT; stdcall;
   end;
 
-  {$HPPEMIT 'typedef System::DelphiInterface<IWMReaderCallback> _di_IWMReaderCallback;'}
-  {$EXTERNALSYM IWMReaderCallback}
+{$HPPEMIT 'typedef System::DelphiInterface<IWMReaderCallback> _di_IWMReaderCallback;'}
+{$EXTERNALSYM IWMReaderCallback}
   IWMReaderCallback = interface(IWMStatusCallback)
-  ['{96406BD8-2B2B-11d3-B36B-00C04F6108FF}']
+    ['{96406BD8-2B2B-11d3-B36B-00C04F6108FF}']
   (*** IWMReaderCallback methods ***)
     // cnsSampleDuration will be 0 for most media types.
     function OnSample(dwOutputNum: LongWord; cnsSampleTime, cnsSampleDuration: Int64;
       dwFlags: LongWord; pSample: INSSBuffer; pvContext: Pointer): HRESULT; stdcall;
   end;
 
-    {$EXTERNALSYM IWMReader}
+{$EXTERNALSYM IWMReader}
   IWMReader = interface(IUnknown)
-  ['{96406BD6-2B2B-11d3-B36B-00C04F6108FF}']
+    ['{96406BD6-2B2B-11d3-B36B-00C04F6108FF}']
   (*** IWMReader methods ***)
     //
     // This interface QI's for IWMHeaderInfo, IWMProfile, IWMReaderAdvanced,
@@ -1005,26 +1005,26 @@ type
 
   PWMPortNumberRange = ^TWMPortNumberRange;
   _WMPortNumberRange = packed record
-    wPortBegin : Word;
-    wPortEnd   : Word;
+    wPortBegin: Word;
+    wPortEnd: Word;
   end;
-  {$EXTERNALSYM _WMPortNumberRange}
+{$EXTERNALSYM _WMPortNumberRange}
   WM_PORT_NUMBER_RANGE = _WMPortNumberRange;
-  {$EXTERNALSYM WM_PORT_NUMBER_RANGE}
+{$EXTERNALSYM WM_PORT_NUMBER_RANGE}
   TWMPortNumberRange = _WMPortNumberRange;
 
-    WMT_PROXY_SETTINGS = (
+  WMT_PROXY_SETTINGS = (
     WMT_PROXY_SETTING_NONE,
     WMT_PROXY_SETTING_MANUAL,
     WMT_PROXY_SETTING_AUTO,
-    WMT_PROXY_SETTING_BROWSER,       // Only valid for HTTP
+    WMT_PROXY_SETTING_BROWSER, // Only valid for HTTP
     WMT_PROXY_SETTING_MAX
-  );
-  {$EXTERNALSYM WMT_PROXY_SETTINGS}
+    );
+{$EXTERNALSYM WMT_PROXY_SETTINGS}
   TWMTProxySettings = WMT_PROXY_SETTINGS;
 
 
-    IWMReaderNetworkConfig = interface(IUnknown)
+  IWMReaderNetworkConfig = interface(IUnknown)
     ['{96406BEC-2B2B-11D3-B36B-00C04F6108FF}']
     (*** IWMReaderNetworkConfig methods ***)
     // Get and set the amount of time the network source will buffer
@@ -1033,23 +1033,23 @@ type
     function SetBufferingTime(cnsBufferingTime: Int64): HResult; stdcall;
     // Returns the UDP port number ranges that will be used for receiving
     // data.  If no ranges are available, random UDP port numbers will be used.
-    function GetUDPPortRanges({out} pRangeArray: PWMPortNumberRange; var pcRanges: LongWord): HResult; stdcall;
+    function GetUDPPortRanges({out}pRangeArray: PWMPortNumberRange; var pcRanges: LongWord): HResult; stdcall;
     // Sets the UDP port number ranges that can be used for receiving data.
     // If no ranges are specified, random UDP port numbers will be used.
-    function SetUDPPortRanges({in} pRangeArray: PWMPortNumberRange; cRanges: LongWord): HResult; stdcall;
+    function SetUDPPortRanges({in}pRangeArray: PWMPortNumberRange; cRanges: LongWord): HResult; stdcall;
     // Proxy settings: Manual proxy, Autodetect, UseBrowser (only for HTTP), or No Proxy.
     function GetProxySettings(pwszProtocol: PWideChar; out pProxySetting: TWMTProxySettings): HResult; stdcall;
     function SetProxySettings(pwszProtocol: PWideChar; ProxySetting: TWMTProxySettings): HResult; stdcall;
     // The host to use as the proxy.
     function GetProxyHostName(pwszProtocol: PWideChar; {out} pwszHostName: PWideChar;
-                              var pcchHostName: LongWord): HResult; stdcall;
+      var pcchHostName: LongWord): HResult; stdcall;
     function SetProxyHostName(pwszProtocol: PWideChar; pwszHostName: PWideChar): HResult; stdcall;
     // The port to use as the proxy.
     function GetProxyPort(pwszProtocol: PWideChar; out pdwPort: LongWord): HResult; stdcall;
     function SetProxyPort(pwszProtocol: PWideChar; dwPort: LongWord): HResult; stdcall;
     // Get and set the proxy exception list.
     function GetProxyExceptionList(pwszProtocol: PWideChar; {out} pwszExceptionList: PWideChar;
-                                   var pcchExceptionList: LongWord): HResult; stdcall;
+      var pcchExceptionList: LongWord): HResult; stdcall;
     function SetProxyExceptionList(pwszProtocol: PWideChar; pwszExceptionList: PWideChar): HResult; stdcall;
     // Whether or not to bypass proxy for local hosts
     function GetProxyBypassForLocal(pwszProtocol: PWideChar; out pfBypassForLocal: BOOL): HResult; stdcall;
@@ -1076,7 +1076,7 @@ type
     // Iterate through the network protocols supported by this reader
     function GetNumProtocolsSupported(out pcProtocols: LongWord): HResult; stdcall;
     function GetSupportedProtocolName(dwProtocolNum: LongWord; {out} pwszProtocolName: PWideChar;
-                                      var pcchProtocolName: LongWord): HResult; stdcall;
+      var pcchProtocolName: LongWord): HResult; stdcall;
     // Adds the specified pszUrl to the list of URL's to recieve logging data.
     // This list is in addition to the origin server.
     function AddLoggingUrl(pwszURL: PWideChar): HResult; stdcall;
@@ -1089,42 +1089,55 @@ type
   end;
 
   IWMPropertyVault = interface(IUnknown)
-  ['{72995A79-5090-42a4-9C8C-D9D0B6D34BE5}']
+    ['{72995A79-5090-42a4-9C8C-D9D0B6D34BE5}']
   (*** IWMPropertyVault methods ***)
     function GetPropertyCount(out pdwCount: LongWord): HRESULT; stdcall;
     function GetPropertyByName(pszName: PWideChar; out pType: TWMTAttrDataType;
-      {out} pValue: PBYTE;  var pdwSize: LongWord): HRESULT; stdcall;
+      {out}pValue: PBYTE; var pdwSize: LongWord): HRESULT; stdcall;
     function SetProperty(pszName: PWideChar; pType: TWMTAttrDataType;
       pValue: PBYTE; dwSize: LongWord): HRESULT; stdcall;
     function GetPropertyByIndex(dwIndex: LongWord; {out} pszName: PWideChar;
       var pdwNameLen: LongWord; out pType: TWMTAttrDataType;
-      {out} pValue: PBYTE; var pdwSize: LongWord): HRESULT; stdcall;
+      {out}pValue: PBYTE; var pdwSize: LongWord): HRESULT; stdcall;
     function CopyPropertiesFrom(pIWMPropertyVault: IWMPropertyVault): HRESULT; stdcall;
     function Clear: HRESULT; stdcall;
   end;
 
-
-  function WMCreateSyncReader(pUnkCert: IUnknown; dwRights: LongWord; out ppSyncReader: IWMSyncReader): HRESULT; stdcall;
-  {$EXTERNALSYM WMCreateSyncReader}
-  function WMCreateWriter(pUnkCert: IUnknown; out ppWriter: IWMWriter): HRESULT; stdcall;
-  {$EXTERNALSYM WMCreateWriter}
-  function WMCreateWriterFileSink(out ppSink: IWMWriterFileSink ): HRESULT; stdcall;
-  {$EXTERNALSYM WMCreateWriterFileSink}
-  function WMCreateProfileManager(out ppProfileManager: IWMProfileManager): HRESULT; stdcall;
-  {$EXTERNALSYM WMCreateProfileManager}
-  function WMCreateReader(pUnkCert: IUnknown; dwRights: LongWord; out ppReader: IWMReader): HRESULT; stdcall;
-  {$EXTERNALSYM WMCreateReader}
-
+var
+  WMCreateSyncReader: function(pUnkCert: IUnknown; dwRights: LongWord; out ppSyncReader: IWMSyncReader): HRESULT; stdcall;
+  WMCreateWriter: function(pUnkCert: IUnknown; out ppWriter: IWMWriter): HRESULT; stdcall;
+  WMCreateWriterFileSink: function(out ppSink: IWMWriterFileSink): HRESULT; stdcall;
+  WMCreateProfileManager: function(out ppProfileManager: IWMProfileManager): HRESULT; stdcall;
+  WMCreateReader: function(pUnkCert: IUnknown; dwRights: LongWord; out ppReader: IWMReader): HRESULT; stdcall;
+  WMInited : Boolean;
 
 implementation
 
-const
-  WMVCORE = 'WMVCORE.DLL';
+//const
+//  WMVCORE = 'WMVCORE.DLL';
+var
+  hlib: THandle;
 
-  function WMCreateSyncReader; external WMVCORE name 'WMCreateSyncReader';
-  function WMCreateWriter; external WMVCORE name 'WMCreateWriter';
-  function WMCreateWriterFileSink; external WMVCORE name 'WMCreateWriterFileSink';
-  function WMCreateProfileManager; external WMVCORE name 'WMCreateProfileManager';
-  function WMCreateReader; external WMVCORE name 'WMCreateReader';
+procedure Load();
+begin
+  WMInited := False;
+  hlib := LoadLibrary('WMVCORE.DLL');
+  if hlib = 0 then Exit;
+  WMInited := True;
+  WMCreateSyncReader := GetProcAddress(hlib, 'WMCreateSyncReader');
+  WMCreateWriter := GetProcAddress(hlib, 'WMCreateWriter');
+  WMCreateWriterFileSink := GetProcAddress(hlib, 'WMCreateWriterFileSink');
+  WMCreateProfileManager := GetProcAddress(hlib, 'WMCreateProfileManager');
+  WMCreateReader := GetProcAddress(hlib, 'WMCreateReader');
+end;
+
+
+initialization
+  Load;
+
+finalization
+  FreeLibrary(hlib);
+
 
 end.
+

@@ -121,13 +121,11 @@ begin
     else
     begin
       Status := rsRecovering;
-      NotifyForm(1);
       DS.Stop;
       repeat
         Sleep(99);
         if Terminated then Exit;
       until FStream.BuffFilled > BUFFRESTORE;
-      NotifyForm(1);
       DS.Play;
       Status := rsPlaying;
     end;
@@ -138,11 +136,11 @@ begin
 end;
 
 initialization
-  if mpg123_init <> MPG123_OK then
+  if mpg123_init() <> MPG123_OK then
     RaiseError('ERRO, criando instancia do decodificador MPEG');
 
 finalization
-  mpg123_exit;
+  mpg123_exit();
 
 end.
 
