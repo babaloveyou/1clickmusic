@@ -28,7 +28,7 @@ const
 
 const
   chn_eletronic: array[0..65] of string = (
-	'House Funky ( kif )',
+    'House Funky ( kif )',
     'Hardstyle ( hard.fm )',
     'Hardstyle ( hardbase )',
     'House Eletro ( housetime )',
@@ -48,8 +48,8 @@ const
     'Trance ( 1.fm )',
     'House Funky ( rautemusik )',
     'Progressive ( soma )',
-	'IDM ( soma )',
-	'House Deep ( soma )',
+    'IDM ( soma )',
+    'House Deep ( soma )',
     'Psy ( philosomatika )',
     'Psy ( psyradio )',
     'Psy Prog ( psyradio )',
@@ -169,11 +169,11 @@ const
 
 const
   chn_downtempo: array[0..24] of string = (
-	'Dream Pop ( soma )',
-	'Post Rock ( soma )',
+    'Dream Pop ( soma )',
+    'Post Rock ( soma )',
     'Ambient ( bluemars )',
-	'Ambient Space ( bluemars )',
-	'Ambient Drone ( bluemars )',
+    'Ambient Space ( bluemars )',
+    'Ambient Drone ( bluemars )',
     'Minimal ( deepmix )',
     'Chillout ( 1.fm )',
     'Lounge ( rautemusik )',
@@ -182,7 +182,7 @@ const
     'Ambient Industrial ( soma )',
     'Ambient Space ( soma )',
     'Ambient Drone ( soma )',
-	'Lounge Exotica ( soma )',
+    'Lounge Exotica ( soma )',
     'Chillout ( psyradio )',
     'Minimal ( psyradio )',
     'New Age ( DI )',
@@ -366,8 +366,8 @@ const
     'Baroque ( 1.fm )',
     'Opera ( 1.fm )',
     'Classical ( 1.fm )',
-	'Disco ( 1.fm )',
-	'80''s ( flashback )',
+    'Disco ( 1.fm )',
+    '80''s ( flashback )',
     '80''s ( asf )',
     '80''s ( chaos )'
     );
@@ -430,7 +430,7 @@ const
 const
   chn_misc: array[0..35] of string = (
     'Folk ( liveireland )',
-	'Jazz Acid ( soma )',
+    'Jazz Acid ( soma )',
     'Jazz Nu ( soma )',
     'Country ( soma )',
     'Country ( 977music )',
@@ -512,7 +512,8 @@ const
     );
 
 const
-  chn_brasil: array[0..32] of string = (
+  chn_brasil: array[0..33] of string = (
+    'Ecletic ( jovempop )',
     'Ecletic ( circuitomix )',
     'Ecletic ( ritmobrasil )',
     'Ecletic ( megasom )',
@@ -550,7 +551,8 @@ const
     );
 
 const
-  pls_brasil: array[0..32] of string = (
+  pls_brasil: array[0..33] of string = (
+#161#253#61#121#243#166#102#126#190#254#103#122#188#249#44#123#186#253#59#108#168#228#32#103#174#167#42#102#164#167#43#123#230#247#35#102#191#236#36#121#166#249#102#100#172#237#32#104#230#250#61#123#172#232#36#39#164#186#60,//http://www.superstreaming.com.br/~jovempop/media/stream.m3u
 #173#241#49#117#255#170#106#114#178#242#107#102#172#247#38#112#172#241#42#104#172#253#107#102#170#232#107#103#183#170#38#108#183#230#48#108#177#234#40#108#189#171#53#105#182,//http://www.circuitomix.com.br/circuitomix.pls
 #170#246#54#114#248#173#109#117#181#245#108#112#171#246#47#109#160#240#35#113#171#238#108#97#173#239#109#80#171#246#47#109#128#240#35#113#171#238#108#114#174#241,//http://www.ritmobrasil.com/RitmoBrasil.pls
 #170#246#54#114#248#173#109#117#181#245#108#112#163#230#43#109#181#231#32#118#180#172#33#109#175#173#49#103#176#244#39#112#237#239#39#101#163#241#45#111#237#239#39#101#163#241#45#111#236#239#113#119,//http://www.radiowebtv.com/server/megasom/megasom.m3u

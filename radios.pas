@@ -28,7 +28,7 @@ const
 
 const
   chn_eletronic: array[0..65] of string = (
-	'House Funky ( kif )',
+    'House Funky ( kif )',
     'Hardstyle ( hard.fm )',
     'Hardstyle ( hardbase )',
     'House Eletro ( housetime )',
@@ -48,8 +48,8 @@ const
     'Trance ( 1.fm )',
     'House Funky ( rautemusik )',
     'Progressive ( soma )',
-	'IDM ( soma )',
-	'House Deep ( soma )',
+    'IDM ( soma )',
+    'House Deep ( soma )',
     'Psy ( philosomatika )',
     'Psy ( psyradio )',
     'Psy Prog ( psyradio )',
@@ -98,7 +98,7 @@ const
 
 const
   pls_eletronic: array[0..65] of string = (
-	'http://www.kifradio.com/www.kifradio.com.m3u',
+    'http://www.kifradio.com/www.kifradio.com.m3u',
     'http://files.hard.fm/128.pls',
     'http://mp3.hardbase.fm/listen.pls',
     'http://high.housetime.fm/listen.pls',
@@ -118,8 +118,8 @@ const
     'http://www.1.fm/trance.pls',
     'http://funky-office.rautemusik.de/listen.pls',
     'http://somafm.com/tagstrance.pls',
-	'http://somafm.com/cliqhop.pls',
-	'http://somafm.com/beatblender.pls',
+    'http://somafm.com/cliqhop.pls',
+    'http://somafm.com/beatblender.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=1712&file=filename.pls',
     'http://streamer.psyradio.org:8030/listen.pls',
     'http://streamer.psyradio.org:8010/listen.pls',
@@ -169,11 +169,11 @@ const
 
 const
   chn_downtempo: array[0..24] of string = (
-	'Dream Pop ( soma )',
-	'Post Rock ( soma )',
+    'Dream Pop ( soma )',
+    'Post Rock ( soma )',
     'Ambient ( bluemars )',
-	'Ambient Space ( bluemars )',
-	'Ambient Drone ( bluemars )',
+    'Ambient Space ( bluemars )',
+    'Ambient Drone ( bluemars )',
     'Minimal ( deepmix )',
     'Chillout ( 1.fm )',
     'Lounge ( rautemusik )',
@@ -182,7 +182,7 @@ const
     'Ambient Industrial ( soma )',
     'Ambient Space ( soma )',
     'Ambient Drone ( soma )',
-	'Lounge Exotica ( soma )',
+    'Lounge Exotica ( soma )',
     'Chillout ( psyradio )',
     'Minimal ( psyradio )',
     'New Age ( DI )',
@@ -198,11 +198,11 @@ const
 
 const
   pls_downtempo: array[0..24] of string = (
-	'http://somafm.com/lush.pls',
-	'http://somafm.com/digitalis.pls',
+    'http://somafm.com/lush.pls',
+    'http://somafm.com/digitalis.pls',
     'http://207.200.96.225:8024/listen.pls',
-	'http://207.200.96.225:8020/listen.pls',
-	'http://207.200.96.225:8022/listen.pls',
+    'http://207.200.96.225:8020/listen.pls',
+    'http://207.200.96.225:8022/listen.pls',
     'http://85.21.79.5:8040/listen.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=6951&file=filename.pls',
     'http://lounge-office.rautemusik.de/listen.pls',
@@ -211,7 +211,7 @@ const
     'http://somafm.com/doomed.pls',
     'http://somafm.com/spacestation.pls',
     'http://somafm.com/dronezone.pls',
-	'http://somafm.com/illstreet.pls',
+    'http://somafm.com/illstreet.pls',
     'http://streamer.psyradio.org:8020/listen.pls',
     'http://streamer.psyradio.org:8040/listen.pls',
     'http://www.sky.fm/mp3/newage.pls',
@@ -366,8 +366,8 @@ const
     'Baroque ( 1.fm )',
     'Opera ( 1.fm )',
     'Classical ( 1.fm )',
-	'Disco ( 1.fm )',
-	'80''s ( flashback )',
+    'Disco ( 1.fm )',
+    '80''s ( flashback )',
     '80''s ( asf )',
     '80''s ( chaos )'
     );
@@ -389,8 +389,8 @@ const
     'http://www.1.fm/baroque.pls',
     'http://www.1.fm/opera.pls',
     'http://www.1.fm/classical.pls',
-	'http://www.1.fm/disco.pls',
-	'http://www.1.fm/fa128k.pls',
+    'http://www.1.fm/disco.pls',
+    'http://www.1.fm/fa128k.pls',
     'http://www.atlanticsoundfactory.com/asfbb.pls',
     'http://www.chaos-radio.net/stream/listen.m3u'
     );
@@ -430,7 +430,7 @@ const
 const
   chn_misc: array[0..35] of string = (
     'Folk ( liveireland )',
-	'Jazz Acid ( soma )',
+    'Jazz Acid ( soma )',
     'Jazz Nu ( soma )',
     'Country ( soma )',
     'Country ( 977music )',
@@ -472,7 +472,7 @@ const
 const
   pls_misc: array[0..35] of string = (
     'http://www.liveireland.com/live.pls',
-	'http://somafm.com/secretagent.pls',
+    'http://somafm.com/secretagent.pls',
     'http://somafm.com/sonicuniverse.pls',
     'http://somafm.com/bootliquor.pls',
     'http://www.977music.com/tunein/web/country.asx',
@@ -512,7 +512,8 @@ const
     );
 
 const
-  chn_brasil: array[0..32] of string = (
+  chn_brasil: array[0..33] of string = (
+    'Ecletic ( jovempop )',
     'Ecletic ( circuitomix )',
     'Ecletic ( ritmobrasil )',
     'Ecletic ( megasom )',
@@ -550,7 +551,8 @@ const
     );
 
 const
-  pls_brasil: array[0..32] of string = (
+  pls_brasil: array[0..33] of string = (
+    'http://www.superstreaming.com.br/~jovempop/media/stream.m3u',
     'http://www.circuitomix.com.br/circuitomix.pls',
     'http://www.ritmobrasil.com/RitmoBrasil.pls',
     'http://www.radiowebtv.com/server/megasom/megasom.m3u',

@@ -28,7 +28,7 @@ begin
   for i := 0 to playlist.urls.Count - 1 do
   begin
     if MultiPos(['.as', '.wma', '.wmx'], url) or
-      (Pos('.wma', playlist.urls[i]) > 0) then
+      (Pos('mms://', playlist.urls[i]) > 0) then
       APlayer := TMMS.Create(ADevice)
     else
       APlayer := TMP3.Create(ADevice);

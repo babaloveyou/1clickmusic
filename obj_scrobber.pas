@@ -138,7 +138,7 @@ const
 var
   moment: string;
   md5response: string;
-  urldata: UTF8String;
+  urldata: string;
   sl: TStringlist;
 begin
   Result := False;
@@ -147,8 +147,7 @@ begin
   moment := FormatDateTime('YYYY-MM-DD hh:mm:ss', IncHour(Now, 3));
   // md5 response
   md5response := StrMD5(passMD5 + sessioncode);
-  // the finalurl encoded to UTF-8
-  urldata := AnsiToUtf8(Format(scroburlparam, [user, md5response, artist, track, '', 240, moment]));
+  urldata := Format(scroburlparam, [user, md5response, artist, track, '', 240, moment]);
   // submit the POST
   if HttpPostText(scroburl, EncodeURL(urldata), sl) then
     if (sl[0] = 'OK') then
