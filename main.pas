@@ -111,7 +111,6 @@ begin
     'kamikazze, BomGaroto, SnowHill, Ricardo, Greel, The_Terminator,' + #13#10
     + 'jotaeme, Mouse Pad, Lokinhow, Mario Bros, Blurkness.' + #13#10 +
     'e a toda a galera que tem me incentivado.' + #13#10 + #13#10 +
-    'Agradecimento especial nessa versao ao Blurkness.',
     '1ClickMusic ' + APPVERSIONSTR, MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
 end;
 
