@@ -1109,7 +1109,7 @@ var
   WMCreateWriterFileSink: function(out ppSink: IWMWriterFileSink): HRESULT; stdcall;
   WMCreateProfileManager: function(out ppProfileManager: IWMProfileManager): HRESULT; stdcall;
   WMCreateReader: function(pUnkCert: IUnknown; dwRights: LongWord; out ppReader: IWMReader): HRESULT; stdcall;
-  WMInited : Boolean;
+  WMInited: Boolean;
 
 implementation
 
@@ -1118,22 +1118,18 @@ implementation
 var
   hlib: THandle;
 
-procedure Load();
-begin
-  WMInited := False;
-  hlib := LoadLibrary('WMVCORE.DLL');
-  if hlib = 0 then Exit;
-  WMInited := True;
-  WMCreateSyncReader := GetProcAddress(hlib, 'WMCreateSyncReader');
-  WMCreateWriter := GetProcAddress(hlib, 'WMCreateWriter');
-  WMCreateWriterFileSink := GetProcAddress(hlib, 'WMCreateWriterFileSink');
-  WMCreateProfileManager := GetProcAddress(hlib, 'WMCreateProfileManager');
-  WMCreateReader := GetProcAddress(hlib, 'WMCreateReader');
-end;
-
-
 initialization
-  Load;
+  begin
+    WMInited := False;
+    hlib := LoadLibrary('WMVCORE.DLL');
+    if hlib = 0 then Exit;
+    WMInited := True;
+    WMCreateSyncReader := GetProcAddress(hlib, 'WMCreateSyncReader');
+    WMCreateWriter := GetProcAddress(hlib, 'WMCreateWriter');
+    WMCreateWriterFileSink := GetProcAddress(hlib, 'WMCreateWriterFileSink');
+    WMCreateProfileManager := GetProcAddress(hlib, 'WMCreateProfileManager');
+    WMCreateReader := GetProcAddress(hlib, 'WMCreateReader');
+  end;
 
 finalization
   FreeLibrary(hlib);

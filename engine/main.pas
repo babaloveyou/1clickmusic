@@ -17,15 +17,15 @@ uses
   httpsend;
 
 const
-  APPVERSION = 185;
-  APPVERSIONSTR = '1.8.5';
+  APPVERSION = 186;
+  APPVERSIONSTR = '1.8.6';
 
 var
   //# needed cuz of the KOL windows is Free with no control..
   appwinHANDLE: HWND;
   //# Core Global Variables
   DS: TDSoutput;
-  Chn: TRadioPlayer;
+  Chn: TRadioPlayer = nil;
   curProgress: Cardinal;
   curVolume: Cardinal;
   //

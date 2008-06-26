@@ -220,7 +220,6 @@ end;
 
 destructor THTTPSTREAM.Destroy;
 begin
-  Terminate;
   FHTTP.CloseSocket;
   FHTTP.Free;
   inherited;

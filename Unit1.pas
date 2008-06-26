@@ -179,7 +179,7 @@ var
   progress : Cardinal;
 begin
   // # GET INFO
-  chn.GetProgress(progress);
+  Chn.GetProgress(progress);
   if progress = curProgress then Exit;
 
   case progress of
@@ -207,7 +207,7 @@ procedure TForm1.UpdateExecute();
 begin
   Form.BeginUpdate;
 
-  chn.GetInfo(curTitle, curBitrate);
+  Chn.GetInfo(curTitle, curBitrate);
 
   Tray.Tooltip := curTitle;
 
@@ -251,7 +251,7 @@ begin
   lblbuffer.Caption := IntToStr(curBitrate) + 'kbps' +
     #13#10 + 'vol:' + IntToStr(curVolume) + '%';
 
-  case chn.Status of
+  case Chn.Status of
     rsPlaying: lblstatus.Caption := 'Connected!';
     rsPrebuffering: lblstatus.Caption := 'Prebufering..';
     rsRecovering: lblstatus.Caption := 'Recovering Buffer!';
@@ -287,7 +287,7 @@ begin
     end;
 
     //# Lets Try to play
-    if not OpenRadio(radiolist.getpls(channeltree.TVItemText[channeltree.TVSelected]), chn, DS) then
+    if not OpenRadio(radiolist.getpls(channeltree.TVItemText[channeltree.TVSelected]), Chn, DS) then
     begin
       if traypopups_enabled then
       begin
@@ -317,8 +317,8 @@ procedure TForm1.StopChannel;
 begin
   if msn_enabled then
     updateMSN(False);
-  if chn <> nil then
-    FreeAndNil(chn);
+  if Chn <> nil then
+    FreeAndNil(Chn);
 
   KillTimer(appwinHANDLE, 1);
 
@@ -345,13 +345,13 @@ begin
   begin
     case Msg.wParam of
       1001, 3001:
-        if chn <> nil then
+        if Chn <> nil then
         begin
           curVolume := DS.Volume(curVolume + 2);
           UpdateExecute();
         end;
       1002, 3002:
-        if chn <> nil then
+        if Chn <> nil then
         begin
           curVolume := DS.Volume(curVolume - 2);
           UpdateExecute();
@@ -359,7 +359,7 @@ begin
       1003, 3003:
         StopChannel;
       1004, 3004:
-        if chn = nil then
+        if Chn = nil then
           PlayChannel;
       2001..2012:
         if hotkeys[Msg.wParam - 2000] > 0 then
@@ -377,9 +377,9 @@ begin
     end
     else
       if (Msg.message = WM_USER) and
-        (Msg.wParam = Integer(chn)) then
+        (Msg.wParam = Integer(Chn)) then
       begin
-        if Msg.lParam <> 0 then // We have new content!
+        if Msg.lParam <> 0 then // We have something to update!
           UpdateExecute()
         else
         begin
@@ -403,11 +403,10 @@ begin
   //# Kill the GUI timer, it exists? I don't care!
   KillTimer(appwinHANDLE, 1);
 
-  Thread.Terminate;
   Thread.Free;
 
-  if chn <> nil then
-    chn.Free;
+  if Chn <> nil then
+    Chn.Free;
 
   DS.Free;
   //# Save .INI config
@@ -422,8 +421,8 @@ begin
   appwinHANDLE := form.Handle;
   //# Inicializa o SOM
   curVolume := 100;
-  chn := nil;
-  DS := TDSoutput.Create;
+  Chn := nil;
+  DS := TDSoutput.Create(appwinHANDLE);
 
   ITRAY := LoadIcon(HInstance, 'TRAY'); // gray icon
   ITrayBlue := LoadIcon(HInstance, 'TRAYBLUE');
@@ -627,12 +626,12 @@ begin
     end;
   end
   else
-    showaboutbox;
+    ShowAboutbox;
 end;
 
 procedure TForm1.btplayClick(Sender: PObj);
 begin
-  if chn = nil then
+  if Chn = nil then
     PlayChannel
   else
     StopChannel;

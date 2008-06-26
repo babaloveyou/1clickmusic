@@ -27,7 +27,7 @@ type
     procedure Play;
     procedure Stop;
     function InitializeBuffer(const Arate, Achannels: Cardinal): Cardinal;
-    constructor Create;
+    constructor Create(const WndHandle : HWND);
     destructor Destroy; override;
   end;
 
@@ -61,12 +61,11 @@ type
   end;
 
 procedure DSERROR(const value: HResult; const Error: string);
-procedure NotifyForm(const lParam : Integer);
 
 implementation
 
 uses
-  main, utils;
+  utils, main;
 
 { TDSoutput }
 
@@ -77,18 +76,15 @@ begin
     RaiseError('DIRECTSOUND ERROR, [' + IntToStr(value) + '] : ' + Error);
 end;
 
-procedure NotifyForm(const lParam : Integer);
-begin
-  PostMessage(appwinHANDLE,WM_USER,Integer(chn),lParam);
-end;  
-
-constructor TDSoutput.Create;
+constructor TDSoutput.Create(const WndHandle : HWND);
 var
   Fpwfm: TWAVEFORMATEX;
   Fpdesc: TDSBUFFERDESC;
 begin
+  Fvolume := 100;
+  
   DSERROR(DirectSoundCreate(nil, FDS, nil), 'Creating DS device');
-  DSERROR(FDS.SetCooperativeLevel(appwinHANDLE, DSSCL_PRIORITY), 'Setting the cooperative level');
+  DSERROR(FDS.SetCooperativeLevel(WndHandle, DSSCL_PRIORITY), 'Setting the cooperative level');
 
   FillChar(Fpdesc, SizeOf(TDSBUFFERDESC), 0);
   with Fpdesc do
@@ -223,7 +219,6 @@ destructor TRadioPlayer.Destroy;
 begin
   FStatus := rsStoped;
   DS.Stop;
-  Terminate;
   inherited;
   DS.SoundBuffer := nil;
 end;
@@ -233,14 +228,16 @@ var
   section, lastsection: Cardinal;
 begin
   prebuffer();
+  // If terminated while prebuffering Exit
   if Terminated then Exit;
+  
   initbuffer();
+  // Fill buffer at offset 0
   updatebuffer(0);
   lastsection := 0;
   DS.Play;
   Status := rsPlaying;
-  while not Terminated do
-  begin
+  repeat
     if DS.GetPlayCursorPos > Fhalfbuffersize then
       section := 0
     else
@@ -251,7 +248,7 @@ begin
       lastsection := section;
     end;
     Sleep(50);
-  end;
+  until Terminated;
 end;
 
 procedure TRadioPlayer.SetStatus(const Value: TRadioStatus);

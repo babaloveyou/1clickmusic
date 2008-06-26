@@ -34,7 +34,6 @@ uses
 
 { TMP3 }
 
-
 procedure TMP3.GetProgress(out ABuffPercentage : Cardinal);
 begin
   ABuffPercentage := FStream.BuffFilled;

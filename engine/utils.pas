@@ -6,6 +6,10 @@ uses
   sysutils,
   Windows;
 
+{$IFDEF LOG}
+procedure Log(const Text: string);
+{$ENDIF}
+
 function Crypt(const str: string): string;
 procedure writeFile(const FileName, Text: string);
 function MultiPos(const SubStr: array of string; const str: string): Boolean;

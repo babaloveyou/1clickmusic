@@ -4,7 +4,7 @@ interface
 
 // THIS ONE DOES NOT NEED HTTPSTREAM
 
-uses SysUtils, Classes, Windows, DSoutput, libwma1;
+uses SysUtils, Classes, Windows, DSoutput,wmfintf, libwma1;
 
 type
   TMMS = class(TRadioPlayer)
@@ -38,9 +38,11 @@ end;
 
 procedure TMMS.initdecoder;
 begin
+  if not WMInited then
+    RaiseError('ERRO, WindowsMediaPlayer nao encontrado');
   lwma_async_reader_init(Fhandle);
   if Fhandle.reader = nil then
-    RaiseError('ERRO, inicializando o decodificador wma (mms)');
+    RaiseError('ERRO, inicializando o decodificador wma');
 end;
 
 procedure TMMS.initbuffer;
@@ -73,6 +75,7 @@ begin
   begin
     repeat
       lwma_async_reader_get_data(Fhandle, tmpbuffer, tmpbuffersize);
+      if tmpbuffersize = 0 then Continue;
       Move(tmpbuffer^, bufferPos^, tmpbuffersize);
       Inc(bufferPos, tmpbuffersize);
       Inc(TotalDecoded, tmpbuffersize);

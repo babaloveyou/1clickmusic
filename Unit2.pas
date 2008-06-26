@@ -8,13 +8,13 @@ interface
 uses Windows,
   Messages,
   KOL{$IF Defined(KOL_MCK)}{$ELSE},
-  mirror,
-  Classes,
-  Controls,
-  mckCtrls,
-  mckObjs,
-  Graphics,
-  StdCtrls{$IFEND (place your units here->)};
+mirror,
+Classes,
+Controls,
+mckCtrls,
+mckObjs,
+Graphics,
+StdCtrls{$IFEND (place your units here->)};
 {$ELSE}
 {$I uses.inc}
 Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
@@ -22,53 +22,53 @@ Dialogs, mirror;
 {$ENDIF}
 
 type
-  {$IF Defined(KOL_MCK)}
-  {$I MCKfakeClasses.inc}
-  {$IFDEF KOLCLASSES} {$I TForm2class.inc} {$ELSE OBJECTS} PForm2 = ^TForm2; {$ENDIF CLASSES/OBJECTS}
-  {$IFDEF KOLCLASSES}{$I TForm2.inc}{$ELSE} TForm2 = object(TObj) {$ENDIF}
+{$IF Defined(KOL_MCK)}
+{$I MCKfakeClasses.inc}
+{$IFDEF KOLCLASSES}{$I TForm2class.inc}{$ELSE OBJECTS}PForm2 = ^TForm2; {$ENDIF CLASSES/OBJECTS}
+{$IFDEF KOLCLASSES}{$I TForm2.inc}{$ELSE}TForm2 = object(TObj){$ENDIF}
     Form: PControl;
-    {$ELSE not_KOL_MCK}
-  TForm2 = class(TForm)
-  {$IFEND KOL_MCK}
-    KOLForm1: TKOLForm;
-    ckbxmsnenabled: TKOLCheckBox;
-    cmbxmsnicon: TKOLComboBox;
-    ckbxlistenabled: TKOLCheckBox;
-    edtlistname: TKOLEditBox;
-    ckbxclipboard: TKOLCheckBox;
-    ckbxlastfm: TKOLCheckBox;
-    edtuser: TKOLEditBox;
-    edtpass: TKOLEditBox;
-    lbluser: TKOLLabel;
-    lblpass: TKOLLabel;
-    btapply: TKOLButton;
-    btupdate: TKOLButton;
-    ckbxballons: TKOLCheckBox;
-    lblversion: TKOLLabel;
-    ckbxtraycolors: TKOLCheckBox;
-    tabs: TKOLTabControl;
-    edtproxyhost: TKOLEditBox;
-    edtproxyport: TKOLEditBox;
-    ckbxproxyenabled: TKOLCheckBox;
-    lblproxyhost: TKOLLabel;
-    lblproxyport: TKOLLabel;
-    procedure ckbxlistenabledClick(Sender: PObj);
-    procedure ckbxmsnenabledClick(Sender: PObj);
-    procedure ckbxlastfmClick(Sender: PObj);
-    procedure KOLForm1FormCreate(Sender: PObj);
-    procedure btapplyClick(Sender: PObj);
-    procedure btupdateClick(Sender: PObj);
-    procedure ckbxproxyenabledClick(Sender: PObj);
-  private
+{$ELSE not_KOL_MCK}
+    TForm2 = class(TForm)
+{$IFEND KOL_MCK}
+      KOLForm1: TKOLForm;
+      ckbxmsnenabled: TKOLCheckBox;
+      cmbxmsnicon: TKOLComboBox;
+      ckbxlistenabled: TKOLCheckBox;
+      edtlistname: TKOLEditBox;
+      ckbxclipboard: TKOLCheckBox;
+      ckbxlastfm: TKOLCheckBox;
+      edtuser: TKOLEditBox;
+      edtpass: TKOLEditBox;
+      lbluser: TKOLLabel;
+      lblpass: TKOLLabel;
+      btapply: TKOLButton;
+      btupdate: TKOLButton;
+      ckbxballons: TKOLCheckBox;
+      lblversion: TKOLLabel;
+      ckbxtraycolors: TKOLCheckBox;
+      tabs: TKOLTabControl;
+      edtproxyhost: TKOLEditBox;
+      edtproxyport: TKOLEditBox;
+      ckbxproxyenabled: TKOLCheckBox;
+      lblproxyhost: TKOLLabel;
+      lblproxyport: TKOLLabel;
+      procedure ckbxlistenabledClick(Sender: PObj);
+      procedure ckbxmsnenabledClick(Sender: PObj);
+      procedure ckbxlastfmClick(Sender: PObj);
+      procedure KOLForm1FormCreate(Sender: PObj);
+      procedure btapplyClick(Sender: PObj);
+      procedure btupdateClick(Sender: PObj);
+      procedure ckbxproxyenabledClick(Sender: PObj);
+    private
     { Private declarations }
-  public
+    public
     { Public declarations }
-  end;
+    end;
 
-var
-  Form2{$IFDEF KOL_MCK}: PForm2{$ELSE}: TForm2{$ENDIF};
+  var
+    Form2{$IFDEF KOL_MCK}: PForm2{$ELSE}: TForm2{$ENDIF};
 
-  {$IFDEF KOL_MCK}
+{$IFDEF KOL_MCK}
 procedure NewForm2(var Result: PForm2; AParent: PControl);
 {$ENDIF}
 
@@ -100,14 +100,14 @@ end;
 
 procedure TForm2.KOLForm1FormCreate(Sender: PObj);
 begin
-  tabs.TC_Insert(0,'Tray',0);
-  tabs.TC_Insert(1,'Messenger',0);
-  tabs.TC_Insert(2,'Last.FM',0);
-  tabs.TC_Insert(3,'Track List',0);
-  tabs.TC_Insert(4,'Proxy',0);
+  tabs.TC_Insert(0, 'Tray', 0);
+  tabs.TC_Insert(1, 'Messenger', 0);
+  tabs.TC_Insert(2, 'Last.FM', 0);
+  tabs.TC_Insert(3, 'Track List', 0);
+  tabs.TC_Insert(4, 'Proxy', 0);
 
-  lblversion.Caption := 'version:'+appversionstr+
-  #13#10 + 'by arthurprs, arthurprs@gmail.com';
+  lblversion.Caption := 'version:' + APPVERSIONSTR +
+    #13#10 + 'by arthurprs, arthurprs@gmail.com';
   //
   ckbxballons.Parent := tabs.TC_Pages[0];
   ckbxballons.Checked := traypopups_enabled;
@@ -204,6 +204,4 @@ begin
 end;
 
 end.
-
-
 
