@@ -50,12 +50,14 @@ type
       procedure KOLForm1Destroy(Sender: PObj);
       procedure KOLForm1FormCreate(Sender: PObj);
       function KOLForm1Message(var Msg: tagMSG; var Rslt: Integer): Boolean;
-      procedure channeltreeSelChange(Sender: PObj);
       procedure channeltreeMouseUp(Sender: PControl;
         var Mouse: TMouseEventData);
       procedure btoptionsClick(Sender: PObj);
       procedure TrayMouseUp(Sender: PControl; var Mouse: TMouseEventData);
       procedure btplayClick(Sender: PObj);
+      function channeltreeTVSelChanging(Sender: PControl; oldItem,
+        newItem: Cardinal): Boolean;
+      procedure channeltreeSelChange(Sender: PObj);
     private
     { Private declarations }
     public
@@ -168,15 +170,9 @@ begin
   end;
 end;
 
-procedure TimerProc(Wnd: HWnd; Mesg, TimerID, SysTime: Longint); stdcall;
-begin
-  if (TimerID = 1) then
-    Form1.ProgressExecute();
-end;
-
 procedure TForm1.ProgressExecute();
 var
-  progress : Cardinal;
+  progress: Cardinal;
 begin
   // # GET INFO
   Chn.GetProgress(progress);
@@ -271,7 +267,7 @@ begin
 
     btplay.Caption := 'Stop';
     //# Init timer that refresh the progress bar, 500ms interval
-    SetTimer(appwinHANDLE, 1, 500, @TimerProc);
+    SetTimer(appwinHANDLE, 1, 500, nil);
 
     pgrbuffer.Progress := 100;
     pgrbuffer.ProgressBkColor := clRed;
@@ -341,52 +337,55 @@ function TForm1.KOLForm1Message(var Msg: tagMSG;
 begin
   Result := False;
 
-  if (Msg.Message = WM_HOTKEY) and (channeltree.Enabled) then
-  begin
-    case Msg.wParam of
-      1001, 3001:
-        if Chn <> nil then
-        begin
-          curVolume := DS.Volume(curVolume + 2);
-          UpdateExecute();
-        end;
-      1002, 3002:
-        if Chn <> nil then
-        begin
-          curVolume := DS.Volume(curVolume - 2);
-          UpdateExecute();
-        end;
-      1003, 3003:
-        StopChannel;
-      1004, 3004:
-        if Chn = nil then
-          PlayChannel;
-      2001..2012:
-        if hotkeys[Msg.wParam - 2000] > 0 then
-        begin
-          channeltree.TVSelected := channeltree.TVRoot; //# reset selection
-          channeltree.TVSelected := hotkeys[Msg.wParam - 2000];
-        end;
-    end;
-  end
+  if (Msg.message = WM_TIMER) and (Chn <> nil) then
+    ProgressExecute()
   else
-    if (Msg.Message = WM_SYSCOMMAND) and (Msg.wParam = SC_MINIMIZE) then
+    if (Msg.Message = WM_HOTKEY) and (channeltree.Enabled) then
     begin
-      form.Hide;
-      Result := True;
+      case Msg.wParam of
+        1001, 3001:
+          if Chn <> nil then
+          begin
+            curVolume := DS.Volume(curVolume + 2);
+            UpdateExecute();
+          end;
+        1002, 3002:
+          if Chn <> nil then
+          begin
+            curVolume := DS.Volume(curVolume - 2);
+            UpdateExecute();
+          end;
+        1003, 3003:
+          StopChannel;
+        1004, 3004:
+          if Chn = nil then
+            PlayChannel;
+        2001..2012:
+          if hotkeys[Msg.wParam - 2000] > 0 then
+          begin
+            channeltree.TVSelected := channeltree.TVRoot; //# reset selection
+            channeltree.TVSelected := hotkeys[Msg.wParam - 2000];
+          end;
+      end;
     end
     else
-      if (Msg.message = WM_USER) and
-        (Msg.wParam = Integer(Chn)) then
+      if (Msg.Message = WM_SYSCOMMAND) and (Msg.wParam = SC_MINIMIZE) then
       begin
-        if Msg.lParam <> 0 then // We have something to update!
-          UpdateExecute()
-        else
+        form.Hide;
+        Result := True;
+      end
+      else
+        if (Msg.message = WM_USER) and
+          (Msg.wParam = Integer(Chn)) then
         begin
-          StopChannel;
-          lblstatus.Text := 'Disconected!';
+          if Msg.lParam <> 0 then // We have something to update!
+            UpdateExecute()
+          else
+          begin
+            StopChannel;
+            lblstatus.Text := 'Disconected!';
+          end;
         end;
-      end;
 end;
 
 procedure TForm1.KOLForm1Destroy(Sender: PObj);
@@ -412,6 +411,60 @@ begin
   //# Save .INI config
   SaveConfig;
   radiolist.Free;
+end;
+
+function TreeListWndProc(Sender: PControl; var Msg: TMsg; var Rslt: Integer): Boolean;
+type
+  TNMTVCUSTOMDRAW = packed record
+    nmcd: TNMCustomDraw;
+    clrText: COLORREF;
+    clrTextBk: COLORREF;
+    iLevel: Integer;
+  end;
+  PNMTVCustomDraw = ^TNMTVCustomDraw;
+var
+  cdInfo: PNMTVCUSTOMDRAW;
+  iRect: TRect;
+begin
+  Result := False;
+  if (Msg.message = WM_NOTIFY) and (PNMHdr(Msg.lParam).code = NM_CUSTOMDRAW) then
+  begin
+    Result := True;
+    cdInfo := PNMTVCUSTOMDRAW(Msg.lParam);
+
+    case cdInfo.nmcd.dwDrawStage of
+      CDDS_PREPAINT:
+        begin
+          Rslt := CDRF_NOTIFYITEMDRAW;
+        end;
+
+      CDDS_ITEMPREPAINT:
+        begin
+          if (cdInfo.iLevel = 1) and (cdInfo.nmcd.uItemState and CDIS_SELECTED = CDIS_SELECTED) then
+          begin
+            with Sender^ do
+            begin
+            Canvas.Brush.Color := clSkyBlue;
+            Canvas.Font.Color := clBlue;
+            Canvas.Font.FontStyle := [fsBold];
+            Canvas.FillRect(cdInfo.nmcd.rc);
+            iRect := TVItemRect[cdInfo.nmcd.dwItemSpec, True];
+            canvas.TextOut(iRect.Left + 2, iRect.Top + 1, TVItemText[cdInfo.nmcd.dwItemSpec]);
+            end;
+            Rslt := CDRF_SKIPDEFAULT;
+          end
+          else
+            if (cdInfo.iLevel = 1) and (cdInfo.nmcd.uItemState and CDIS_HOT = CDIS_HOT) then
+            begin
+              cdInfo.clrText := clBlue;
+              Rslt := CDRF_NEWFONT;
+            end
+            else rslt := CDRF_DODEFAULT;
+        end;
+    else
+      rslt := CDRF_DODEFAULT;
+    end
+  end;
 end;
 
 procedure TForm1.KOLForm1FormCreate(Sender: PObj);
@@ -467,9 +520,11 @@ begin
   //# Cria lista de radios
   Radiolist := NewRadioList;
 
-  //# inicializa os canais
+  //# inicializa os canais e o message handler
   with channeltree^ do
   begin
+    AttachProc(TreeListWndProc);
+
     for i := 0 to High(genrelist) do
       genreid[i] := TVInsert(0, 0, genrelist[i]);
 
@@ -540,18 +595,12 @@ begin
     for i := 0 to High(genreid) do
       TVSort(genreid[i]);
 
-    TVSelected := TVRoot;
   end;
 
   //# Load .INI Config
   LoadConfig;
   //# Show About box if first run or just updated!
   if firstrun_enabled then showaboutbox;
-end;
-
-procedure TForm1.channeltreeSelChange(Sender: PObj);
-begin
-  PlayChannel;
 end;
 
 procedure TForm1.popupproc(Sender: PMenu; Item: Integer);
@@ -610,7 +659,7 @@ begin
     sleep(35000);
     LastFMexecute;
     Sender.Suspend;
-  until LastFMThread.Terminated;
+  until Sender.Terminated;
 end;
 
 procedure TForm1.TrayMouseUp(Sender: PControl; var Mouse: TMouseEventData);
@@ -641,6 +690,17 @@ procedure TForm1.ChangeTrayIcon(const NewIcon: HICON);
 begin
   if (trayiconcolor_enabled) and (Tray.Icon <> NewIcon) then
     Tray.Icon := NewIcon;
+end;
+
+function TForm1.channeltreeTVSelChanging(Sender: PControl; oldItem,
+  newItem: Cardinal): Boolean;
+begin
+  Result := Sender.Enabled;
+end;
+
+procedure TForm1.channeltreeSelChange(Sender: PObj);
+begin
+  PlayChannel;
 end;
 
 end.

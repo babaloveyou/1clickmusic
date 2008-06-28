@@ -204,7 +204,7 @@ const
     'http://207.200.96.225:8020/listen.pls',
     'http://207.200.96.225:8022/listen.pls',
     'http://85.21.79.5:8040/listen.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=6951&file=filename.pls',
+    'http://www.1.fm/tcl.pls',
     'http://lounge-office.rautemusik.de/listen.pls',
     'http://www.smoothlounge.com/streams/smoothlounge_128.pls',
     'http://somafm.com/groovesalad.pls',

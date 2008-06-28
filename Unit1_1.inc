@@ -88,7 +88,7 @@ begin
     Result.lbltrack.Font.FontCharset := 0;
     Result.lbltrack.TextAlign := KOL.taCenter;
     // Result.channeltree.TabOrder = 0
-    Result.channeltree := NewTreeView( Result.Form, [ tvoLinesRoot, tvoTrackSelect ], nil, nil ).SetAlign ( caLeft ).SetSize( 231, 0 );
+    Result.channeltree := NewTreeView( Result.Form, [ tvoLinesRoot, tvoNoTooltips, tvoTrackSelect, tvoSingleExpand ], nil, nil ).SetAlign ( caLeft ).SetSize( 231, 0 );
    {$IFDEF USE_NAMES}
     Result.channeltree.SetName( Result.Form, 'channeltree' ); 
    {$ENDIF}
@@ -129,6 +129,7 @@ begin
     Result.pgrbuffer.ProgressColor := clBtnFace;
       Result.channeltree.OnMouseUp := Result.channeltreeMouseUp;
       Result.channeltree.OnSelChange := Result.channeltreeSelChange;
+      Result.channeltree.OnTVSelChanging := Result.channeltreeTVSelChanging;
     {$IFDEF OVERRIDE_SCROLLBARS}
     OverrideScrollbars( Result.channeltree);
     {$ENDIF OVERRIDE_SCROLLBARS}

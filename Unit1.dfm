@@ -61,10 +61,11 @@ object Form1: TForm1
     EraseBackground = False
     Localizy = loForm
     Transparent = False
-    Options = [tvoLinesRoot, tvoTrackSelect]
+    Options = [tvoLinesRoot, tvoNoTooltips, tvoTrackSelect, tvoSingleExpand]
     CurIndex = 0
     TVRightClickSelect = False
     OnSelChange = channeltreeSelChange
+    OnTVSelChanging = channeltreeTVSelChanging
     TVIndent = 0
     HasBorder = True
     TabStop = True

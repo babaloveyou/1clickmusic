@@ -190,8 +190,7 @@ begin
         bytestoreceive := BytesUntilMeta;
 
       FHTTP.RecvBufferEx(@inbuffer[Feed, bytesreceived], bytestoreceive, MaxInt);
-      if (FHTTP.LastError <> 0) and
-        (not Terminated) then
+      if (FHTTP.LastError <> 0) and (not Terminated) then
       begin
         Terminate;
         NotifyForm(0);
@@ -220,6 +219,7 @@ end;
 
 destructor THTTPSTREAM.Destroy;
 begin
+  Terminate;
   FHTTP.CloseSocket;
   FHTTP.Free;
   inherited;

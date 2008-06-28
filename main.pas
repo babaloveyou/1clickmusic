@@ -55,22 +55,22 @@ var
   lastfm_enabled: Boolean;
   lastfm_user, lastfm_pass: string;
   // proxy
-  proxy_enabled : Boolean;
-  proxy_host, proxy_port, proxy_pass : string;
+  proxy_enabled: Boolean;
+  proxy_host, proxy_port, proxy_pass: string;
 
 procedure updateMSN(write: Boolean);
 procedure LastFMexecute;
 procedure ShowAboutbox;
 function AutoUpdate: Boolean;
-procedure NotifyForm(const lParam : Integer);
+procedure NotifyForm(const lParam: Integer);
 
 implementation
 
 uses utils;
 
-procedure NotifyForm(const lParam : Integer);
+procedure NotifyForm(const lParam: Integer);
 begin
-  PostMessage(appwinHANDLE,WM_USER,Integer(Chn),lParam);
+  PostMessage(appwinHANDLE, WM_USER, Integer(Chn), lParam);
 end;
 
 procedure updateMSN(write: Boolean);
@@ -84,7 +84,7 @@ begin
   msndata.cbData := (Length(buffer) * 2) + 2;
   msndata.lpData := Pointer(buffer);
 
-  msnwindow := FindWindowEx(0, 0, 'MsnMsgrUIManager', nil);;
+  msnwindow := FindWindowEx(0, 0, 'MsnMsgrUIManager', nil); ;
   while msnwindow <> 0 do
   begin
     SendMessage(msnwindow, WM_COPYDATA, 0, Integer(@msndata));
@@ -108,9 +108,9 @@ begin
     'by arthurprs (arthurprs@gmail.com)' + #13#10#13#10 +
     'Agradecimentos a:' + #13#10 +
     'freak_insane, Blizzy, Kintoun Rlz, Paperback Writer,' + #13#10 +
-    'kamikazze, BomGaroto, SnowHill, Ricardo, Greel, The_Terminator,' + #13#10
-    + 'jotaeme, Mouse Pad, Lokinhow, Mario Bros, Blurkness.' + #13#10 +
-    'e a toda a galera que tem me incentivado.' + #13#10 + #13#10 +
+    'kamikazze, BomGaroto, SnowHill, Ricardo, Greel, The_Terminator,' + #13#10 +
+    'jotaeme, Mouse Pad, Lokinhow, Mario Bros, Blurkness.' + #13#10 +
+    'e a toda a galera que tem me incentivado.',
     '1ClickMusic ' + APPVERSIONSTR, MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
 end;
 
@@ -171,9 +171,9 @@ begin
       Result := False;
       MessageBox(0, 'Your version is up-to-date', '1ClickMusic', MB_ICONINFORMATION);
     end;
-    
+
   end;
-  
+
   Text.Free;
 end;
 
