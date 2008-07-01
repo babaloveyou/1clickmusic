@@ -2,17 +2,6 @@ unit radios;
 
 interface
 
-const //# genre index
-  ELETRONIC = 0;
-  DOWNTEMPO = 1;
-  ROCKMETAL = 2;
-  ECLETIC = 3;
-  HIPHOP = 4;
-  OLDMUSIC = 5;
-  INDUSTRIAL = 6;
-  MISC = 7;
-  BRASIL = 8;
-
 const
   genrelist: array[0..8] of string = (
     'Eletronic',
@@ -27,7 +16,8 @@ const
     );
 
 const
-  chn_eletronic: array[0..65] of string = (
+  chn_eletronic: array[0..66] of string = (
+	'Trance ( trancebase )',
     'House Funky ( kif )',
     'Hardstyle ( hard.fm )',
     'Hardstyle ( hardbase )',
@@ -97,7 +87,8 @@ const
     );
 
 const
-  pls_eletronic: array[0..65] of string = (
+  pls_eletronic: array[0..66] of string = (
+	'http://mp3.trancebase.fm/listen.pls',
     'http://www.kifradio.com/www.kifradio.com.m3u',
     'http://files.hard.fm/128.pls',
     'http://mp3.hardbase.fm/listen.pls',
@@ -149,8 +140,8 @@ const
     'http://www.imusicfm.nl/listen.pls',
     'http://internetradio.fearfm.nl/customplayer/fearfm_hard_high.pls',
     'http://internetradio.fearfm.nl/customplayer/fearfm_harder_high.pls',
-    'http://stream.breaksfm.com:9000/listen.pls',
-    'http://stream002.breaksfm.com:9000/listen.pls',
+    'http://www.breaksfm.com/breaksfm/hifi.m3u',
+    'http://www.breaksfm.com/breaksfm/hifi2.m3u',
     'http://www.181.fm/winamp.pls?station=181-energy98&bitrate=hi',
     'http://www.181.fm/winamp.pls?station=181-energy93&bitrate=hi',
     'http://88.191.15.43:8020/listen.pls',

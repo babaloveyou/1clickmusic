@@ -90,10 +90,10 @@ uses
   Unit2,
   DSoutput,
   radioopener,
-  radios_,
   obj_list,
   main,
-  utils;
+  utils,
+  obj_db;
 
 
 {$IF Defined(KOL_MCK)}{$ELSE}{$R *.DFM}{$IFEND}
@@ -127,12 +127,10 @@ begin
     proxy_port := ValueString('proxy_port', '');
 
     Section := 'hotkeys';
-    Mode := ifmRead;
     for i := 1 to 12 do
     begin
       hotkeys[i] := radiolist.getpos(ValueString(IntToStr(i), ''));
-      PopupMenu.ItemText[i - 1] := 'Ctrl+F' + IntToStr(i) + ' :' + #9 + channeltree.TVItemText[hotkeys[i]];
-      //PopupMenu.ItemText[i - 1] := 'Ctrl+F' + IntToStr(i) + ' :' + #9 + radiolist.getname(hotkeys[i]);
+      PopupMenu.ItemText[i - 1] := 'Ctrl+F' + IntToStr(i) + ' :' + #9 + radiolist.getname(hotkeys[i]);
     end;
     Free;
   end;
@@ -249,8 +247,8 @@ begin
 
   case Chn.Status of
     rsPlaying: lblstatus.Caption := 'Connected!';
-    rsPrebuffering: lblstatus.Caption := 'Prebufering..';
-    rsRecovering: lblstatus.Caption := 'Recovering Buffer!';
+    rsPrebuffering: lblstatus.Caption := 'Prebufering';
+    rsRecovering: lblstatus.Caption := 'Recovering';
   end;
 
   Form.EndUpdate;
@@ -468,8 +466,6 @@ begin
 end;
 
 procedure TForm1.KOLForm1FormCreate(Sender: PObj);
-var
-  i: Integer;
 begin
   appwinHANDLE := form.Handle;
   //# Inicializa o SOM
@@ -513,89 +509,19 @@ begin
   //# define o popup da channeltree
   channeltree.SetAutoPopupMenu(PopupMenu);
 
+  //# Cria lista de radios
+  Radiolist := NewRadioList();
+  //# inicializa os canais e o message handler
+  channeltree.AttachProc(TreeListWndProc);
+  LoadDb(channeltree,radiolist);
+  //# close the treeview
+  channeltree.TVSelected := channeltree.TVRoot;
+  channeltree.TVExpand(channeltree.TVRoot,TVE_COLLAPSE);
+
+
   //# proibit our buttons from getting focus
   btplay.LikeSpeedButton;
   btoptions.LikeSpeedButton;
-
-  //# Cria lista de radios
-  Radiolist := NewRadioList;
-
-  //# inicializa os canais e o message handler
-  with channeltree^ do
-  begin
-    AttachProc(TreeListWndProc);
-
-    for i := 0 to High(genrelist) do
-      genreid[i] := TVInsert(0, 0, genrelist[i]);
-
-    for i := 0 to High(chn_eletronic) do
-      radiolist.Add(
-        TVInsert(genreid[ELETRONIC], 0, chn_eletronic[i]),
-        chn_eletronic[i],
-        Crypt(pls_eletronic[i])
-        );
-
-    for i := 0 to High(chn_downtempo) do
-      radiolist.Add(
-        TVInsert(genreid[DOWNTEMPO], 0, chn_downtempo[i]),
-        chn_downtempo[i],
-        Crypt(pls_downtempo[i])
-        );
-
-    for i := 0 to High(chn_rockmetal) do
-      radiolist.Add(
-        TVInsert(genreid[ROCKMETAL], 0, chn_rockmetal[i]),
-        chn_rockmetal[i],
-        Crypt(pls_rockmetal[i])
-        );
-
-    for i := 0 to High(chn_ecletic) do
-      radiolist.Add(
-        TVInsert(genreid[ECLETIC], 0, chn_ecletic[i]),
-        chn_ecletic[i],
-        Crypt(pls_ecletic[i])
-        );
-
-    for i := 0 to High(chn_hiphop) do
-      radiolist.Add(
-        TVInsert(genreid[HIPHOP], 0, chn_hiphop[i]),
-        chn_hiphop[i],
-        Crypt(pls_hiphop[i])
-        );
-
-    for i := 0 to High(chn_oldmusic) do
-      radiolist.Add(
-        TVInsert(genreid[OLDMUSIC], 0, chn_oldmusic[i]),
-        chn_oldmusic[i],
-        Crypt(pls_oldmusic[i])
-        );
-
-    for i := 0 to High(chn_industrial) do
-      radiolist.Add(
-        TVInsert(genreid[INDUSTRIAL], 0, chn_industrial[i]),
-        chn_industrial[i],
-        Crypt(pls_industrial[i])
-        );
-
-    for i := 0 to High(chn_misc) do
-      radiolist.Add(
-        TVInsert(genreid[MISC], 0, chn_misc[i]),
-        chn_misc[i],
-        Crypt(pls_misc[i])
-        );
-
-    for i := 0 to High(chn_brasil) do
-      radiolist.Add(
-        TVInsert(genreid[BRASIL], 0, chn_brasil[i]),
-        chn_brasil[i],
-        Crypt(pls_brasil[i])
-        );
-
-    //# Sort Radio List
-    for i := 0 to High(genreid) do
-      TVSort(genreid[i]);
-
-  end;
 
   //# Load .INI Config
   LoadConfig;
@@ -695,7 +621,7 @@ end;
 function TForm1.channeltreeTVSelChanging(Sender: PControl; oldItem,
   newItem: Cardinal): Boolean;
 begin
-  Result := Sender.Enabled;
+  Result := channeltree.Enabled;
 end;
 
 procedure TForm1.channeltreeSelChange(Sender: PObj);

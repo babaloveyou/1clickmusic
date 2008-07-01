@@ -33,7 +33,6 @@ var
   lastTitle, curTitle: string;
   //
   undermouse: Cardinal;
-  genreid: array[0..8] of Cardinal;
   radiolist: PRadioList;
 
   //# OPTIONS

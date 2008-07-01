@@ -3,6 +3,7 @@ TRAY ICON "res/tray.ico"
 TRAYBLUE ICON "res/trayblue.ico"
 TRAYGREEN ICON "res/traygreen.ico"
 TRAYRED ICON "res/trayred.ico"
+DB RCDATA "db/db.dat"
 
 VER VERSIONINFO
 FILEVERSION 0,1,8,6
