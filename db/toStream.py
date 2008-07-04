@@ -1,9 +1,9 @@
-import struct
+import struct, string, time
 
 dst = open("db.dat", "wb")
 src = open("radios.pas", "r")
-
 pasw = 704
+
 def crypt(text):
     key = len(text) % 10
     result = ""
@@ -25,12 +25,19 @@ def getarraysize(line):
 
 def getarraycontent(line):
     return line[line.find("'") + 1 : line.rfind("'")].replace("''","'")
+	
+def error(msg):
+	print 'Houston, we have a problem on',msg
+	raw_input()
 
 bParse = False
 iLevel = -2
+genres = []
 chn = []
 pls = []
 count = 0
+totalcount = 0
+tStart = time.clock()
 
 #-2 genrelist array
 #-1 content
@@ -54,18 +61,31 @@ for line in src:
             iLevel += 1
         else:
             iLevel = 0
+            
+			# check if both lists have same size
+            if (len(chn) <> len(pls)) or (len(chn) <> count):
+                error(genres.pop(0))
+
+            slist = [] # a list that we will sort
+            while chn:
+                slist.append((chn.pop(0),pls.pop(0)))
+
+            slist.sort()
+            totalcount += count
+            
             # write to file
+            writestring(genres.pop(0))
             writeint8(count)
-            while len(chn) > 0:
-                writestring(chn.pop(0))
-                writestring(pls.pop(0))
+            for item in slist: # item = (chn, pls)
+                writestring(item[0])
+                writestring(item[1])
                 
     elif bParse:
         if iLevel == -2:
             writeint8(getarraysize(line))
             iLevel += 1
         elif iLevel == -1:
-            writestring(getarraycontent(line))
+            genres.append(getarraycontent(line))
         elif iLevel in (0,2):
             count = getarraysize(line)
             iLevel += 1
@@ -76,3 +96,6 @@ for line in src:
 
 dst.close()
 src.close()
+
+print "OK, %d radios sorted and saved in %fsec" % (totalcount, time.clock() - tStart)
+raw_input()

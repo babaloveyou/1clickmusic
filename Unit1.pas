@@ -373,8 +373,7 @@ begin
         Result := True;
       end
       else
-        if (Msg.message = WM_USER) and
-          (Msg.wParam = Integer(Chn)) then
+        if (Msg.message = WM_USER) and (Msg.wParam = Integer(Chn)) then
         begin
           if Msg.lParam <> 0 then // We have something to update!
             UpdateExecute()
@@ -420,17 +419,13 @@ type
     iLevel: Integer;
   end;
   PNMTVCustomDraw = ^TNMTVCustomDraw;
-var
-  cdInfo: PNMTVCUSTOMDRAW;
-  iRect: TRect;
 begin
   Result := False;
   if (Msg.message = WM_NOTIFY) and (PNMHdr(Msg.lParam).code = NM_CUSTOMDRAW) then
   begin
     Result := True;
-    cdInfo := PNMTVCUSTOMDRAW(Msg.lParam);
 
-    case cdInfo.nmcd.dwDrawStage of
+    case PNMTVCUSTOMDRAW(Msg.lParam).nmcd.dwDrawStage of
       CDDS_PREPAINT:
         begin
           Rslt := CDRF_NOTIFYITEMDRAW;
@@ -438,25 +433,26 @@ begin
 
       CDDS_ITEMPREPAINT:
         begin
-          if (cdInfo.iLevel = 1) and (cdInfo.nmcd.uItemState and CDIS_SELECTED = CDIS_SELECTED) then
-          begin
-            with Sender^ do
+          with PNMTVCUSTOMDRAW(Msg.lParam)^ do
+            if (iLevel = 1) and (nmcd.uItemState and CDIS_SELECTED = CDIS_SELECTED) then
             begin
-            Canvas.Brush.Color := clSkyBlue;
-            Canvas.Font.Color := clBlue;
-            Canvas.Font.FontStyle := [fsBold];
-            Canvas.FillRect(cdInfo.nmcd.rc);
-            iRect := TVItemRect[cdInfo.nmcd.dwItemSpec, True];
-            canvas.TextOut(iRect.Left + 2, iRect.Top + 1, TVItemText[cdInfo.nmcd.dwItemSpec]);
-            end;
-            Rslt := CDRF_SKIPDEFAULT;
-          end
-          else
-            if (cdInfo.iLevel = 1) and (cdInfo.nmcd.uItemState and CDIS_HOT = CDIS_HOT) then
-            begin
-              cdInfo.clrText := clBlue;
-              Rslt := CDRF_NEWFONT;
+              with Sender^ do
+              begin
+                Canvas.Brush.Color := clSkyBlue;
+                Canvas.Font.Color := clBlue;
+                Canvas.Font.FontStyle := [fsBold];
+                Canvas.FillRect(nmcd.rc);
+                with TVItemRect[nmcd.dwItemSpec, True] do
+                  canvas.TextOut(Left + 2, Top + 1, TVItemText[nmcd.dwItemSpec]);
+              end;
+              Rslt := CDRF_SKIPDEFAULT;
             end
+            //else
+            //  if (cdInfo.iLevel = 1) and (cdInfo.nmcd.uItemState and CDIS_HOT = CDIS_HOT) then
+            //  begin
+            //  cdInfo.clrText := clBlue;
+            //  Rslt := CDRF_NEWFONT;
+            //  end
             else rslt := CDRF_DODEFAULT;
         end;
     else
@@ -512,12 +508,11 @@ begin
   //# Cria lista de radios
   Radiolist := NewRadioList();
   //# inicializa os canais e o message handler
+  LoadDb(channeltree, radiolist);
   channeltree.AttachProc(TreeListWndProc);
-  LoadDb(channeltree,radiolist);
   //# close the treeview
   channeltree.TVSelected := channeltree.TVRoot;
-  channeltree.TVExpand(channeltree.TVRoot,TVE_COLLAPSE);
-
+  channeltree.TVExpand(channeltree.TVRoot, TVE_COLLAPSE);
 
   //# proibit our buttons from getting focus
   btplay.LikeSpeedButton;

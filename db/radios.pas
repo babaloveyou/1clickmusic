@@ -17,7 +17,6 @@ const
 
 const
   chn_eletronic: array[0..66] of string = (
-	'Trance ( trancebase )',
     'House Funky ( kif )',
     'Hardstyle ( hard.fm )',
     'Hardstyle ( hardbase )',
@@ -26,7 +25,6 @@ const
     'Trance ( afterhours )',
     'Club ( blitz )',
     'Club ( playdio )',
-    'Club ( xtcradio )',
     'Club ( techno4ever )',
     'Club ( pulsradio )',
     'Club ( technobase )',
@@ -37,6 +35,8 @@ const
     'Dance ( 1.fm )',
     'Trance ( 1.fm )',
     'House Funky ( rautemusik )',
+    'Progressive ( xtcradio )',
+    'Progressive ( RaveTrax )',
     'Progressive ( soma )',
     'IDM ( soma )',
     'House Deep ( soma )',
@@ -44,6 +44,7 @@ const
     'Psy ( psyradio )',
     'Psy Prog ( psyradio )',
     'Trance ( neradio )',
+    'Trance ( trancebase )',
     'Drum''and''Bass ( dnbradio )',
     'Drum''and''Bass ( bassdrive)',
     'House Eletro ( DI )',
@@ -78,17 +79,15 @@ const
     'Psy Prog ( psychedelik )',
     'Psy Dark ( psychedelik )',
     'Psy Dark ( triplag )',
-    'Psy DarkAmbient ( triplag )',
+    'Psy Darkbient ( triplag )',
     'Dance ( frisky )',
-    'Alternative ( RaveTrax )',
     'Alternative ( 1.fm )',
-    'Dance ( FG Radio )',
+    'Dance ( fg radio )',
     'Dance ( ibizaglobal )'
     );
 
 const
   pls_eletronic: array[0..66] of string = (
-	'http://mp3.trancebase.fm/listen.pls',
     'http://www.kifradio.com/www.kifradio.com.m3u',
     'http://files.hard.fm/128.pls',
     'http://mp3.hardbase.fm/listen.pls',
@@ -97,17 +96,18 @@ const
     'http://stats.ah.fm/dynamicplaylist.m3u?quality=96',
     'http://blitz-stream.de/stream/stream.m3u',
     'http://www.playdio.se/bredband.pls',
-    'http://stream.xtcradio.com:8069/listen.pls',
     'http://listen.to.techno4ever.net/dsl/mp3',
     'http://www.pulsradio.com/pls/puls-adsl.m3u',
     'http://dsl.technobase.eu/listen-dsl.pls',
     'http://kim2.frenchkissfm.com/listen.pls',
     'http://www.radioseven.se/128.pls',
-    'http://club-office.rautemusik.de/listen.pls',
+    'http://club-office.rautemusik.fm/listen.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=6057&file=filename.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=6201&file=filename.pls',
     'http://www.1.fm/trance.pls',
-    'http://funky-office.rautemusik.de/listen.pls',
+    'http://funky-office.rautemusik.fm/listen.pls',
+    'http://stream.xtcradio.com:8069/listen.pls',
+    'http://ravetrax.com/mp3_hi.pls',
     'http://somafm.com/tagstrance.pls',
     'http://somafm.com/cliqhop.pls',
     'http://somafm.com/beatblender.pls',
@@ -115,6 +115,7 @@ const
     'http://streamer.psyradio.org:8030/listen.pls',
     'http://streamer.psyradio.org:8010/listen.pls',
     'http://www.neradio.se/listen.pls',
+    'http://mp3.trancebase.fm/listen.pls',
     'http://www.dnbradio.com/hi.pls',
     'http://www.bassdrive.com/v2/streams/BassDrive.pls',
     'http://www.di.fm/mp3/electro.pls',
@@ -151,7 +152,6 @@ const
     'http://www.triplag.com/webradio/darkpsy/triplag-darkpsy.php',
     'http://www.triplag.com/webradio/chilltrip/triplag-chilltrip.php',
     'http://friskyradio.com/frisky.m3u',
-    'http://ravetrax.com/mp3_hi.pls',
     'http://www.1.fm/electronica.pls',
     'http://fg.impek.tv/listen.pls',
     'http://s6.viastreaming.net:7010/listen.pls'
@@ -196,7 +196,7 @@ const
     'http://207.200.96.225:8022/listen.pls',
     'http://85.21.79.5:8040/listen.pls',
     'http://www.1.fm/tcl.pls',
-    'http://lounge-office.rautemusik.de/listen.pls',
+    'http://lounge-office.rautemusik.fm/listen.pls',
     'http://www.smoothlounge.com/streams/smoothlounge_128.pls',
     'http://somafm.com/groovesalad.pls',
     'http://somafm.com/doomed.pls',
@@ -217,7 +217,8 @@ const
     );
 
 const
-  chn_rockmetal: array[0..24] of string = (
+  chn_rockmetal: array[0..26] of string = (
+    '80''s Rock ( 181.fm )',
     'Indie Rock ( soma )',
     'Punk Rock ( hifipunk )',
     'Punk Rock ( idobi )',
@@ -232,11 +233,12 @@ const
     'Classic Rock ( sky )',
     'Indie Rock ( sky )',
     'Alternative ( sky )',
+    'Rock/Metal ( 181.fm )',
     'Alternative ( 181.fm )',
     'Classic Rock ( 181. fm)',
     'Rock/Metal ( rautemusik )',
     'Rock/Metal ( x.1.fm )',
-    'Rock/Metal ( high voltage.1.fm )',
+    'Rock/Metal ( hv.1.fm )',
     'Rock/Metal ( metalonly )',
     'Rock/Metal ( kinkfm )',
     'Rock/Metal ( gothmetal )',
@@ -246,7 +248,8 @@ const
     );
 
 const
-  pls_rockmetal: array[0..24] of string = (
+  pls_rockmetal: array[0..26] of string = (
+    'http://www.181.fm/winamp.pls?station=181-hairband&bitrate=hi',
     'http://somafm.com/indiepop.pls',
     'http://128.hifipunk.com:8000/listen.pls',
     'http://www.idobi.com/radio/iradio.pls',
@@ -261,9 +264,10 @@ const
     'http://www.sky.fm/mp3/classicrock.pls',
     'http://www.sky.fm/mp3/indierock.pls',
     'http://www.sky.fm/mp3/altrock.pls',
+    'http://www.181.fm/winamp.pls?station=181-rock&bitrate=hi',
     'http://www.181.fm/winamp.pls?station=181-buzz&bitrate=hi',
     'http://www.181.fm/winamp.pls?station=181-eagle&bitrate=hi',
-    'http://extreme-office.rautemusik.de/listen.pls',
+    'http://extreme-office.rautemusik.fm/listen.pls',
     'http://www.1.fm/x.pls',
     'http://www.1.fm/hv.pls',
     'http://metal-only.de/listen.pls',
@@ -275,7 +279,9 @@ const
     );
 
 const
-  chn_ecletic: array[0..12] of string = (
+  chn_ecletic: array[0..16] of string = (
+	'Ecletic ( mixnation )',
+    'Ecletic ( eye97 )',
     'Ecletic ( fusionchicago )',
     'Ecletic ( paradise )',
     'Ecletic ( enjoystation )',
@@ -287,12 +293,16 @@ const
     'Ecletic ( mix.181.fm )',
     'Ecletic ( point.181.fm )',
     'Ecletic ( party.181.fm )',
+    'Ecletic ( mix.181.fm )',
+    'Ecletic ( office.181.fm )',
     'Ecletic ( rautemusik )',
     'Ecletic ( HitzRadio )'
     );
 
 const
-  pls_ecletic: array[0..12] of string = (
+  pls_ecletic: array[0..16] of string = (
+	'http://www.mixnation.de/listen.pls',
+    'http://loudcity.com/stations/eye97/files/show/eye97.pls',
     'http://streams.fusionchicago.com/128.pls',
     'http://www.radioparadise.com/musiclinks/rp_128-1.m3u',
     'http://www.enjoystation.net/player/mp3.m3u',
@@ -304,7 +314,9 @@ const
     'http://www.181.fm/winamp.pls?station=181-themix&bitrate=hi',
     'http://www.181.fm/winamp.pls?station=181-thepoint&bitrate=hi',
     'http://www.181.fm/winamp.pls?station=181-party&bitrate=hi',
-    'http://main-office.rautemusik.de/listen.pls',
+    'http://www.181.fm/winamp.pls?station=181-themix&bitrate=hi',
+    'http://www.181.fm/winamp.pls?station=181-office&bitrate=hi',
+    'http://main-office.rautemusik.fm/listen.pls',
     'http://www.hitzradio.com/hitzradio.pls'
     );
 
@@ -330,7 +342,7 @@ const
     'http://www.powerhitz.com/ph.pls',
     'http://www.thugzone.com/broadband-128.pls',
     'http://www.defjay.com/listen.pls',
-    'http://jam-office.rautemusik.de/listen.pls',
+    'http://jam-office.rautemusik.fm/listen.pls',
     'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=5548&file=filename.pls',
     'http://www.hot108.com/hot108.pls',
     'http://www.181.fm/winamp.pls?station=181-beat&bitrate=hi',
@@ -375,7 +387,7 @@ const
     'http://www.181.fm/winamp.pls?station=181-star90s&bitrate=hi',
     'http://www.977music.com/tunein/web/80s.asx',
     'http://www.977music.com/tunein/web/90s.asx',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=6422&file=filename.pls',
+    'http://goldies-high.rautemusik.fm/listen.pls',
     'http://www.sky.fm/mp3/classical.pls',
     'http://www.1.fm/baroque.pls',
     'http://www.1.fm/opera.pls',
@@ -419,7 +431,8 @@ const
     );
 
 const
-  chn_misc: array[0..35] of string = (
+  chn_misc: array[0..38] of string = (
+    'Latino ( romanticafm )',
     'Folk ( liveireland )',
     'Jazz Acid ( soma )',
     'Jazz Nu ( soma )',
@@ -432,10 +445,11 @@ const
     'Lovesongs ( 181.fm )',
     'Lovesongs ( slowradio )',
     'Country ( 181.fm )',
+    'Country Classic ( 181.fm )',
     'Country ( 1.fm )',
     'Blues ( 1.fm )',
     'Reggae ( 1.fm )',
- // 'Reggae Roots( bigup )',
+    'Reggae Roots( bigup )',
  // 'Reggae Dancehall ( bigup )',
     'Reggae ( sky )',
     'Lovesongs ( sky )',
@@ -461,7 +475,8 @@ const
     );
 
 const
-  pls_misc: array[0..35] of string = (
+  pls_misc: array[0..38] of string = (
+    'http://www.romanticafm.net/winampst128.m3u',
     'http://www.liveireland.com/live.pls',
     'http://somafm.com/secretagent.pls',
     'http://somafm.com/sonicuniverse.pls',
@@ -474,10 +489,11 @@ const
     'http://www.181.fm/winamp.pls?station=181-heart&bitrate=hi',
     'http://streams.slowradio.com/index.php?id=winamp',
     'http://www.181.fm/winamp.pls?station=181-kickincountry&bitrate=hi',
+    'http://www.181.fm/winamp.pls?station=181-highway&bitrate=hi',
     'http://www.1.fm/country.pls',
     'http://www.1.fm/blues.pls',
     'http://www.1.fm/reggae.pls',
- // 'http://radio.bigupradio.com:8005/listen.pls',
+    'http://radio.bigupradio.com:8005/listen.pls',
  // 'http://radio.bigupradio.com:8000/listen.pls',
     'http://www.sky.fm/mp3/rootsreggae.pls',
     'http://www.sky.fm/mp3/lovemusic.pls',
@@ -529,7 +545,6 @@ const
     'Ecletic ( japan.transamerica )',
     'Ecletic ( mixfm )',
     'Ecletic ( totalshare )',
-    //
     'Ecletic ( 98fm )',
     'Ecletic ( globo.fm )',
     'Popular ( globo.am.sp )',
@@ -568,7 +583,6 @@ const
     'mms://transastream.dyndns.org/transapop',
     'http://producao.upx.com.br/players/mixfm.wmx',
     'http://radio.2streaming.info/players/8014.pls',
-    //
     'http://wmsgr.globo.com/webmedia/ObterPathMidia?usuario=sgr01&tipo=live&path=/sgr_off_98fmrj_live.wma&midiaId=513694&ext.asx&output=ASX',
     'http://wmsgr.globo.com/webmedia/ObterPathMidia?usuario=sgr01&tipo=live&path=/sgr_off_globofmrj_live.wma&midiaId=505114&ext.asx&output=ASX',
     'http://wmsgr.globo.com/webmedia/ObterPathMidia?usuario=sgr01&tipo=live&path=/sgr_off_globoamsp_live.wma&midiaId=511329&ext.asx&output=ASX',

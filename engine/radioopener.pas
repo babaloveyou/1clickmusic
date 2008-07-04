@@ -33,7 +33,7 @@ begin
     else
       APlayer := TMP3.Create(ADevice);
 
-    Result := APlayer.open(playlist.urls[i]);
+    Result := APlayer.Open(playlist.urls[i]);
     if Result then
       break
     else

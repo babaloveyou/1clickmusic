@@ -30,9 +30,9 @@ begin
 
   WriteInt8(High(genrelist) + 1);
 
-  for i := 0 to High(genrelist) do
-    WriteString(genrelist[i]);
-
+  
+  
+  WriteString(genrelist[0]);
   WriteInt8(High(chn_eletronic) + 1);
   for i := 0 to High(chn_eletronic) do
   begin
@@ -40,6 +40,7 @@ begin
     WriteString(Crypt(pls_eletronic[i]));
   end;
 
+  WriteString(genrelist[1]);
   WriteInt8(High(chn_downtempo) + 1);
   for i := 0 to High(chn_downtempo) do
   begin
@@ -47,6 +48,7 @@ begin
     WriteString(Crypt(pls_downtempo[i]));
   end;
 
+  WriteString(genrelist[2]);
   WriteInt8(High(chn_rockmetal) + 1);
   for i := 0 to High(chn_rockmetal) do
   begin
@@ -54,6 +56,7 @@ begin
     WriteString(Crypt(pls_rockmetal[i]));
   end;
 
+  WriteString(genrelist[3]);
   WriteInt8(High(chn_ecletic) + 1);
   for i := 0 to High(chn_ecletic) do
   begin
@@ -61,6 +64,7 @@ begin
     WriteString(Crypt(pls_ecletic[i]));
   end;
 
+  WriteString(genrelist[4]);
   WriteInt8(High(chn_hiphop) + 1);
   for i := 0 to High(chn_hiphop) do
   begin
@@ -68,6 +72,7 @@ begin
     WriteString(Crypt(pls_hiphop[i]));
   end;
 
+  WriteString(genrelist[5]);
   WriteInt8(High(chn_oldmusic) + 1);
   for i := 0 to High(chn_oldmusic) do
   begin
@@ -75,6 +80,7 @@ begin
     WriteString(Crypt(pls_oldmusic[i]));
   end;
 
+  WriteString(genrelist[6]);
   WriteInt8(High(chn_industrial) + 1);
   for i := 0 to High(chn_industrial) do
   begin
@@ -82,6 +88,7 @@ begin
     WriteString(Crypt(pls_industrial[i]));
   end;
 
+  WriteString(genrelist[7]);
   WriteInt8(High(chn_misc) + 1);
   for i := 0 to High(chn_misc) do
   begin
@@ -89,6 +96,7 @@ begin
     WriteString(Crypt(pls_misc[i]));
   end;
 
+  WriteString(genrelist[8]);
   WriteInt8(High(chn_brasil) + 1);
   for i := 0 to High(chn_brasil) do
   begin

@@ -10,11 +10,9 @@ implementation
 
 procedure LoadDb(const TV: PControl; const List: PRadioList);
 var
-  i: Integer;
-  n: Integer;
+  i, n: Integer;
   Parent: Cardinal;
   Src: TResourceStream;
-  Genres: array of string;
   sChn: string;
 
   function ReadInt8(): Byte;
@@ -34,17 +32,11 @@ var
 begin
   Src := TResourceStream.Create(HInstance, 'db', RT_RCDATA);
 
-  n := ReadInt8();
-  SetLength(Genres, n);
-
-  for i := 0 to High(Genres) do
-    Genres[i] := ReadString();
-
-  for n := 0 to High(Genres) do
+  for n := 1 to ReadInt8() do // for 1 to count of genres
   begin
-    Parent := TV.TVInsert(0, 0, genres[n]);
+    Parent := TV.TVInsert(0, 0, ReadString());
 
-    for i := 0 to ReadInt8() - 1 do
+    for i := 1 to ReadInt8() do // for 1 to count of radios
     begin
       sChn := ReadString();
 
@@ -54,8 +46,8 @@ begin
         Crypt(ReadString())
         );
     end;
-
-    TV.TVSort(Parent);
+    // Agora o Python faz o sort pra nois :]
+    // TV.TVSort(Parent);
   end;
 
   Src.Free;
