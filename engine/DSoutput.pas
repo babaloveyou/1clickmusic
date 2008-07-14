@@ -73,7 +73,7 @@ uses
 procedure DSERROR(const value: HResult; const Error: string);
 begin
   if value <> DS_OK then
-    RaiseError('DIRECTSOUND ERROR, [' + IntToStr(value) + '] : ' + Error);
+    RaiseError('DIRECTSOUND, [' + IntToStr(value) + '] : ' + Error);
 end;
 
 constructor TDSoutput.Create(const WndHandle : HWND);

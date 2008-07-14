@@ -21,7 +21,7 @@ type
     procedure initbuffer; override;
     procedure prebuffer; override;
   public
-    procedure GetProgress(out ABuffPercentage : Cardinal); override;
+    procedure GetProgress(out ABuffPercentage: Cardinal); override;
     procedure GetInfo(out Atitle: string; out Aquality: Cardinal); override;
     function Open(const url: string): Boolean; override;
     destructor Destroy; override;
@@ -34,10 +34,10 @@ uses
 
 { TMP3 }
 
-procedure TMP3.GetProgress(out ABuffPercentage : Cardinal);
+procedure TMP3.GetProgress(out ABuffPercentage: Cardinal);
 begin
   ABuffPercentage := FStream.BuffFilled;
-end;  
+end;
 
 procedure TMP3.GetInfo(out Atitle: string; out Aquality: Cardinal);
 begin
@@ -55,6 +55,9 @@ procedure TMP3.initbuffer;
 var
   r: Integer;
 begin
+  mpg123_close(Fhandle);
+  mpg123_open_feed(Fhandle);
+
   repeat
     r := mpg123_decode(Fhandle, FStream.GetBuffer(), BUFFSIZE, nil, 0, nil);
     FStream.NextBuffer();
@@ -62,18 +65,17 @@ begin
 
   mpg123_getformat(Fhandle, @Frate, @Fchannels, @Fencoding);
   if Fchannels = 0 then
-    RaiseError('ERRO, tentando descobrir o formato do audio');
+    RaiseError('discovering audio format');
 
   Fhalfbuffersize := DS.InitializeBuffer(Frate, Fchannels);
 end;
 
 procedure TMP3.initdecoder;
 begin
+  FStream := THTTPSTREAM.Create;
   Fhandle := mpg123_new('i586', nil); //i586
   if Fhandle = nil then
-    RaiseError('ERRO, inicializando o decodificador MPEG');
-  mpg123_open_feed(Fhandle);
-  FStream := THTTPSTREAM.Create;
+    RaiseError('creating MPEG decoder');
 end;
 
 function TMP3.Open(const url: string): Boolean;
@@ -107,7 +109,7 @@ begin
   TotalDecoded := 0;
   bufferPos := buffer;
   r := MPG123_NEED_MORE;
-  
+
   repeat
   // Repeat code that fills the DS buffer
     if (FStream.BuffFilled > 0) then
@@ -129,14 +131,24 @@ begin
       Status := rsPlaying;
     end;
   until (r <> MPG123_NEED_MORE) or (Terminated);
-  // Until don't need to fill more or thread terminated
 
-  DS.SoundBuffer.Unlock(buffer, Size, nil, 0);
+
+  if (r = MPG123_OK) then
+    DS.SoundBuffer.Unlock(buffer, Size, nil, 0)
+  else
+    if (r = MPG123_DONE) then
+    // Some streams give us MPG123_DONE
+    // after initial messages, lets try re-open
+    begin
+      initbuffer();
+      DS.Play;
+    end;
+
 end;
 
 initialization
   if mpg123_init() <> MPG123_OK then
-    RaiseError('ERRO, criando instancia do decodificador MPEG');
+    RaiseError('initing MPEG decoder');
 
 finalization
   mpg123_exit();

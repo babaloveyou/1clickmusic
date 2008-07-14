@@ -22,7 +22,7 @@ type
     procedure Add(const pos: Cardinal; const Name, pls: string);
     function getpos(const Name: string): Cardinal;
     function getname(const pos: Cardinal): string;
-    function getpls(const Name: string): string;
+    function getpls(const pos: Cardinal): string;
     constructor Create;
     destructor Destroy; virtual;
   end;
@@ -85,12 +85,12 @@ begin
   Result := '';
 end;
 
-function TRadioList.getpls(const Name: string): string;
+function TRadioList.getpls(const pos: Cardinal): string;
 var
   i: Integer;
 begin
   for i := 0 to FList.Count - 1 do
-    if GetItem(i).Name = Name then
+    if GetItem(i).pos = pos then
     begin
       Result := GetItem(i).pls;
       Exit;

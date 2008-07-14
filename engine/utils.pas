@@ -63,7 +63,7 @@ end;
 
 procedure RaiseError(const Error: string; const Fatal: Boolean = True);
 begin
-  MessageBox(0, PChar(Error), '1ClickMusic Exception', MB_ICONERROR);
+  MessageBox(0, PChar('ERRO, ' + Error), '1ClickMusic Exception', MB_ICONERROR);
   writeFile('ERROR.txt', Error);
   if Fatal then Halt;
 end;

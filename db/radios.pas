@@ -213,7 +213,7 @@ const
     'http://www.di.fm/mp3/ambient.pls',
     'http://bluefm.net/listen.pls',
     'http://www.181.fm/winamp.pls?station=181-chilled&bitrate=hi',
-    'http://88.191.38.140:8014/listen.pls'
+    'http://88.191.38.140:8002/listen.pls'
     );
 
 const
@@ -519,7 +519,8 @@ const
     );
 
 const
-  chn_brasil: array[0..33] of string = (
+  chn_brasil: array[0..34] of string = (
+	'Ecletic ( classicpan )'
     'Ecletic ( jovempop )',
     'Ecletic ( circuitomix )',
     'Ecletic ( ritmobrasil )',
@@ -557,7 +558,8 @@ const
     );
 
 const
-  pls_brasil: array[0..33] of string = (
+  pls_brasil: array[0..34] of string = (
+	'http://server09.virgula.com.br:8000/listen.pls',
     'http://www.superstreaming.com.br/~jovempop/media/stream.m3u',
     'http://www.circuitomix.com.br/circuitomix.pls',
     'http://www.ritmobrasil.com/RitmoBrasil.pls',
@@ -570,10 +572,10 @@ const
     'http://cbn.globoradio.globo.com/cbn/wma/radiobsb/asx.asp?audio=',
     'http://cbn.globoradio.globo.com/cbn/wma/radiobh/asx.asp?audio=',
     'http://www.crossdigital.com.br/servidor1/8080/listen.pls',
-    'mms://tupirio.interrogacaodigital.net/tupirio',
+    'mms://dedicado.tupi.am:8000/tupiaudio',
     'http://www.crosshost.com.br/cbs/tupifm/listen.pls',
     'http://198.106.109.53/radio.mp3.m3u',
-    'http://www.crosshost.com.br/cbs/kiss/listen.pls',
+    'http://www.crosshost.com.br/cbs/kiss/ouvir.m3u',
     'http://www.redeblitz.com.br/redeblitz.m3u',
     'mms://server09.virgula.com.br/jovempanfm/',
     'http://radiorox.oi.com.br/listen.m3u',

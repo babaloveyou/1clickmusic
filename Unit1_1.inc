@@ -75,7 +75,7 @@ begin
     Result.lblstatus.TextAlign := KOL.taRight;
     Result.lblstatus.IgnoreDefault := TRUE;
     // Result.lbltrack.TabOrder = -1
-    Result.lbltrack := NewLabel( Result.Form, '' ).SetPosition( 242, 8 ).SetSize( 366, 57 ).MakeWordWrap;
+    Result.lbltrack := NewLabel( Result.Form, '' ).SetPosition( 242, 8 ).SetSize( 366, 57 );
    {$IFDEF USE_NAMES}
     Result.lbltrack.SetName( Result.Form, 'lbltrack' ); 
    {$ENDIF}

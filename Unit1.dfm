@@ -226,7 +226,7 @@ object Form1: TForm1
     Transparent = False
     TextAlign = taCenter
     VerticalAlign = vaTop
-    wordWrap = True
+    wordWrap = False
     autoSize = False
     Brush.Color = clBtnFace
     Brush.BrushStyle = bsSolid

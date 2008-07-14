@@ -97,7 +97,7 @@ var
 begin
   lastfmplugin := TScrobber.Create;
   if not lastfmplugin.Execute(curtitle) then
-    RaiseError('Last.FM plugin error : ' + lastfmplugin.Error, False);
+    RaiseError('Last.FM, ' + lastfmplugin.Error, False);
   lastfmplugin.Free;
 end;
 
@@ -128,7 +128,7 @@ begin
   if not HttpGetText(updateurl, Text) then
   begin
     Result := False;
-    RaiseError('ERROR DOWNLOADING THE UPDATE INFO!', False);
+    RaiseError('DOWNLOADING THE UPDATE INFO!', False);
   end;
 
   if Result then
@@ -163,7 +163,7 @@ begin
           Result := WinExec(PChar(batpath), SW_HIDE) > 0;
         end
         else
-          RaiseError('ERROR DOWNLOADING THE UPDATE FILE', False)
+          RaiseError('DOWNLOADING THE UPDATE FILE', False)
       end
     end
     else

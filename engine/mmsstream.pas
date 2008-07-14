@@ -39,10 +39,10 @@ end;
 procedure TMMS.initdecoder;
 begin
   if not WMInited then
-    RaiseError('ERRO, WindowsMediaPlayer nao encontrado');
+    RaiseError('WMP engine not found');
   lwma_async_reader_init(Fhandle);
   if Fhandle.reader = nil then
-    RaiseError('ERRO, inicializando o decodificador wma');
+    RaiseError('could not initialize WMP engine');
 end;
 
 procedure TMMS.initbuffer;
@@ -71,7 +71,7 @@ begin
   bufferPos := buffer;
   TotalDecoded := 0;
 
-  if (Fhandle.BlockList.Count > 1) then
+  if (Fhandle.BlockList.Count > 0) then
   begin
     repeat
       lwma_async_reader_get_data(Fhandle, tmpbuffer, tmpbuffersize);
@@ -100,7 +100,7 @@ end;
 function TMMS.Open(const url: string): Boolean;
 begin
   if proxy_enabled then
-    lwma_async_reader_set_proxy(Fhandle, 'mms', proxy_host, StrToInt(proxy_port));
+    lwma_async_reader_set_proxy(Fhandle, 'http', proxy_host, StrToInt(proxy_port));
   lwma_async_reader_open(Fhandle, url);
   Result := Fhandle.has_audio;
   if Result then

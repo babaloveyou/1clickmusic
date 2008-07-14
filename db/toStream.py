@@ -62,15 +62,18 @@ for line in src:
         else:
             iLevel = 0
             
-			# check if both lists have same size
+	    # check if both lists have same size
             if (len(chn) <> len(pls)) or (len(chn) <> count):
                 error(genres.pop(0))
 
             slist = [] # a list that we will sort
-            while chn:
-                slist.append((chn.pop(0),pls.pop(0)))
+            for i1, i2 in zip(chn,pls):
+                slist.append((i1,i2))
 
+            chn = []
+            pls = []
             slist.sort()
+            
             totalcount += count
             
             # write to file

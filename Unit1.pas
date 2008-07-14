@@ -281,7 +281,7 @@ begin
     end;
 
     //# Lets Try to play
-    if not OpenRadio(radiolist.getpls(channeltree.TVItemText[channeltree.TVSelected]), Chn, DS) then
+    if not OpenRadio(radiolist.getpls(channeltree.TVSelected), Chn, DS) then
     begin
       if traypopups_enabled then
       begin
@@ -341,21 +341,21 @@ begin
     if (Msg.Message = WM_HOTKEY) and (channeltree.Enabled) then
     begin
       case Msg.wParam of
-        1001, 3001:
+        1001:
           if Chn <> nil then
           begin
             curVolume := DS.Volume(curVolume + 2);
             UpdateExecute();
           end;
-        1002, 3002:
+        1002:
           if Chn <> nil then
           begin
             curVolume := DS.Volume(curVolume - 2);
             UpdateExecute();
           end;
-        1003, 3003:
+        1003:
           StopChannel;
-        1004, 3004:
+        1004:
           if Chn = nil then
             PlayChannel;
         2001..2012:
@@ -364,6 +364,8 @@ begin
             channeltree.TVSelected := channeltree.TVRoot; //# reset selection
             channeltree.TVSelected := hotkeys[Msg.wParam - 2000];
           end;
+        3000:
+          radiolist.Add(channeltree.TVInsert(0, 0, Clipboard2Text()), '', Clipboard2Text());
       end;
     end
     else
@@ -447,12 +449,6 @@ begin
               end;
               Rslt := CDRF_SKIPDEFAULT;
             end
-            //else
-            //  if (cdInfo.iLevel = 1) and (cdInfo.nmcd.uItemState and CDIS_HOT = CDIS_HOT) then
-            //  begin
-            //  cdInfo.clrText := clBlue;
-            //  Rslt := CDRF_NEWFONT;
-            //  end
             else rslt := CDRF_DODEFAULT;
         end;
     else
@@ -495,6 +491,7 @@ begin
   RegisterHotKey(appwinHANDLE, 2010, MOD_CONTROL, VK_F10);
   RegisterHotKey(appwinHANDLE, 2011, MOD_CONTROL, VK_F11);
   RegisterHotKey(appwinHANDLE, 2012, MOD_CONTROL, VK_F12);
+  RegisterHotKey(appwinHANDLE, 3000, MOD_CONTROL, VK_INSERT);
 
   //# Create the thread that open the radio
   Thread := NewThread;
@@ -577,7 +574,7 @@ function TForm1.LastFMThreadExecute(Sender: PThread): Integer;
 begin
   Result := 1;
   repeat
-    sleep(35000);
+    //sleep(35000);
     LastFMexecute;
     Sender.Suspend;
   until Sender.Terminated;

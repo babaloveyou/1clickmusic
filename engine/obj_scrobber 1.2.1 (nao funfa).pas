@@ -13,8 +13,6 @@ uses
 type
   TScrobber = class
   private
-    user: string;
-    passMD5: string;
     scroburl: string;
     sessioncode: string;
     class procedure fixTrackName(var Title: string);
@@ -27,7 +25,8 @@ type
 
 implementation
 
-uses main,
+uses
+  main,
   utils;
 
 { TScrober }
@@ -51,48 +50,54 @@ begin
   end;
 end;
 
+
 class procedure TScrobber.fixTrackName(var Title: string);
 var
   p: Integer;
 begin
-  // POG!!!
+  // POG
   // get rid of some ad's!
   p := Pos('http', Title);
-  if p = 0 then p := Pos('www',Title);
   if p > 0 then
-    Delete(Title, p, MaxInt);
+    Delete(Title, p, Length(Title) - p);
   // get rid of 1.fm ad!
   p := Pos('(1.FM', Title);
-  if p = 0 then p := Pos('(WWW',Title);
+  if p = 0 then p := Pos('(WWW', Title);
+
   if p > 0 then
-    Delete(Title, p, MaxInt);
+    Delete(Title, p, Length(Title) - p);
   // get rid of | album:
   p := Pos('| Album', Title);
   if p > 0 then
-    Delete(Title, p, MaxInt);
+    Delete(Title, p, Length(Title) - p);
   //
 end;
 
 function TScrobber.HandShake(const UserName, password: string): Boolean;
 const
-  handshakeurl = 'http://post.audioscrobbler.com/?hs=true&p=1.1&c=1cm&v=1.0&u=%s';
+  handshakeurl = 'http://post.audioscrobbler.com/?hs=true&p=1.2.1&c=1cm&v=1.0&u=%s&t=%s&a=%s';
 var
   lines: TStringlist;
+  timestamp: string;
+  authMD5: string;
 begin
+
+///////////// http://www.last.fm/api/submissions
+
   Result := False;
-  user := UserName;
-  passMD5 := StrToHex(MD5(password));
+  timestamp := IntToStr(DateTimeToUnix(IncHour(Now, 3)));
+  authMD5 := StrToHex(MD5(StrToHex(MD5(password)) + timestamp));
+
   lines := TStringlist.Create;
-  
-  if HttpGetText(Format(handshakeurl, [user]), lines) then
-    if lines[0] = 'UPTODATE' then
+  if HttpGetText(Format(handshakeurl, [username, timestamp, authMD5]), lines) then
+    if lines[0] = 'OK' then
     begin
       Result := True;
       sessioncode := lines[1]; // SESSION CODE
       scroburl := lines[2]; // SCROB URL
     end
     else
-      Error := 'Last.FM plugin handshake ERROR :' + #10#13 + lines[0]
+      Error := Format('Last.FM plugin handshake ERROR :' + #10#13 + '%s', [lines[0]])
   else
     Result := True;
 
@@ -113,14 +118,15 @@ begin
 
   p := Pos(' - ', title);
 
-  if (title = '') or (p = 0) or MultiPos(['www', 'http', '.fm'], title) then
+  if (p = 0) or MultiPos(['www', 'http', '.fm'], title) then
   begin
     Result := True; //# YES, result true
     Exit;
   end;
 
+
   artist := Copy(title, 1, p - 1);
-  track := Copy(title, p + 3, Length(title) - p + 2);
+  track := Copy(title, p + 3, MaxInt);
 
   if not Scrobb(artist, track) then
     Exit;
@@ -130,22 +136,19 @@ end;
 
 function TScrobber.Scrobb(const artist, track: string): Boolean;
 const
-  scroburlparam = 'u=%s&s=%s&a[0]=%s&t[0]=%s&b[0]=&m[0]=&l[0]=240&i[0]=%s';
+  nowplayparam = 's=%s&a=%s&t=%s&b=&l=&n=&m=';
+  scrobparam = 's=%s&a[0]=%s&t[0]=%s&i[0]=%s&o[0]=P&r[0]=L&l[0]=320&b[0]=&n[0]=&m[0]=';
 var
-  timestamp: string;
-  authmd5: string;
   urldata: string;
+  timestamp: string;
   lines: TStringlist;
 begin
   Result := False;
   lines := TStringlist.Create;
-  // Format and Correct the UCT time
-  timestamp := FormatDateTime('YYYY-MM-DD hh:mm:ss', IncHour(Now, 3));
-
-  authmd5 := StrToHex(MD5(passMD5 + sessioncode));
-
-  urldata := EncodeURL(AnsiToUtf8(Format(scroburlparam, [user, authmd5, artist, track, timestamp])));
-
+  timestamp := IntToStr(DateTimeToUnix(IncHour(Now, 3)));
+  urldata := EncodeURL(AnsiToUtf8(Format(nowplayparam, [sessioncode, artist, track])));
+  HttpPostText(scroburl, urldata, lines);
+  urldata := EncodeURL(AnsiToUtf8(Format(scrobparam, [sessioncode, artist, track, timestamp])));
   if HttpPostText(scroburl, urldata, lines) then
     if (lines[0] = 'OK') then
       Result := True
@@ -153,7 +156,7 @@ begin
       Error := 'Last.FM plugin scrobbing ERROR :' + #10#13 + lines[0]
   else
     Result := True;
-
+  //
   lines.Free;
 end;
 

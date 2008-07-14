@@ -2,7 +2,7 @@ unit obj_db;
 
 interface
 
-uses Windows, SysUtils, KOL, Classes, utils, obj_list;
+uses SysUtils, Windows, KOL, Classes, utils, obj_list;
 
 procedure LoadDb(const TV: PControl; const List: PRadioList);
 

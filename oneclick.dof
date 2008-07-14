@@ -91,7 +91,7 @@ ImageBase=4194304
 ExeDescription=
 [Directories]
 OutputDir=
-UnitOutputDir=
+UnitOutputDir=dcu
 PackageDLLOutputDir=
 PackageDCPOutputDir=
 SearchPath=engine
@@ -141,3 +141,6 @@ Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 Count=2
 Item0=engine
 Item1=C:\Borland\Delphi7\Source\ToolsAPI
+[HistoryLists\hlUnitOutputDirectory]
+Count=1
+Item0=dcu
