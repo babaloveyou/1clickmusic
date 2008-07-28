@@ -13,8 +13,7 @@ type
   end;
 
 type
-  PRadioList = ^TRadioList;
-  TRadioList = object(TObj)
+  TRadioList = class
   private
     FList: PList;
     function GetItem(Index: Integer): PRadioItem;
@@ -24,17 +23,10 @@ type
     function getname(const pos: Cardinal): string;
     function getpls(const pos: Cardinal): string;
     constructor Create;
-    destructor Destroy; virtual;
+    destructor Destroy; override;
   end;
 
-function NewRadioList: PRadioList;
-
 implementation
-
-function NewRadioList: PRadioList;
-begin
-  New(Result, Create);
-end;
 
 { TRadioList }
 

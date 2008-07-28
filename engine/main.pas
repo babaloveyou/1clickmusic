@@ -23,6 +23,7 @@ const
 var
   //# needed cuz of the KOL windows is Free with no control..
   appwinHANDLE: HWND;
+  
   //# Core Global Variables
   DS: TDSoutput;
   Chn: TRadioPlayer = nil;
@@ -33,7 +34,7 @@ var
   lastTitle, curTitle: string;
   //
   undermouse: Cardinal;
-  radiolist: PRadioList;
+  radiolist: TRadioList;
 
   //# OPTIONS
   trayiconcolor_enabled: Boolean;
@@ -58,7 +59,6 @@ var
   proxy_host, proxy_port, proxy_pass : string;
 
 procedure updateMSN(write: Boolean);
-procedure LastFMexecute;
 procedure ShowAboutbox;
 function AutoUpdate: Boolean;
 procedure NotifyForm(const lParam : Integer);
@@ -89,16 +89,6 @@ begin
     SendMessage(msnwindow, WM_COPYDATA, 0, Integer(@msndata));
     msnwindow := FindWindowEx(0, msnwindow, 'MsnMsgrUIManager', nil);
   end;
-end;
-
-procedure LastFMexecute;
-var
-  lastfmplugin: TScrobber;
-begin
-  lastfmplugin := TScrobber.Create;
-  if not lastfmplugin.Execute(curtitle) then
-    RaiseError('Last.FM, ' + lastfmplugin.Error, False);
-  lastfmplugin.Free;
 end;
 
 procedure ShowAboutbox;

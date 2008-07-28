@@ -17,9 +17,8 @@ type
     passMD5: string;
     scroburl: string;
     sessioncode: string;
-    class procedure fixTrackName(var Title: string);
     function HandShake(const UserName, password: string): Boolean;
-    function Scrobb(const artist, track: string): Boolean;
+    procedure Scrobb(const artist, track: string);
   public
     Error: string;
     function Execute(title: string): Boolean;
@@ -27,7 +26,8 @@ type
 
 implementation
 
-uses main,
+uses
+  main,
   utils;
 
 { TScrober }
@@ -51,16 +51,11 @@ begin
   end;
 end;
 
-class procedure TScrobber.fixTrackName(var Title: string);
+procedure fixTrackName(var Title: string);
 var
   p: Integer;
 begin
   // POG!!!
-  // get rid of some ad's!
-  p := Pos('http', Title);
-  if p = 0 then p := Pos('www',Title);
-  if p > 0 then
-    Delete(Title, p, MaxInt);
   // get rid of 1.fm ad!
   p := Pos('(1.FM', Title);
   if p = 0 then p := Pos('(WWW',Title);
@@ -113,7 +108,7 @@ begin
 
   p := Pos(' - ', title);
 
-  if (title = '') or (p = 0) or MultiPos(['www', 'http', '.fm'], title) then
+  if (p = 0) or MultiPos(['www', 'http', '.fm'], title) then
   begin
     Result := True; //# YES, result true
     Exit;
@@ -122,13 +117,12 @@ begin
   artist := Copy(title, 1, p - 1);
   track := Copy(title, p + 3, Length(title) - p + 2);
 
-  if not Scrobb(artist, track) then
-    Exit;
+  Scrobb(artist, track);
 
   Result := True;
 end;
 
-function TScrobber.Scrobb(const artist, track: string): Boolean;
+procedure TScrobber.Scrobb(const artist, track: string);
 const
   scroburlparam = 'u=%s&s=%s&a[0]=%s&t[0]=%s&b[0]=&m[0]=&l[0]=240&i[0]=%s';
 var
@@ -137,8 +131,6 @@ var
   urldata: string;
   lines: TStringlist;
 begin
-  Result := False;
-  lines := TStringlist.Create;
   // Format and Correct the UCT time
   timestamp := FormatDateTime('YYYY-MM-DD hh:mm:ss', IncHour(Now, 3));
 
@@ -146,13 +138,10 @@ begin
 
   urldata := EncodeURL(AnsiToUtf8(Format(scroburlparam, [user, authmd5, artist, track, timestamp])));
 
-  if HttpPostText(scroburl, urldata, lines) then
-    if (lines[0] = 'OK') then
-      Result := True
-    else
-      Error := 'Last.FM plugin scrobbing ERROR :' + #10#13 + lines[0]
-  else
-    Result := True;
+  lines := TStringlist.Create;
+  HttpPostText(scroburl, urldata, lines);
+  if lines[0] <> 'OK' then
+    writeFile('ERROR.txt', lines[0]);
 
   lines.Free;
 end;

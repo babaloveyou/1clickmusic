@@ -29,11 +29,11 @@ Dialogs;
 type
 {$IF Defined(KOL_MCK)}
 {$I MCKfakeClasses.inc}
-  {$IFDEF KOLCLASSES} {$I TForm1class.inc} {$ELSE OBJECTS} PForm1 = ^TForm1; {$ENDIF CLASSES/OBJECTS}
-  {$IFDEF KOLCLASSES}{$I TForm1.inc}{$ELSE} TForm1 = object(TObj) {$ENDIF}
+{$IFDEF KOLCLASSES}{$I TForm1class.inc}{$ELSE OBJECTS}PForm1 = ^TForm1; {$ENDIF CLASSES/OBJECTS}
+{$IFDEF KOLCLASSES}{$I TForm1.inc}{$ELSE}TForm1 = object(TObj){$ENDIF}
     Form: PControl;
 {$ELSE not_KOL_MCK}
-  TForm1 = class(TForm)
+    TForm1 = class(TForm)
 {$IFEND KOL_MCK}
       KOLProject1: TKOLProject;
       lbltrack: TKOLLabel;
@@ -70,6 +70,7 @@ type
       function LastFMThreadExecute(Sender: PThread): Integer;
       function ThreadExecute(Sender: PThread): Integer;
       procedure ChangeTrayIcon(const NewIcon: HICON);
+      procedure traypopup(const Atitle, Atext: string; const IconType: Integer);
       procedure PlayChannel;
       procedure StopChannel;
       procedure popupproc(Sender: PMenu; Item: Integer);
@@ -91,6 +92,7 @@ uses
   DSoutput,
   radioopener,
   obj_list,
+  obj_scrobber,
   main,
   utils,
   obj_db;
@@ -215,12 +217,7 @@ begin
     begin
       lastTitle := curTitle;
 
-      if traypopups_enabled then
-      begin
-        Tray.BalloonTitle := 'Track change';
-        Tray.BalloonText := curTitle;
-        Tray.ShowBalloon(NIIF_INFO, 3);
-      end;
+      traypopup('Track change', curTitle, NIIF_INFO);
 
       if msn_enabled then
         updateMSN(True);
@@ -273,22 +270,12 @@ begin
 
     lblstatus.Caption := 'Searching...';
 
-    if traypopups_enabled then
-    begin
-      Tray.BalloonTitle := 'Connecting';
-      Tray.BalloonText := lblradio.Caption;
-      Tray.ShowBalloon(NIIF_INFO, 3);
-    end;
+    traypopup('Connecting', lblradio.Caption, NIIF_INFO);
 
     //# Lets Try to play
     if not OpenRadio(radiolist.getpls(channeltree.TVSelected), Chn, DS) then
     begin
-      if traypopups_enabled then
-      begin
-        Tray.BalloonTitle := 'Error Connecting';
-        Tray.BalloonText := lblradio.Caption;
-        Tray.ShowBalloon(NIIF_ERROR, 3);
-      end;
+      traypopup('Error Connecting', lblradio.Caption, NIIF_ERROR);
       StopChannel;
       lblstatus.caption := 'Error Connecting';
     end;
@@ -346,12 +333,14 @@ begin
           begin
             curVolume := DS.Volume(curVolume + 2);
             UpdateExecute();
+            traypopup('', 'Volume ' + IntToStr(curVolume) + '%', NIIF_NONE);
           end;
         1002:
           if Chn <> nil then
           begin
             curVolume := DS.Volume(curVolume - 2);
             UpdateExecute();
+            traypopup('', 'Volume ' + IntToStr(curVolume) + '%', NIIF_NONE);
           end;
         1003:
           StopChannel;
@@ -470,7 +459,6 @@ begin
   ITrayGreen := LoadIcon(HInstance, 'TRAYGREEN');
   ITrayRed := LoadIcon(HInstance, 'TRAYRED');
 
-  Form.Icon := ITRAY;
   Tray.Icon := ITRAY;
   Tray.Active := True;
 
@@ -503,7 +491,7 @@ begin
   channeltree.SetAutoPopupMenu(PopupMenu);
 
   //# Cria lista de radios
-  Radiolist := NewRadioList();
+  Radiolist := TRadioList.Create;
   //# inicializa os canais e o message handler
   LoadDb(channeltree, radiolist);
   channeltree.AttachProc(TreeListWndProc);
@@ -571,11 +559,16 @@ begin
 end;
 
 function TForm1.LastFMThreadExecute(Sender: PThread): Integer;
+var
+  lastfmplugin: TScrobber;
 begin
   Result := 1;
   repeat
     //sleep(35000);
-    LastFMexecute;
+    lastfmplugin := TScrobber.Create;
+    if not lastfmplugin.Execute(curtitle) then
+      RaiseError(lastfmplugin.Error, False);
+    lastfmplugin.Free;
     Sender.Suspend;
   until Sender.Terminated;
 end;
@@ -621,6 +614,18 @@ begin
   PlayChannel;
 end;
 
-end.
 
+
+procedure TForm1.traypopup(const Atitle, Atext: string;
+  const IconType: Integer);
+begin
+  if traypopups_enabled then
+  begin
+    Tray.BalloonTitle := Atitle;
+    Tray.BalloonText := Atext;
+    Tray.ShowBalloon(IconType,3);
+  end;  
+end;
+
+end.
 

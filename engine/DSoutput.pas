@@ -242,6 +242,7 @@ begin
       section := 0
     else
       section := Fhalfbuffersize;
+      
     if section <> lastsection then
     begin
       UpdateBuffer(section);

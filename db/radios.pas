@@ -16,13 +16,14 @@ const
     );
 
 const
-  chn_eletronic: array[0..66] of string = (
+  chn_eletronic: array[0..67] of string = (
     'House Funky ( kif )',
     'Hardstyle ( hard.fm )',
     'Hardstyle ( hardbase )',
     'House Eletro ( housetime )',
     'House SoulFull ( freshhouse )',
     'Trance ( afterhours )',
+	'Club ( c89.5 )',
     'Club ( blitz )',
     'Club ( playdio )',
     'Club ( techno4ever )',
@@ -87,13 +88,14 @@ const
     );
 
 const
-  pls_eletronic: array[0..66] of string = (
+  pls_eletronic: array[0..67] of string = (
     'http://www.kifradio.com/www.kifradio.com.m3u',
     'http://files.hard.fm/128.pls',
     'http://mp3.hardbase.fm/listen.pls',
     'http://high.housetime.fm/listen.pls',
-    'http://85.21.79.5:8040/listen.pls',
+    'http://listen.freshhouse.fm/listen.pls',
     'http://stats.ah.fm/dynamicplaylist.m3u?quality=96',
+	'http://c895worldwide.com/web/streaming/c895sc128.pls',
     'http://blitz-stream.de/stream/stream.m3u',
     'http://www.playdio.se/bredband.pls',
     'http://listen.to.techno4ever.net/dsl/mp3',
@@ -111,7 +113,7 @@ const
     'http://somafm.com/tagstrance.pls',
     'http://somafm.com/cliqhop.pls',
     'http://somafm.com/beatblender.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=1712&file=filename.pls',
+    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=2933&file=filename.pls',
     'http://streamer.psyradio.org:8030/listen.pls',
     'http://streamer.psyradio.org:8010/listen.pls',
     'http://www.neradio.se/listen.pls',
@@ -194,7 +196,7 @@ const
     'http://207.200.96.225:8024/listen.pls',
     'http://207.200.96.225:8020/listen.pls',
     'http://207.200.96.225:8022/listen.pls',
-    'http://85.21.79.5:8040/listen.pls',
+    'http://deepmix.ru/deepmix128.pls',
     'http://www.1.fm/tcl.pls',
     'http://lounge-office.rautemusik.fm/listen.pls',
     'http://www.smoothlounge.com/streams/smoothlounge_128.pls',
@@ -419,7 +421,7 @@ const
      // 'http://dark-section.de/streams/winamp_128.pls',
      // 'http://www.dunklewelle.de/modules/mod_internetradio/makeplaylist.php?ip=87.106.67.16&port=10000&format=M3U',
     'http://radio.darkness.com/listen.pls',
-    'http://playlist.tormentedradio.com/radioG.pls',
+    'http://playlist.tormentedradio.com/tormentedradio.pls',
     'http://www.digitalgunfire.com/playlist.pls',
     'http://www.ultradarkradio.com/listen.pls',
     'http://38.96.148.24:6764/listen.pls',

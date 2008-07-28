@@ -19,6 +19,7 @@ begin
    {$ENDIF}
     Result.Form.Style := Result.Form.Style and not WS_MAXIMIZEBOX;
     Result.Form.SetClientSize( 625, 285 );
+    Result.Form.IconLoad( hInstance, 'ICO' );
     Result.Form.Font.FontPitch := fpFixed;
       Result.Form.OnMessage := Result.KOLForm1Message;
       Result.Form.OnDestroy := Result.KOLForm1Destroy;

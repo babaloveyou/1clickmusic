@@ -4,11 +4,11 @@ interface
 
 uses SysUtils, Windows, KOL, Classes, utils, obj_list;
 
-procedure LoadDb(const TV: PControl; const List: PRadioList);
+procedure LoadDb(const TV: PControl; const List: TRadioList);
 
 implementation
 
-procedure LoadDb(const TV: PControl; const List: PRadioList);
+procedure LoadDb(const TV: PControl; const List: TRadioList);
 var
   i, n: Integer;
   Parent: Cardinal;
