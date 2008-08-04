@@ -182,7 +182,7 @@ const
     'Minimal ( DI )',
     'Chillout ( DI )',
     'Lounge ( DI )',
-    'Lounge Datempo ( sky )',
+    'Lounge Downtempo ( sky )',
     'Ambient ( DI )',
     'Chillout ( bluefm )',
     'Chillout ( 181.fm )',
@@ -402,8 +402,7 @@ const
 
 const
   chn_industrial: array[0..9] of string = (
-     // 'Post Industrial ( darksection )',
-     // 'Post Industrial ( dunkle )',
+    // 'Post Industrial ( dunkle )',
     'Post Industrial ( darkness )',
     'Post Industrial ( tormented )',
     'Post Industrial ( digitalgunfire )',
@@ -418,8 +417,7 @@ const
 
 const
   pls_industrial: array[0..9] of string = (
-     // 'http://dark-section.de/streams/winamp_128.pls',
-     // 'http://www.dunklewelle.de/modules/mod_internetradio/makeplaylist.php?ip=87.106.67.16&port=10000&format=M3U',
+    // 'http://www.dunklewelle.de/modules/mod_internetradio/makeplaylist.php?ip=87.106.67.16&port=10000&format=M3U',
     'http://radio.darkness.com/listen.pls',
     'http://playlist.tormentedradio.com/tormentedradio.pls',
     'http://www.digitalgunfire.com/playlist.pls',
@@ -433,7 +431,7 @@ const
     );
 
 const
-  chn_misc: array[0..38] of string = (
+  chn_misc: array[0..39] of string = (
     'Latino ( romanticafm )',
     'Folk ( liveireland )',
     'Jazz Acid ( soma )',
@@ -451,8 +449,8 @@ const
     'Country ( 1.fm )',
     'Blues ( 1.fm )',
     'Reggae ( 1.fm )',
-    'Reggae Roots( bigup )',
- // 'Reggae Dancehall ( bigup )',
+    'Reggae ( bigup )',
+    'Reggae Dancehall ( bigup )',
     'Reggae ( sky )',
     'Lovesongs ( sky )',
     'Beatles tribute ( sky )',
@@ -477,7 +475,7 @@ const
     );
 
 const
-  pls_misc: array[0..38] of string = (
+  pls_misc: array[0..39] of string = (
     'http://www.romanticafm.net/winampst128.m3u',
     'http://www.liveireland.com/live.pls',
     'http://somafm.com/secretagent.pls',
@@ -496,7 +494,7 @@ const
     'http://www.1.fm/blues.pls',
     'http://www.1.fm/reggae.pls',
     'http://radio.bigupradio.com:8005/listen.pls',
- // 'http://radio.bigupradio.com:8000/listen.pls',
+	'http://radio.bigupradio.com:8000/listen.pls',
     'http://www.sky.fm/mp3/rootsreggae.pls',
     'http://www.sky.fm/mp3/lovemusic.pls',
     'http://www.sky.fm/mp3/beatles.pls',

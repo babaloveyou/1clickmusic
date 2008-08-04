@@ -2138,10 +2138,6 @@ type
 const
   DirectSoundDll = 'dsound.dll';
 
-function DirectSoundLoaded: Boolean;
-function UnLoadDirectSound: Boolean;
-function LoadDirectSound: Boolean;
-
 function DirectSoundCreate(lpGuid: PGUID; out ppDS: IDirectSound; pUnkOuter: IUnknown): HResult; stdcall; external DirectSoundDLL;
 {$EXTERNALSYM DirectSoundCreate}
 function DirectSoundEnumerateW(lpDSEnumCallback: TDSEnumCallbackW; lpContext: Pointer): HResult; stdcall; external DirectSoundDLL name 'DirectSoundEnumerateW';
@@ -2208,22 +2204,6 @@ end;
 function DSSPEAKER_GEOMETRY(a: Cardinal): Byte;
 begin
   Result:= Byte((DWORD(a) shr 16) and $00FF);
-end;
-
-
-function DirectSoundLoaded: Boolean;
-begin // Stub function for static linking
-  Result:= True;
-end;
-
-function UnLoadDirectSound: Boolean;
-begin // Stub function for static linking
-  Result:= True; // should emulate "normal" behaviour
-end;
-
-function LoadDirectSound: Boolean;
-begin // Stub function for static linking
-  Result:= True;
 end;
 
 

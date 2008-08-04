@@ -11,13 +11,13 @@ uses
   mp3stream,
   obj_playlist;
 
-function OpenRadio(const url: string; var APlayer: TRadioPlayer; const ADevice: TDSoutput): Boolean;
+function OpenRadio(const url: string; var APlayer: TRadioPlayer; const ADevice: TDSoutput): LongBool;
 
 implementation
 
-uses utils, StrUtils;
+uses utils;
 
-function OpenRadio(const url: string; var APlayer: TRadioPlayer; const ADevice: TDSoutput): Boolean;
+function OpenRadio(const url: string; var APlayer: TRadioPlayer; const ADevice: TDSoutput): LongBool;
 var
   playlist: TPlaylist;
   i: Integer;
@@ -27,7 +27,7 @@ begin
   playlist.openpls(url);
   for i := 0 to playlist.urls.Count - 1 do
   begin
-    if MultiPos(['.as', '.wma', '.wmx'], url) or
+    if MultiPos(['.as', '.wm'], url) or // asp aspx wmx wma
       (Pos('mms://', playlist.urls[i]) > 0) then
       APlayer := TMMS.Create(ADevice)
     else
@@ -35,7 +35,7 @@ begin
 
     Result := APlayer.Open(playlist.urls[i]);
     if Result then
-      break
+      Break
     else
       FreeAndNil(APlayer);
   end;

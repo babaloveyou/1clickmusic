@@ -19,7 +19,7 @@ begin
    {$ENDIF}
     Result.Form.Style := Result.Form.Style and not WS_MAXIMIZEBOX;
     Result.Form.SetClientSize( 625, 285 );
-    Result.Form.IconLoad( hInstance, 'ICO' );
+    Result.Form.IconLoad( hInstance, 'MAINICON' );
     Result.Form.Font.FontPitch := fpFixed;
       Result.Form.OnMessage := Result.KOLForm1Message;
       Result.Form.OnDestroy := Result.KOLForm1Destroy;
@@ -98,7 +98,7 @@ begin
    {$ENDIF UNICODE_CTRLS}
     Result.channeltree.Font.Color := TColor(clBlack);
     // Result.btoptions.TabOrder = 1
-    Result.btoptions := NewButton( Result.Form, 'Options' ).SetPosition( 536, 248 ).SetSize( 76, 0 );
+    Result.btoptions := NewButton( Result.Form, 'Options' ).SetPosition( 536, 248 ).SetSize( 76, 0 ).LikeSpeedButton;
    {$IFDEF USE_NAMES}
     Result.btoptions.SetName( Result.Form, 'btoptions' ); 
    {$ENDIF}
@@ -108,7 +108,7 @@ begin
     Result.btoptions.Font.FontStyle := [ fsBold ];
     Result.btoptions.Style := Result.btoptions.Style or BS_FLAT;
     // Result.btplay.TabOrder = 1
-    Result.btplay := NewButton( Result.Form, 'Play' ).SetPosition( 536, 216 ).SetSize( 76, 0 );
+    Result.btplay := NewButton( Result.Form, 'Play' ).SetPosition( 536, 216 ).SetSize( 76, 0 ).LikeSpeedButton;
    {$IFDEF USE_NAMES}
     Result.btplay.SetName( Result.Form, 'btplay' ); 
    {$ENDIF}

@@ -1,24 +1,5 @@
-ICO ICON "res/icon.ico"
 TRAY ICON "res/tray.ico"
 TRAYBLUE ICON "res/trayblue.ico"
 TRAYGREEN ICON "res/traygreen.ico"
 TRAYRED ICON "res/trayred.ico"
 DB RCDATA "db/db.dat"
-
-VER VERSIONINFO
-FILEVERSION 0,1,8,6
-PRODUCTVERSION 0,1,8,6
-BEGIN
-  BLOCK "StringFileInfo"
-  BEGIN
-    BLOCK "040904E4"
-    BEGIN
-      VALUE "FileVersion", "1.8.6\000"
-      VALUE "ProductVersion", "1.8.6\000"
-      VALUE "ProductName", "1ClickMusic\000"
-      VALUE "FileDescription", "por arthurprs\000"
-      VALUE "LegalCopyright", "arthurprs@gmail.com\000"
-      VALUE "OriginalFilename", "onemusic.exe\000"
-    END
-  END
-END

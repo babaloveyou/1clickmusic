@@ -33,7 +33,7 @@ type
     FRGNDATA: PRGNDATA;
     FRGN: HRGN;
 
-    needPaint: Boolean;
+    needPaint: LongBool;
 
     mouse: TPoint;
     controls: array of TThemeControl;

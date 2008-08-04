@@ -20,6 +20,7 @@ const
   APPVERSION = 186;
   APPVERSIONSTR = '1.8.6';
 
+  // GLOBAL VARS, IF NECESSARY INITIALIZED
 var
   //# needed cuz of the KOL windows is Free with no control..
   appwinHANDLE: HWND;
@@ -28,7 +29,7 @@ var
   DS: TDSoutput;
   Chn: TRadioPlayer = nil;
   curProgress: Cardinal;
-  curVolume: Cardinal;
+  curVolume: Cardinal = 100;
   //
   curBitrate: Cardinal;
   lastTitle, curTitle: string;
@@ -37,30 +38,31 @@ var
   radiolist: TRadioList;
 
   //# OPTIONS
-  trayiconcolor_enabled: Boolean;
-  traypopups_enabled: Boolean;
-  firstrun_enabled: Boolean;
+  trayiconcolor_enabled: LongBool;
+  traypopups_enabled: LongBool;
+  firstrun_enabled: LongBool;
   //# MSN NOW PLAYING FEATURE
-  msn_enabled: Boolean;
+  msn_enabled: LongBool;
   msn_iconi: Integer;
   msn_icons: string;
   //# Hotkeys
   hotkeys: array[1..12] of Cardinal;
   //# list
-  list_enabled: Boolean;
+  list_enabled: LongBool;
   list_file: string;
   //
-  clipboard_enabled: Boolean;
+  clipboard_enabled: LongBool;
   // lastfm plugin
-  lastfm_enabled: Boolean;
+  lastfm_enabled: LongBool;
   lastfm_user, lastfm_pass: string;
+  lastfm_nextscrobb : Cardinal = 0;
   // proxy
-  proxy_enabled : Boolean;
+  proxy_enabled : LongBool;
   proxy_host, proxy_port, proxy_pass : string;
 
-procedure updateMSN(write: Boolean);
+procedure updateMSN(write: LongBool);
 procedure ShowAboutbox;
-function AutoUpdate: Boolean;
+function AutoUpdate(): LongBool;
 procedure NotifyForm(const lParam : Integer);
 
 implementation
@@ -72,13 +74,13 @@ begin
   PostMessage(appwinHANDLE,WM_USER,Integer(Chn),lParam);
 end;
 
-procedure updateMSN(write: Boolean);
+procedure updateMSN(write: LongBool);
 var
   msndata: CopyDataStruct;
   msnwindow: HWND;
   buffer: WideString;
 begin
-  buffer := WideFormat('1ClickMusic\0%s\0%d\0{0}\0%s\0\0\0\0\0', [msn_icons, Integer(write), curTitle]);
+  buffer := WideFormat('1ClickMusic\0%s\0%d\0{0}\0%s\0\0\0\0\0', [msn_icons, Ord(write), curTitle]);
   msndata.dwData := $547;
   msndata.cbData := (Length(buffer) * 2) + 2;
   msndata.lpData := Pointer(buffer);
@@ -104,7 +106,7 @@ begin
     '1ClickMusic ' + APPVERSIONSTR, MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
 end;
 
-function AutoUpdate: Boolean;
+function AutoUpdate: LongBool;
 const
   updateurl = 'http://arthurprs.srcom.org/update.txt';
   updatefile = 'http://arthurprs.srcom.org/oneclick.exe';

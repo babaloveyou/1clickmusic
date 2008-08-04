@@ -29,11 +29,11 @@ Dialogs;
 type
 {$IF Defined(KOL_MCK)}
 {$I MCKfakeClasses.inc}
-{$IFDEF KOLCLASSES}{$I TForm1class.inc}{$ELSE OBJECTS}PForm1 = ^TForm1; {$ENDIF CLASSES/OBJECTS}
-{$IFDEF KOLCLASSES}{$I TForm1.inc}{$ELSE}TForm1 = object(TObj){$ENDIF}
+  {$IFDEF KOLCLASSES} {$I TForm1class.inc} {$ELSE OBJECTS} PForm1 = ^TForm1; {$ENDIF CLASSES/OBJECTS}
+  {$IFDEF KOLCLASSES}{$I TForm1.inc}{$ELSE} TForm1 = object(TObj) {$ENDIF}
     Form: PControl;
 {$ELSE not_KOL_MCK}
-    TForm1 = class(TForm)
+  TForm1 = class(TForm)
 {$IFEND KOL_MCK}
       KOLProject1: TKOLProject;
       lbltrack: TKOLLabel;
@@ -64,7 +64,6 @@ type
       ITRAY, ITrayBlue, ITrayGreen, ITrayRed: HICON;
       popupmenu: PMenu;
       Thread: PThread;
-      LastFMThread: PThread;
       procedure ProgressExecute();
       procedure UpdateExecute();
       function LastFMThreadExecute(Sender: PThread): Integer;
@@ -203,18 +202,16 @@ procedure TForm1.UpdateExecute();
 begin
   Form.BeginUpdate;
 
-  Chn.GetInfo(curTitle, curBitrate);
+  Chn.GetInfo(curTitle,curBitrate);
 
-  Tray.Tooltip := curTitle;
-
-  if curTitle = '' then
-    Form.Caption := '1ClickMusic'
-  else
-  begin
-    Form.caption := curTitle;
-    //# Trow events when track changes
-    if curTitle <> lastTitle then
+  //# Trow events when track changes
+  if curTitle <> lastTitle then
+    if curTitle = '' then
+      Form.Caption := '1ClickMusic'
+    else
     begin
+      Tray.Tooltip := curTitle;
+      Form.caption := curTitle;
       lastTitle := curTitle;
 
       traypopup('Track change', curTitle, NIIF_INFO);
@@ -228,19 +225,19 @@ begin
       if clipboard_enabled then
         Text2Clipboard(curTitle);
 
-      if lastfm_enabled then
-        if LastFMThread <> nil then
-          LastFMThread.Resume
-        else
-          LastFMThread := NewThreadEx(LastFMThreadExecute);
+      if (lastfm_enabled) and // ENSURE 60sec interval
+        (GetTickCount >= lastfm_nextscrobb) then
+      begin
+        lastfm_nextscrobb := GetTickCount() + 60000;
+        NewThreadAutoFree(LastFMThreadExecute);
+      end;
     end;
-  end;
 
   // # REFRESH GUI INFORMATION
   lbltrack.caption := curTitle;
 
   lblbuffer.Caption := IntToStr(curBitrate) + 'kbps' +
-    #13#10 + 'vol:' + IntToStr(curVolume) + '%';
+    #13 + 'vol:' + IntToStr(curVolume) + '%';
 
   case Chn.Status of
     rsPlaying: lblstatus.Caption := 'Connected!';
@@ -353,8 +350,6 @@ begin
             channeltree.TVSelected := channeltree.TVRoot; //# reset selection
             channeltree.TVSelected := hotkeys[Msg.wParam - 2000];
           end;
-        3000:
-          radiolist.Add(channeltree.TVInsert(0, 0, Clipboard2Text()), '', Clipboard2Text());
       end;
     end
     else
@@ -380,12 +375,6 @@ procedure TForm1.KOLForm1Destroy(Sender: PObj);
 begin
   if msn_enabled then
     updateMSN(False);
-
-  if LastFMThread <> nil then
-  begin
-    LastFMThread.Terminate;
-    LastFMThread.Free;
-  end;
 
   //# Kill the GUI timer, it exists? I don't care!
   KillTimer(appwinHANDLE, 1);
@@ -450,8 +439,6 @@ procedure TForm1.KOLForm1FormCreate(Sender: PObj);
 begin
   appwinHANDLE := form.Handle;
   //# Inicializa o SOM
-  curVolume := 100;
-  Chn := nil;
   DS := TDSoutput.Create(appwinHANDLE);
 
   ITRAY := LoadIcon(HInstance, 'TRAY'); // gray icon
@@ -479,7 +466,6 @@ begin
   RegisterHotKey(appwinHANDLE, 2010, MOD_CONTROL, VK_F10);
   RegisterHotKey(appwinHANDLE, 2011, MOD_CONTROL, VK_F11);
   RegisterHotKey(appwinHANDLE, 2012, MOD_CONTROL, VK_F12);
-  RegisterHotKey(appwinHANDLE, 3000, MOD_CONTROL, VK_INSERT);
 
   //# Create the thread that open the radio
   Thread := NewThread;
@@ -494,14 +480,11 @@ begin
   Radiolist := TRadioList.Create;
   //# inicializa os canais e o message handler
   LoadDb(channeltree, radiolist);
+  LoadCustomDb(channeltree,radiolist,'c:/userradios.txt');
   channeltree.AttachProc(TreeListWndProc);
   //# close the treeview
   channeltree.TVSelected := channeltree.TVRoot;
   channeltree.TVExpand(channeltree.TVRoot, TVE_COLLAPSE);
-
-  //# proibit our buttons from getting focus
-  btplay.LikeSpeedButton;
-  btoptions.LikeSpeedButton;
 
   //# Load .INI Config
   LoadConfig;
@@ -559,18 +542,14 @@ begin
 end;
 
 function TForm1.LastFMThreadExecute(Sender: PThread): Integer;
-var
-  lastfmplugin: TScrobber;
 begin
   Result := 1;
-  repeat
-    //sleep(35000);
-    lastfmplugin := TScrobber.Create;
-    if not lastfmplugin.Execute(curtitle) then
-      RaiseError(lastfmplugin.Error, False);
-    lastfmplugin.Free;
-    Sender.Suspend;
-  until Sender.Terminated;
+  with TScrobber.Create do
+  begin
+    if not Execute(lastTitle) then
+      RaiseError(ErrorStr, False);
+    Free;
+  end;
 end;
 
 procedure TForm1.TrayMouseUp(Sender: PControl; var Mouse: TMouseEventData);
@@ -614,8 +593,6 @@ begin
   PlayChannel;
 end;
 
-
-
 procedure TForm1.traypopup(const Atitle, Atext: string;
   const IconType: Integer);
 begin
@@ -623,9 +600,20 @@ begin
   begin
     Tray.BalloonTitle := Atitle;
     Tray.BalloonText := Atext;
-    Tray.ShowBalloon(IconType,3);
-  end;  
+    Tray.ShowBalloon(IconType, 3);
+  end;
 end;
 
 end.
+
+
+
+
+
+
+
+
+
+
+
 

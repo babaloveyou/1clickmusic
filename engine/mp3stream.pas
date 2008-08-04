@@ -23,7 +23,7 @@ type
   public
     procedure GetProgress(out ABuffPercentage: Cardinal); override;
     procedure GetInfo(out Atitle: string; out Aquality: Cardinal); override;
-    function Open(const url: string): Boolean; override;
+    function Open(const url: string): LongBool; override;
     destructor Destroy; override;
   end;
 
@@ -78,7 +78,7 @@ begin
     RaiseError('creating MPEG decoder');
 end;
 
-function TMP3.Open(const url: string): Boolean;
+function TMP3.Open(const url: string): LongBool;
 begin
   Result := FStream.open(url);
   if Result then

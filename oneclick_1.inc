@@ -6,5 +6,4 @@
   in some cases. TIP: always use Applet for such checks
   and make it invisible until final decision if to run
   application or not. }
-
   isMultiThread := True;

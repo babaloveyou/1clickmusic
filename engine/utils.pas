@@ -6,14 +6,10 @@ uses
   sysutils,
   Windows;
 
-{$IFDEF LOG}
-procedure Log(const Text: string);
-{$ENDIF}
-
 function Crypt(const str: string): string;
 procedure writeFile(const FileName, Text: string);
-function MultiPos(const SubStr: array of string; const str: string): Boolean;
-procedure RaiseError(const Error: string; const Fatal: Boolean = True);
+function MultiPos(const SubStr: array of string; const str: string): LongBool;
+procedure RaiseError(const Error: string; const Fatal: LongBool = True);
 
 implementation
 
@@ -50,7 +46,7 @@ begin
 {$I+}
 end;
 
-function MultiPos(const SubStr: array of string; const str: string): Boolean;
+function MultiPos(const SubStr: array of string; const str: string): LongBool;
 var
   i: Integer;
 begin
@@ -61,7 +57,7 @@ begin
   Result := False;
 end;
 
-procedure RaiseError(const Error: string; const Fatal: Boolean = True);
+procedure RaiseError(const Error: string; const Fatal: LongBool = True);
 begin
   MessageBox(0, PChar('ERRO, ' + Error), '1ClickMusic Exception', MB_ICONERROR);
   writeFile('ERROR.txt', Error);

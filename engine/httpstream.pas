@@ -35,10 +35,10 @@ type
     //# Get ShoutCast info
     procedure GetMetaInfo(out Atitle: string; out Aquality: Cardinal);
     //# Read the Buffer
-    function GetBuffer: PByte;
-    procedure NextBuffer;
+    function GetBuffer(): PByte;
+    procedure NextBuffer();
     //# Open stream
-    function Open(const url: string): Boolean;
+    function Open(const url: string): LongBool;
     constructor Create;
     destructor Destroy; override;
   end;
@@ -139,7 +139,8 @@ begin
       Result := 0;
   end
   else
-    if MultiPos(['302', '303', '301'], MetaData[0]) then
+  // 302, 303, 301
+    if Pos('30', MetaData[0]) > 0 then
     begin
       for i := 1 to MetaData.Count - 1 do
       begin
@@ -236,7 +237,7 @@ begin
   until Terminated;
 end;
 
-function THTTPSTREAM.Open(const url: string): Boolean;
+function THTTPSTREAM.Open(const url: string): LongBool;
 var
   host, port, icyheader: string;
   response: string;
@@ -277,12 +278,12 @@ begin
   Aquality := MetaBitrate;
 end;
 
-function THTTPSTREAM.GetBuffer: PByte;
+function THTTPSTREAM.GetBuffer(): PByte;
 begin
   Result := @inbuffer[Cursor];
 end;
 
-procedure THTTPSTREAM.NextBuffer;
+procedure THTTPSTREAM.NextBuffer();
 begin
   if Cursor = BUFFCOUNT - 1 then Cursor := 0 else Inc(Cursor);
   Dec(BuffFilled);

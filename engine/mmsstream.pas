@@ -18,7 +18,7 @@ type
   public
     procedure GetProgress(out ABuffPercentage : Cardinal); override;
     procedure GetInfo(out Atitle: string; out Aquality: Cardinal); override;
-    function Open(const url: string): Boolean; override;
+    function Open(const url: string): LongBool; override;
     destructor Destroy; override;
   end;
 
@@ -97,7 +97,7 @@ begin
   DS.SoundBuffer.Unlock(buffer, Size, nil, 0);
 end;
 
-function TMMS.Open(const url: string): Boolean;
+function TMMS.Open(const url: string): LongBool;
 begin
   if proxy_enabled then
     lwma_async_reader_set_proxy(Fhandle, 'http', proxy_host, StrToInt(proxy_port));

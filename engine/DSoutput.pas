@@ -18,16 +18,16 @@ type
     FDS: IDirectSound;
     FPrimary: IDirectSoundBuffer;
     FSecondary: IDirectSoundBuffer;
-    Fvolume: Integer;
+    Fvolume: Cardinal;
     function GetPlayCursorPos: Cardinal;
   public
     property PlayCursorPos: Cardinal read GetPlayCursorPos;
     property SoundBuffer: IDirectSoundBuffer read FSecondary write FSecondary;
-    function Volume(const value: Integer): Cardinal;
+    function Volume(value: Integer): Cardinal;
     procedure Play;
     procedure Stop;
     function InitializeBuffer(const Arate, Achannels: Cardinal): Cardinal;
-    constructor Create(const WndHandle : HWND);
+    constructor Create(const WndHandle: HWND);
     destructor Destroy; override;
   end;
 
@@ -55,7 +55,7 @@ type
     property DS: TDSoutput read FDevice write FDevice;
     procedure GetProgress(out ABuffPercentage : Cardinal); virtual; abstract;
     procedure GetInfo(out Atitle: string; out Aquality: Cardinal); virtual; abstract;
-    function Open(const url: string): Boolean; virtual; abstract;
+    function Open(const url: string): LongBool; virtual; abstract;
     constructor Create(ADevice: TDSoutput);
     destructor Destroy; override;
   end;
@@ -76,13 +76,13 @@ begin
     RaiseError('DIRECTSOUND, [' + IntToStr(value) + '] : ' + Error);
 end;
 
-constructor TDSoutput.Create(const WndHandle : HWND);
+constructor TDSoutput.Create(const WndHandle: HWND);
 var
   Fpwfm: TWAVEFORMATEX;
   Fpdesc: TDSBUFFERDESC;
 begin
   Fvolume := 100;
-  
+
   DSERROR(DirectSoundCreate(nil, FDS, nil), 'Creating DS device');
   DSERROR(FDS.SetCooperativeLevel(WndHandle, DSSCL_PRIORITY), 'Setting the cooperative level');
 
@@ -126,31 +126,32 @@ begin
     FSecondary.GetCurrentPosition(@Result, nil);
 end;
 
-function TDSoutput.Volume(const value: Integer): Cardinal;
+function TDSoutput.Volume(value: Integer): Cardinal;
 begin
   Result := Fvolume;
   if FSecondary = nil then Exit;
 
   if value >= 100 then
   begin
-    Fvolume := DSBVOLUME_MAX;
     Result := 100;
+    value := DSBVOLUME_MAX;
   end
   else
     if value <= 0 then
     begin
-      Fvolume := DSBVOLUME_MIN;
       Result := 0;
+      value := DSBVOLUME_MIN;
     end
     else
     begin
-      Fvolume := Round(
+      Result := value;
+      value := Round(
         ((100 - value) * DSBVOLUME_MIN) / 500
         );
-      Result := value;
+
     end;
 
-  FSecondary.SetVolume(Fvolume);
+  FSecondary.SetVolume(value);
 end;
 
 function TDSoutput.InitializeBuffer(const Arate, Achannels: Cardinal): Cardinal;
@@ -222,7 +223,7 @@ begin
   inherited;
   DS.SoundBuffer := nil;
 end;
-  
+
 procedure TRadioPlayer.Execute;
 var
   section, lastsection: Cardinal;
@@ -230,7 +231,7 @@ begin
   prebuffer();
   // If terminated while prebuffering Exit
   if Terminated then Exit;
-  
+
   initbuffer();
   // Fill buffer at offset 0
   updatebuffer(0);
@@ -242,7 +243,7 @@ begin
       section := 0
     else
       section := Fhalfbuffersize;
-      
+
     if section <> lastsection then
     begin
       UpdateBuffer(section);

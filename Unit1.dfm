@@ -399,7 +399,7 @@ object Form1: TForm1
     windowed = True
     Flat = True
     WordWrap = False
-    LikeSpeedButton = False
+    LikeSpeedButton = True
   end
   object btplay: TKOLButton
     Tag = 0
@@ -456,7 +456,7 @@ object Form1: TForm1
     windowed = True
     Flat = True
     WordWrap = False
-    LikeSpeedButton = False
+    LikeSpeedButton = True
   end
   object pgrbuffer: TKOLProgressBar
     Tag = 0
@@ -517,8 +517,8 @@ object Form1: TForm1
     projectName = 'oneclick'
     projectDest = 'oneclick'
     sourcePath = 'C:\Documents and Settings\Administrador\Desktop\1clickmusic\'
-    outdcuPath = 'C:\Documents and Settings\Administrador\Desktop\1clickmusic\'
-    dprResource = False
+    outdcuPath = 'dcu\'
+    dprResource = True
     protectFiles = True
     showReport = False
     isKOLProject = True
@@ -537,7 +537,7 @@ object Form1: TForm1
   end
   object KOLForm1: TKOLForm
     Tag = 0
-    Icon = 'ICO'
+    Icon = 'MAINICON'
     ForceIcon16x16 = False
     Caption = '1ClickMusic'
     Visible = True

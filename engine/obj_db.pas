@@ -5,6 +5,8 @@ interface
 uses SysUtils, Windows, KOL, Classes, utils, obj_list;
 
 procedure LoadDb(const TV: PControl; const List: TRadioList);
+procedure LoadCustomDb(const TV: PControl; const List: TRadioList; const filename: string);
+
 
 implementation
 
@@ -51,6 +53,22 @@ begin
   end;
 
   Src.Free;
+end;
+
+procedure LoadCustomDb(const TV: PControl; const List: TRadioList; const filename: string);
+var
+  sl: TStringList;
+  i: Integer;
+begin
+  sl := TStringList.Create;
+  sl.LoadFromFile(filename);
+  for i := 0 to sl.Count - 1 do
+    List.Add(
+      TV.TVInsert(0, 0, sl.Names[i]),
+      sl.Names[i],
+      sl.ValueFromIndex[i]
+      );
+  sl.Free;
 end;
 
 end.

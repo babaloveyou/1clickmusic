@@ -13,7 +13,7 @@ KOL,
   radioopener in 'engine\radioopener.pas',
   obj_db in 'engine\obj_db.pas';
 
-//{$R *.res}
+{$R *.res}
 
 begin // PROGRAM START HERE -- Please do not remove this comment
 
