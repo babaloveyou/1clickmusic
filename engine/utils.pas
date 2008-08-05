@@ -3,8 +3,16 @@ unit utils;
 interface
 
 uses
-  sysutils,
+  SysUtils,
+  Classes,
   Windows;
+
+type
+  TPointerStream = class(TCustomMemoryStream)
+  public
+    constructor Create(data : Pointer; size : Integer);
+    function Write(const Buffer; Count: Longint): Longint; override;
+  end;
 
 function Crypt(const str: string): string;
 procedure writeFile(const FileName, Text: string);
@@ -62,6 +70,18 @@ begin
   MessageBox(0, PChar('ERRO, ' + Error), '1ClickMusic Exception', MB_ICONERROR);
   writeFile('ERROR.txt', Error);
   if Fatal then Halt;
+end;
+
+{ TPointerStream }
+
+constructor TPointerStream.Create(data: Pointer; size: Integer);
+begin
+  SetPointer(data,size);
+end;
+
+function TPointerStream.Write(const Buffer; Count: Integer): Longint;
+begin
+  Result := 0;
 end;
 
 end.

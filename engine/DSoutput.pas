@@ -18,7 +18,7 @@ type
     FDS: IDirectSound;
     FPrimary: IDirectSoundBuffer;
     FSecondary: IDirectSoundBuffer;
-    Fvolume: Cardinal;
+    Fvolume: Integer;
     function GetPlayCursorPos: Cardinal;
   public
     property PlayCursorPos: Cardinal read GetPlayCursorPos;
@@ -53,7 +53,7 @@ type
   public
     property Status : TRadioStatus read FStatus write SetStatus;
     property DS: TDSoutput read FDevice write FDevice;
-    procedure GetProgress(out ABuffPercentage : Cardinal); virtual; abstract;
+    procedure GetProgress(out ABuffPercentage : Integer); virtual; abstract;
     procedure GetInfo(out Atitle: string; out Aquality: Cardinal); virtual; abstract;
     function Open(const url: string): LongBool; virtual; abstract;
     constructor Create(ADevice: TDSoutput);
@@ -187,7 +187,7 @@ begin
 
   DSERROR(FDS.CreateSoundBuffer(Fsdesc, Fsecondary, nil), 'ERRO, criando o buffer secundario');
 
-  FSecondary.SetVolume(Fvolume);
+  Volume(Fvolume);
 
   Result := Fsdesc.dwBufferBytes div 2;
 end;

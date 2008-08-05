@@ -171,7 +171,7 @@ end;
 
 procedure TForm1.ProgressExecute();
 var
-  progress: Cardinal;
+  progress: Integer;
 begin
   // # GET INFO
   Chn.GetProgress(progress);
@@ -325,17 +325,10 @@ begin
     if (Msg.Message = WM_HOTKEY) and (channeltree.Enabled) then
     begin
       case Msg.wParam of
-        1001:
+         -2,2:
           if Chn <> nil then
           begin
-            curVolume := DS.Volume(curVolume + 2);
-            UpdateExecute();
-            traypopup('', 'Volume ' + IntToStr(curVolume) + '%', NIIF_NONE);
-          end;
-        1002:
-          if Chn <> nil then
-          begin
-            curVolume := DS.Volume(curVolume - 2);
+            curVolume := DS.Volume(curVolume + Msg.wParam);
             UpdateExecute();
             traypopup('', 'Volume ' + IntToStr(curVolume) + '%', NIIF_NONE);
           end;
@@ -450,8 +443,8 @@ begin
   Tray.Active := True;
 
   //# HOTKEYS
-  RegisterHotKey(appwinHANDLE, 1001, MOD_CONTROL, VK_UP);
-  RegisterHotKey(appwinHANDLE, 1002, MOD_CONTROL, VK_DOWN);
+  RegisterHotKey(appwinHANDLE, 2, MOD_CONTROL, VK_UP);
+  RegisterHotKey(appwinHANDLE, -2, MOD_CONTROL, VK_DOWN);
   RegisterHotKey(appwinHANDLE, 1003, MOD_CONTROL, VK_END);
   RegisterHotKey(appwinHANDLE, 1004, MOD_CONTROL, VK_HOME);
   RegisterHotKey(appwinHANDLE, 2001, MOD_CONTROL, VK_F1);
@@ -605,15 +598,4 @@ begin
 end;
 
 end.
-
-
-
-
-
-
-
-
-
-
-
 

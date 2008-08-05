@@ -16,7 +16,7 @@ type
     procedure initbuffer; override;
     procedure prebuffer; override;
   public
-    procedure GetProgress(out ABuffPercentage : Cardinal); override;
+    procedure GetProgress(out ABuffPercentage : Integer); override;
     procedure GetInfo(out Atitle: string; out Aquality: Cardinal); override;
     function Open(const url: string): LongBool; override;
     destructor Destroy; override;
@@ -117,7 +117,7 @@ begin
   Aquality := Fhandle.Bitrate div 1000;
 end;
 
-procedure TMMS.GetProgress(out ABuffPercentage : Cardinal);
+procedure TMMS.GetProgress(out ABuffPercentage : Integer);
 begin
   ABuffPercentage := 0;
 end;  

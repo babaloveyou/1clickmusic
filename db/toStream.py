@@ -1,4 +1,4 @@
-import struct, string, time
+import struct, string, time, os
 
 dst = open("db.dat", "wb")
 src = open("radios.pas", "r")
@@ -100,5 +100,25 @@ for line in src:
 dst.close()
 src.close()
 
-print "OK, %d radios sorted and saved in %fsec" % (totalcount, time.clock() - tStart)
+srcsize = os.stat("db.dat").st_size
+src = open("db.dat","rb")
+dst = open("../engine/db.inc","w")
+
+dst.write("const dbdata : array[0..%d] of byte = (\n" % (srcsize -1 ,))
+
+srcpos = 0
+while srcpos < srcsize:
+    if srcpos > 0:
+        dst.write(",")
+        if srcpos % 12 == 0:
+            dst.write("\n")
+    dst.write(str(ord(src.read(1))))
+    srcpos += 1
+    
+dst.write("\n);");
+
+src.close()
+dst.close()
+
+print "OK, %d radios sorted and saved in %fs" % (totalcount, time.clock() - tStart)
 raw_input()

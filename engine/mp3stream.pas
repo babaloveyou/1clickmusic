@@ -21,7 +21,7 @@ type
     procedure initbuffer; override;
     procedure prebuffer; override;
   public
-    procedure GetProgress(out ABuffPercentage: Cardinal); override;
+    procedure GetProgress(out ABuffPercentage: Integer); override;
     procedure GetInfo(out Atitle: string; out Aquality: Cardinal); override;
     function Open(const url: string): LongBool; override;
     destructor Destroy; override;
@@ -34,7 +34,7 @@ uses
 
 { TMP3 }
 
-procedure TMP3.GetProgress(out ABuffPercentage: Cardinal);
+procedure TMP3.GetProgress(out ABuffPercentage: Integer);
 begin
   ABuffPercentage := FStream.BuffFilled;
 end;

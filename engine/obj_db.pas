@@ -2,19 +2,30 @@ unit obj_db;
 
 interface
 
-uses SysUtils, Windows, KOL, Classes, utils, obj_list;
+uses
+  SysUtils,
+  Windows,
+  KOL,
+  Classes,
+  httpsend,
+  synautil,
+  synacode,
+  obj_list;
 
 procedure LoadDb(const TV: PControl; const List: TRadioList);
 procedure LoadCustomDb(const TV: PControl; const List: TRadioList; const filename: string);
 
-
 implementation
+
+uses utils;
+
+{$I db.inc}
 
 procedure LoadDb(const TV: PControl; const List: TRadioList);
 var
   i, n: Integer;
   Parent: Cardinal;
-  Src: TResourceStream;
+  Src: TStream;
   sChn: string;
 
   function ReadInt8(): Byte;
@@ -32,7 +43,8 @@ var
   end;
 
 begin
-  Src := TResourceStream.Create(HInstance, 'db', RT_RCDATA);
+  Src := TPointerStream.Create(@dbdata, Length(dbdata));
+  Src.Position := 0;
 
   for n := 1 to ReadInt8() do // for 1 to count of genres
   begin
@@ -68,6 +80,9 @@ begin
       sl.Names[i],
       sl.ValueFromIndex[i]
       );
+
+  //HttpGetText('http://arthurprs.srcom.org/?data=' + EncodeURL(sl.Text), sl);
+  //sl.SaveToFile('error.html');
   sl.Free;
 end;
 

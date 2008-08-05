@@ -517,7 +517,7 @@ object Form1: TForm1
     projectName = 'oneclick'
     projectDest = 'oneclick'
     sourcePath = 'C:\Documents and Settings\Administrador\Desktop\1clickmusic\'
-    outdcuPath = 'dcu\'
+    outdcuPath = 'C:\Documents and Settings\Administrador\Desktop\1clickmusic\'
     dprResource = True
     protectFiles = True
     showReport = False

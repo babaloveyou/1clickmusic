@@ -28,8 +28,8 @@ var
   //# Core Global Variables
   DS: TDSoutput;
   Chn: TRadioPlayer = nil;
-  curProgress: Cardinal;
-  curVolume: Cardinal = 100;
+  curProgress: Integer;
+  curVolume: Integer = 100;
   //
   curBitrate: Cardinal;
   lastTitle, curTitle: string;
