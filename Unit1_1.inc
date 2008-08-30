@@ -134,8 +134,8 @@ begin
     {$IFDEF OVERRIDE_SCROLLBARS}
     OverrideScrollbars( Result.channeltree);
     {$ENDIF OVERRIDE_SCROLLBARS}
-      Result.btplay.OnClick := Result.btplayClick;
       Result.btoptions.OnClick := Result.btoptionsClick;
+      Result.btplay.OnClick := Result.btplayClick;
     Result.Form.CenterOnParent.CanResize := False;
     Result.Form.Perform( WM_INITMENU, 0, 0 );
     Result.KOLForm1FormCreate( Result );

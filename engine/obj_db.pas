@@ -72,8 +72,8 @@ var
   sl: TStringList;
   i: Integer;
 begin
+  if not FileExists(filename) then Exit;
   sl := TStringList.Create;
-  sl.LoadFromFile(filename);
   for i := 0 to sl.Count - 1 do
     List.Add(
       TV.TVInsert(0, 0, sl.Names[i]),
