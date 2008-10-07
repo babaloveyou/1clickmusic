@@ -10,9 +10,15 @@ uses
 type
   TPointerStream = class(TCustomMemoryStream)
   public
-    constructor Create(data : Pointer; size : Integer);
+    constructor Create(data: Pointer; size: Integer);
     function Write(const Buffer; Count: Longint): Longint; override;
   end;
+
+
+{$IFDEF DEBUG}
+procedure Debug(const s: string); overload;
+procedure Debug(const s: string; a: array of const); overload;
+{$ENDIF}
 
 function Crypt(const str: string): string;
 procedure writeFile(const FileName, Text: string);
@@ -20,6 +26,37 @@ function MultiPos(const SubStr: array of string; const str: string): LongBool;
 procedure RaiseError(const Error: string; const Fatal: LongBool = True);
 
 implementation
+
+{$IFDEF DEBUG}
+var
+  ok: LongBool = False;
+
+procedure Debug(const s: string);
+begin
+  if not ok then
+  begin
+    ok := True;
+    //AssignFile(f, 'f.txt');
+    //Reset(f);
+  end;
+  Writeln(s);
+  //Writeln(f, s);
+  //Flush(f);
+end;
+
+procedure Debug(const s: string; a: array of const);
+begin
+  if not ok then
+  begin
+    ok := True;
+    //AssignFile(f, 'f.txt');
+    //Reset(f);
+  end;
+  Writeln(Format(s, a));
+  //Writeln(f,Format(s, a));
+  //Flush(f);
+end;
+{$ENDIF}
 
 const
   KEYCODE = 704; //# encoding password
@@ -76,7 +113,7 @@ end;
 
 constructor TPointerStream.Create(data: Pointer; size: Integer);
 begin
-  SetPointer(data,size);
+  SetPointer(data, size);
 end;
 
 function TPointerStream.Write(const Buffer; Count: Integer): Longint;

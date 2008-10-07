@@ -2,26 +2,26 @@ unit obj_list;
 
 interface
 
-uses kol, SysUtils, Windows;
-
 type
-  PRadioItem = ^TRadioItem;
-  TRadioItem = record
+  PRadioEntry = ^TRadioEntry;
+  TRadioEntry = record
     pos: Cardinal;
     Name: string;
     pls: string;
   end;
 
+{ a perfect performance/size implementation for the program needs}
 type
   TRadioList = class
   private
-    FList: PList;
-    function GetItem(Index: Integer): PRadioItem;
+    fList: PRadioEntry;
+    fListSize: Integer;
+    fListCapacity: Integer;
   public
-    procedure Add(const pos: Cardinal; const Name, pls: string);
-    function getpos(const Name: string): Cardinal;
-    function getname(const pos: Cardinal): string;
-    function getpls(const pos: Cardinal): string;
+    procedure Add(const Apos: Cardinal; const AName, Apls: string);
+    function getpos(const AName: string): Cardinal;
+    function getname(const Apos: Cardinal): string;
+    function getpls(const Apos: Cardinal): string;
     constructor Create;
     destructor Destroy; override;
   end;
@@ -30,76 +30,98 @@ implementation
 
 { TRadioList }
 
-procedure TRadioList.Add(const pos: Cardinal; const Name, pls: string);
+procedure TRadioList.Add(const Apos: Cardinal; const AName, Apls: string);
 var
-  newitem: PRadioItem;
+  entry: PRadioEntry;
 begin
-  New(newitem);
-  newitem.pos := pos;
-  newitem.Name := Name;
-  newitem.pls := pls;
-  FList.Add(newitem);
+  if fListSize = fListCapacity then
+  begin
+    fListCapacity := fListCapacity shl 2;
+    ReallocMem(fList,fListCapacity * SizeOf(TRadioEntry));
+  end;
+
+  //entry := fList;
+  //Inc(entry,fListsize);
+  entry := Pointer(Integer(fList) + (fListSize * SizeOf(TRadioEntry))); 
+  with entry^ do
+  begin
+    pos := Apos;
+    Name := AName;
+    pls := Apls;
+  end;
+
+  Inc(fListSize);
 end;
 
 constructor TRadioList.Create;
 begin
-  inherited Create;
-  FList := NewList;
-  //# change capacity to allow lesses realocations of mem
-  FList.Capacity := 250;
+  fListCapacity := 256;
+  fListSize := 0;
+  GetMem(fList, SizeOf(TRadioEntry) * fListCapacity);
 end;
 
 destructor TRadioList.Destroy;
 begin
-  while FList.Count > 0 do
+  FreeMem(fList);
+end;
+
+function TRadioList.getname(const Apos: Cardinal): string;
+var
+  i: Integer;
+  entry: PRadioEntry;
+begin
+  i := 0;
+  entry := fList;
+  while i < fListSize do
   begin
-    Dispose(GetItem(0));
-    FList.Delete(0);
+    if entry.pos = Apos then
+    begin
+      Result := entry.Name;
+      Exit;
+    end;
+    Inc(i);
+    Inc(entry);
   end;
-  FList.Free;
-end;
-
-function TRadioList.GetItem(Index: Integer): PRadioItem;
-begin
-  Result := FList.Items[Index];
-end;
-
-function TRadioList.getname(const pos: Cardinal): string;
-var
-  i: Integer;
-begin
-  for i := 0 to FList.Count - 1 do
-    if GetItem(i).pos = pos then
-    begin
-      Result := GetItem(i).Name;
-      Exit;
-    end;
   Result := '';
 end;
 
-function TRadioList.getpls(const pos: Cardinal): string;
+function TRadioList.getpls(const Apos: Cardinal): string;
 var
   i: Integer;
+  entry: PRadioEntry;
 begin
-  for i := 0 to FList.Count - 1 do
-    if GetItem(i).pos = pos then
+  i := 0;
+  entry := fList;
+  while i < fListSize do
+  begin
+    if entry.pos = Apos then
     begin
-      Result := GetItem(i).pls;
+      Result := entry.pls;
       Exit;
     end;
+    Inc(i);
+    Inc(entry);
+  end;
   Result := '';
 end;
 
-function TRadioList.getpos(const Name: string): Cardinal;
+function TRadioList.getpos(const AName: string): Cardinal;
 var
   i: Integer;
+  entry: PRadioEntry;
 begin
-  for i := 0 to FList.Count - 1 do
-    if GetItem(i).Name = Name then
+  i := 0;
+  entry := fList;
+  while i < fListSize do
+  begin
+    if entry.Name = AName then
     begin
-      Result := GetItem(i).pos;
+      Result := entry.pos;
       Exit;
     end;
+    Inc(i);
+    Inc(entry);
+  end;
   Result := 0;
 end;
 

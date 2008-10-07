@@ -1,6 +1,6 @@
 { KOL MCK } // Do not remove this line!
 program oneclick;
-{$R 'resources.res' 'resources.rc'}
+{$R 'resources.res' 'resources.rc'}{$IFDEF DEBUG}{$APPTYPE CONSOLE}{$ENDIF}
 uses
 KOL,
   Unit1 in 'Unit1.pas' {Form1},

@@ -6,14 +6,20 @@ uses
   SysUtils,
   Windows,
   Classes,
-  mpg123,
+  mpglib,
   DSoutput,
   httpstream;
 
+const
+  PCMBUFSIZE = 4608;
+  //MP3BUFSIZE = BUFFPACKET;
 type
   TMP3 = class(TRadioPlayer)
   private
-    Fhandle: Pmpg123_handle;
+    pcmbuf: array[0..PCMBUFSIZE - 1] of Byte;
+    pcmbufpos, pcmbuffilled: Integer;
+    //mp3buf: array[0..MP3BUFSIZE - 1] of Byte;
+    Fhandle: TMp3Handle;
     FStream: THTTPSTREAM;
   protected
     procedure updatebuffer(const offset: Cardinal); override;
@@ -30,7 +36,7 @@ type
 implementation
 
 uses
-  utils;
+  utils, main;
 
 { TMP3 }
 
@@ -47,35 +53,66 @@ end;
 destructor TMP3.Destroy;
 begin
   inherited;
-  mpg123_close(Fhandle);
   FStream.Free;
+  ExitMp3(Fhandle);
 end;
 
 procedure TMP3.initbuffer;
+const
+  freqs: array[0..8] of Integer = (
+    44100, 48000, 32000,
+    22050, 24000, 16000,
+    11025, 12000, 8000);
 var
-  r: Integer;
+  offset: Integer;
+  done: Integer;
+  r: TMp3Result;
 begin
-  mpg123_close(Fhandle);
-  mpg123_open_feed(Fhandle);
-
+  pcmbufpos := 0;
+  r := MP3_ERROR;
+  offset := 0;
   repeat
-    r := mpg123_decode(Fhandle, FStream.GetBuffer(), BUFFSIZE, nil, 0, nil);
+    offset := FindFrame(Pointer(LongInt(FStream.GetBuffer()) + offset), BUFFPACKET - offset);
+    //Debug('FindFrame = %d', [offset]);
+    if offset <> -1 then
+    begin
+      InitMp3(FHandle);
+      done := 0;
+      r := DecodeMp3(FHandle,
+        Pointer(LongInt(FStream.GetBuffer()) + offset),
+        BUFFPACKET - offset,
+        @pcmbuf,
+        PCMBUFSIZE,
+        done);
+
+      if r = MP3_ERROR then
+      begin
+        ExitMp3(Fhandle);
+        if BUFFPACKET - offset > 4  then Continue;
+      end;
+
+      pcmbuffilled := done;
+
+      //Debug('DecodeMp3 on offset %d = lay %d, framesize = %d', [offset, Fhandle.lay, Fhandle.framesize]);
+    end;
+
     FStream.NextBuffer();
-  until (r = MPG123_NEW_FORMAT) or (FStream.BuffFilled < 50);
+    offset := 0;
+  until (r <> MP3_ERROR) or (Fstream.BuffFilled = 0);
 
-  mpg123_getformat(Fhandle, @Frate, @Fchannels, @Fencoding);
-  if Fchannels = 0 then
-    RaiseError('discovering audio format');
+  if r = MP3_ERROR then
+    RaiseError('');
 
+  Fchannels := Fhandle.stereo;
+  Frate := freqs[Fhandle.sampling_frequency];
+
+  //Debug('DS.InitializeBuffer(%d, %d);', [Frate, Fchannels]);
   Fhalfbuffersize := DS.InitializeBuffer(Frate, Fchannels);
 end;
 
 procedure TMP3.initdecoder;
 begin
   FStream := THTTPSTREAM.Create;
-  Fhandle := mpg123_new('i586', nil); //i586
-  if Fhandle = nil then
-    RaiseError('creating MPEG decoder');
 end;
 
 function TMP3.Open(const url: string): LongBool;
@@ -99,59 +136,77 @@ end;
 
 procedure TMP3.updatebuffer(const offset: Cardinal);
 var
-  buffer, bufferPos: PByte;
-  Size, SizeDecoded, TotalDecoded: Cardinal;
-  r: Integer;
+  outbuf: PByteArray;
+  outsize, Decoded, done: Integer;
+  r: TMp3Result;
 begin
-  DSERROR(DS.SoundBuffer.Lock(offset, Fhalfbuffersize, @buffer, @Size, nil, nil, 0), 'ERRO, locking buffer');
+  DSERROR(DS.SoundBuffer.Lock(offset, Fhalfbuffersize, @outbuf, @outsize, nil, nil, 0), 'ERRO, locking buffer');
 
-  SizeDecoded := 0;
-  TotalDecoded := 0;
-  bufferPos := buffer;
-  r := MPG123_NEED_MORE;
+  Decoded := 0;
 
+  // some data is already decoded
+  if pcmbuffilled <> 0 then
+  begin
+    Decoded := pcmbuffilled;
+    Move(pcmbuf[pcmbufpos], outbuf^, Decoded);
+    pcmbufpos := 0;
+    pcmbuffilled := 0;
+  end;
+
+  r := MP3_OK;
   repeat
-  // Repeat code that fills the DS buffer
+    // Repeat code that fills the DS buffer
     if (FStream.BuffFilled > 0) then
     begin
-      r := mpg123_decode(Fhandle, FStream.GetBuffer(), BUFFSIZE, bufferPos, Size - TotalDecoded, @SizeDecoded);
-      FStream.NextBuffer();
-      Inc(bufferPos, SizeDecoded);
-      Inc(TotalDecoded, SizeDecoded);
+      done := 0;
+
+      if r = MP3_OK then
+        r := DecodeMp3(Fhandle, nil, 0, @pcmbuf, PCMBUFSIZE, done)
+      else
+      begin // NEED_MORE
+        r := DecodeMp3(Fhandle, FStream.GetBuffer(), BUFFPACKET, @pcmbuf, PCMBUFSIZE, done);
+        FStream.NextBuffer();
+      end;
+
+      if r = MP3_ERROR then
+      begin
+        DS.Stop();
+        ExitMp3(FHandle);
+        initbuffer();
+        DS.Play();
+        Exit;
+      end;
+
+      if done = 0 then Continue;
+      
+      if done + Decoded <= outsize then
+        Move(pcmbuf, outbuf[Decoded], done)
+      else
+      begin
+        pcmbufpos := outsize - Decoded;
+        pcmbuffilled := done - pcmbufpos;
+        Move(pcmbuf, outbuf[Decoded], pcmbufpos);
+        done := pcmbufpos;
+      end;
+
+      Inc(Decoded, done);
+
     end
     else
     begin
       Status := rsRecovering;
-      DS.Stop;
+      DS.Stop();
       repeat
         Sleep(99);
         if Terminated then Exit;
       until FStream.BuffFilled > BUFFRESTORE;
-      DS.Play;
+      DS.Play();
       Status := rsPlaying;
     end;
-  until (r <> MPG123_NEED_MORE) or (Terminated);
+  until (Decoded >= outsize) or (Terminated);
 
-
-  if (r = MPG123_OK) then
-    DS.SoundBuffer.Unlock(buffer, Size, nil, 0)
-  else
-    if (r = MPG123_DONE) then
-    // Some streams give us MPG123_DONE
-    // after initial messages, lets try re-open
-    begin
-      initbuffer();
-      DS.Play;
-    end;
-
+  DS.SoundBuffer.Unlock(outbuf, outsize, nil, 0);
 end;
-
-initialization
-  if mpg123_init() <> MPG123_OK then
-    RaiseError('initing MPEG decoder');
-
-finalization
-  mpg123_exit();
 
 end.
 

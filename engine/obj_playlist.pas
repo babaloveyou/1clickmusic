@@ -3,14 +3,16 @@ unit obj_playlist;
 interface
 
 uses
-  Classes,
   SysUtils,
+  StrUtils,
+  Classes,
+  Windows,
   httpsend;
 
 type
   TPlaylist = class
   public
-    urls: TStringlist;
+    urls: TStringList;
     procedure openpls(const plsurl: string);
     constructor Create;
     destructor Destroy; override;
@@ -20,11 +22,10 @@ implementation
 
 { TPlaylist }
 
-uses StrUtils,
+uses
   utils;
 
 procedure ParseASX(Lines: TStrings);
-
 var
   i, a, b: Integer;
   Line: string;
@@ -73,7 +74,7 @@ end;
 
 constructor TPlaylist.Create;
 begin
-  urls := TStringlist.Create;
+  urls := TStringList.Create;
 end;
 
 destructor TPlaylist.Destroy;

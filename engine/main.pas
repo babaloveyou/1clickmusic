@@ -3,11 +3,11 @@ unit main;
 interface
 
 uses
-  Classes,
+  KOL,
   SysUtils,
+  Classes,
   Windows,
   Messages,
-  KOL,
   DSoutput,
   radioopener,
   mp3stream,
@@ -17,14 +17,14 @@ uses
   httpsend;
 
 const
-  APPVERSION = 186;
-  APPVERSIONSTR = '1.8.6';
+  APPVERSION = 187;
+  APPVERSIONSTR = '1.8.7';
 
   // GLOBAL VARS, IF NECESSARY INITIALIZED
 var
   //# needed cuz of the KOL windows is Free with no control..
   appwinHANDLE: HWND;
-  
+
   //# Core Global Variables
   DS: TDSoutput;
   Chn: TRadioPlayer = nil;
@@ -55,23 +55,23 @@ var
   // lastfm plugin
   lastfm_enabled: LongBool;
   lastfm_user, lastfm_pass: string;
-  lastfm_nextscrobb : Cardinal = 0;
+  lastfm_nextscrobb: Cardinal = 0;
   // proxy
-  proxy_enabled : LongBool;
-  proxy_host, proxy_port, proxy_pass : string;
+  proxy_enabled: LongBool;
+  proxy_host, proxy_port, proxy_pass: string;
 
 procedure updateMSN(write: LongBool);
-procedure ShowAboutbox;
+procedure ShowAboutbox();
 function AutoUpdate(): LongBool;
-procedure NotifyForm(const lParam : Integer);
+procedure NotifyForm(const lParam: Integer);
 
 implementation
 
 uses utils;
 
-procedure NotifyForm(const lParam : Integer);
+procedure NotifyForm(const lParam: Integer);
 begin
-  PostMessage(appwinHANDLE,WM_USER,Integer(Chn),lParam);
+  PostMessage(appwinHANDLE, WM_USER, Integer(Chn), lParam);
 end;
 
 procedure updateMSN(write: LongBool);
@@ -80,12 +80,13 @@ var
   msnwindow: HWND;
   buffer: WideString;
 begin
+
   buffer := WideFormat('1ClickMusic\0%s\0%d\0{0}\0%s\0\0\0\0\0', [msn_icons, Ord(write), curTitle]);
   msndata.dwData := $547;
   msndata.cbData := (Length(buffer) * 2) + 2;
   msndata.lpData := Pointer(buffer);
 
-  msnwindow := FindWindowEx(0, 0, 'MsnMsgrUIManager', nil);;
+  msnwindow := FindWindowEx(0, 0, 'MsnMsgrUIManager', nil); ;
   while msnwindow <> 0 do
   begin
     SendMessage(msnwindow, WM_COPYDATA, 0, Integer(@msndata));
@@ -93,57 +94,42 @@ begin
   end;
 end;
 
-procedure ShowAboutbox;
+procedure ShowAboutbox();
 begin
   MessageBox(0, '1ClickMusic ' + APPVERSIONSTR + #13#10 +
     'by arthurprs (arthurprs@gmail.com)' + #13#10#13#10 +
     'Agradecimentos a:' + #13#10 +
     'freak_insane, Blizzy, Kintoun Rlz, Paperback Writer,' + #13#10 +
     'kamikazze, BomGaroto, SnowHill, Ricardo, Greel, The_Terminator,' + #13#10
-    + 'jotaeme, Mouse Pad, Lokinhow, Mario Bros, Blurkness.' + #13#10 +
-    'e a toda a galera que tem me incentivado.' + #13#10 + #13#10 +
-    'Agradecimento especial nessa versao ao Blurkness.',
+    + 'jotaeme, Mouse Pad, Lokinhow, Mario Bros, Blurkness, -dnb-,' + #13#10 +
+    'e a toda a galera que tem me incentivado.',
     '1ClickMusic ' + APPVERSIONSTR, MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
 end;
 
-function AutoUpdate: LongBool;
+function AutoUpdate(): LongBool;
 const
   updateurl = 'http://arthurprs.srcom.org/update.txt';
   updatefile = 'http://arthurprs.srcom.org/oneclick.exe';
 var
-  Text: TStringlist;
+  Text: TStringList;
   newfile: TFileStream;
   batpath, tempfilepath: string;
 begin
-  Result := True;
-  Text := TStringlist.Create;
-  if not HttpGetText(updateurl, Text) then
-  begin
-    Result := False;
-    RaiseError('DOWNLOADING THE UPDATE INFO!', False);
-  end;
-
+  Text := TStringList.Create;
+  Result := HttpGetText(updateurl, Text);
   if Result then
-  begin
-
-    if StrToInt(Text[0]) > APPVERSION then
+    if StrToIntDef(Text[0],-1) > APPVERSION then
     begin
       if MessageBox(0,
         PChar(Format('Version %s is avaliable, download and update?', [Text[0]])),
         '1ClickMusic update avaliable', MB_YESNO + MB_ICONQUESTION) = IDYES then
       begin
-        tempfilepath := GetTempDir + 'onemusic.exe';
+        tempfilepath := GetTempDir + 'oneclick.exe';
         newfile := TFileStream.Create(tempfilepath, fmCreate);
-        if not HttpGetBinary(updatefile, newfile) then
-          Result := False;
-        newfile.Free;
-
+        Result := HttpGetBinary(updatefile, newfile);
         if Result then
         begin
           batpath := GetTempDir + 'oneclickupdate.bat';
-{$WARNINGS OFF}
-          FileSetAttr(ParamStr(0), 0);
-{$WARNINGS ON}
           Text.Clear;
           Text.Add(':Label1');
           Text.Add('del "' + ParamStr(0) + '"');
@@ -155,17 +141,19 @@ begin
           Result := WinExec(PChar(batpath), SW_HIDE) > 0;
         end
         else
-          RaiseError('DOWNLOADING THE UPDATE FILE', False)
+          RaiseError('DOWNLOADING THE UPDATE FILE', False);
+
+        newfile.Free;
       end
     end
     else
     begin
       Result := False;
       MessageBox(0, 'Your version is up-to-date', '1ClickMusic', MB_ICONINFORMATION);
-    end;
-    
-  end;
-  
+    end
+  else
+    RaiseError('DOWNLOADING THE UPDATE FILE', False);
+
   Text.Free;
 end;
 

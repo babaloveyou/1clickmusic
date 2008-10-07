@@ -431,7 +431,8 @@ begin
         async_reader.StretchFactor := 1.0;
         Exit;
       end;
-    end else
+    end
+    else
     begin
       async_reader.status := WMT_STARTED;
       async_reader.Paused := False;
@@ -451,9 +452,9 @@ var
   SI: PSampleInfo;
 begin
   buffer := nil;
-  while buffer = nil do
-  begin
-    if not has_data_block(async_reader) then
+  repeat
+    //if not has_data_block(async_reader) then
+    if async_reader.BlockList.Count = 0 then
     begin
       bufsize := 0;
       Exit;
@@ -468,17 +469,19 @@ begin
       async_reader.CriticalSection.Leave;
       Freemem(SI.Data);
       Freemem(SI);
-    end else
+    end
+    else
     begin
       buffer := @(SI.Data[SI.Offset]);
       if bufsize > SI.Length - SI.Offset then
       begin
         bufsize := SI.Length - SI.Offset;
         SI.Offset := SI.Length;
-      end else
+      end
+      else
         Inc(SI.Offset, bufsize)
     end;
-  end;
+  until buffer <> nil;
 end;
 
 procedure lwma_async_reader_free(var async_reader: wma_async_reader);

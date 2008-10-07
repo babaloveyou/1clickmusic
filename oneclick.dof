@@ -131,17 +131,25 @@ ProductName=
 ProductVersion=1.0.0.0
 Comments=
 [HistoryLists\hlConditionals]
-Count=2
+Count=9
 Item0=KOL_MCK
-Item1=INPACKAGE
+Item1=KOL_MCK;dEBUG
+Item2=KOL_MCK;DEBUG;SMALLEST_CODE_PARENTFONT
+Item3=KOL_MCK;DEBUG;SMALLEST_CODE;SMALLEST_CODE_PARENTFONT
+Item4=KOL_MCK;DEBUG;SMALLEST_CODE
+Item5=KOL_MCK;DEBUG;SMALLER_CODE
+Item6=KOL_MCK;SMALLEST_CODE;DEBUG
+Item7=KOL_MCK;SMALLEST_CODE;SMALLEST_CODE_PARENTFONT;DEBUG
+Item8=INPACKAGE
 [HistoryLists\hlUnitAliases]
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
-Count=3
+Count=4
 Item0=engine
-Item1=C:\Documents and Settings\Administrador\Desktop;engine
-Item2=C:\Borland\Delphi7\Source\ToolsAPI
+Item1=engine;engine/kolsyn
+Item2=C:\Documents and Settings\Administrador\Desktop;engine
+Item3=C:\Borland\Delphi7\Source\ToolsAPI
 [HistoryLists\hlUnitOutputDirectory]
 Count=1
 Item0=dcu

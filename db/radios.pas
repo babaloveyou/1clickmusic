@@ -519,7 +519,8 @@ const
     );
 
 const
-  chn_brasil: array[0..34] of string = (
+  chn_brasil: array[0..35] of string = (
+    'Rock ( cidadewebrock )',
 	'Ecletic ( classicpan )'
     'Ecletic ( jovempop )',
     'Ecletic ( circuitomix )',
@@ -558,7 +559,8 @@ const
     );
 
 const
-  pls_brasil: array[0..34] of string = (
+  pls_brasil: array[0..35] of string = (
+    'mms://200.222.115.50/cidadewebrock_cidadewebrock128',
 	'http://server09.virgula.com.br:8000/listen.pls',
     'http://www.superstreaming.com.br/~jovempop/media/stream.m3u',
     'http://www.circuitomix.com.br/circuitomix.pls',

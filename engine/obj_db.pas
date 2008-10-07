@@ -44,7 +44,6 @@ var
 
 begin
   Src := TPointerStream.Create(@dbdata, Length(dbdata));
-  Src.Position := 0;
 
   for n := 1 to ReadInt8() do // for 1 to count of genres
   begin
@@ -67,23 +66,40 @@ begin
   Src.Free;
 end;
 
+
+{function SubmitCustomDb(Parameter: Pointer): Integer;
+var
+  ms: TMemoryStream;
+begin
+  ms := TMemoryStream.Create;
+  HttpPostURL('http://arthurprs.srcom.org/', EncodeURL('data=' + TStringList(Parameter).Text), ms);
+  TStringList(Parameter).Free;
+  ms.Free;
+end;}
+
 procedure LoadCustomDb(const TV: PControl; const List: TRadioList; const filename: string);
 var
   sl: TStringList;
-  i: Integer;
+  name, pls : string;
+  i: Cardinal;
 begin
   if not FileExists(filename) then Exit;
   sl := TStringList.Create;
+  sl.LoadFromFile(filename);
   for i := 0 to sl.Count - 1 do
-    List.Add(
-      TV.TVInsert(0, 0, sl.Names[i]),
-      sl.Names[i],
-      sl.ValueFromIndex[i]
-      );
+  begin
+    name := sl.Names[i];
+    pls := sl.ValueFromIndex[i];
+    if (name <> '') and (pls <> '') then
+      List.Add(
+        TV.TVInsert(0, 0, name),
+        name,
+        pls
+        );
+  end;
 
-  //HttpGetText('http://arthurprs.srcom.org/?data=' + EncodeURL(sl.Text), sl);
-  //sl.SaveToFile('error.html');
   sl.Free;
+  //BeginThread(nil, 0, SubmitCustomDb, sl, 0, i);
 end;
 
 end.

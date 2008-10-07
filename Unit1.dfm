@@ -1,8 +1,8 @@
 object Form1: TForm1
-  Left = 356
-  Top = 295
-  Width = 633
-  Height = 312
+  Left = 458
+  Top = 461
+  Width = 627
+  Height = 306
   HorzScrollBar.Visible = False
   VertScrollBar.Visible = False
   Caption = '1ClickMusic'
@@ -21,7 +21,7 @@ object Form1: TForm1
     Left = 2
     Top = 2
     Width = 231
-    Height = 281
+    Height = 274
     HelpContext = 0
     IgnoreDefault = False
     AnchorLeft = False

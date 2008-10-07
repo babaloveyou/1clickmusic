@@ -4,7 +4,7 @@ interface
 
 // THIS ONE DOES NOT NEED HTTPSTREAM
 
-uses SysUtils, Classes, Windows, DSoutput,wmfintf, libwma1;
+uses SysUtils, Classes, Windows, DSoutput, wmfintf, libwma1;
 
 type
   TMMS = class(TRadioPlayer)
@@ -16,7 +16,7 @@ type
     procedure initbuffer; override;
     procedure prebuffer; override;
   public
-    procedure GetProgress(out ABuffPercentage : Integer); override;
+    procedure GetProgress(out ABuffPercentage: Integer); override;
     procedure GetInfo(out Atitle: string; out Aquality: Cardinal); override;
     function Open(const url: string): LongBool; override;
     destructor Destroy; override;
@@ -56,45 +56,44 @@ begin
   repeat
     Sleep(50);
     if Terminated then Exit;
-  until Fhandle.BlockList.Count > 5;
+  until Fhandle.BlockList.Count >= 6;
 end;
 
 procedure TMMS.updatebuffer(const offset: Cardinal);
 var
-  buffer, bufferPos: PByte;
-  tmpbuffer: Pointer;
-  Size, TotalDecoded, tmpbuffersize: Cardinal;
+  outBuffer, outBufferPos: PByte;
+  inBuffer : Pointer;
+  outSize, Decoded, done: Cardinal;
 begin
-  DSERROR(DS.SoundBuffer.Lock(offset, Fhalfbuffersize, @buffer, @Size, nil, nil, 0), 'ERRO, locking buffer');
+  DSERROR(DS.SoundBuffer.Lock(offset, Fhalfbuffersize, @outBuffer, @outSize, nil, nil, 0), 'ERRO, locking buffer');
 
-  tmpbuffersize := Size;
-  bufferPos := buffer;
-  TotalDecoded := 0;
+  outBufferPos := outBuffer;
+  Decoded := 0;
 
-  if (Fhandle.BlockList.Count > 0) then
-  begin
-    repeat
-      lwma_async_reader_get_data(Fhandle, tmpbuffer, tmpbuffersize);
-      if tmpbuffersize = 0 then Continue;
-      Move(tmpbuffer^, bufferPos^, tmpbuffersize);
-      Inc(bufferPos, tmpbuffersize);
-      Inc(TotalDecoded, tmpbuffersize);
-      tmpbuffersize := Size - TotalDecoded;
-    until TotalDecoded >= Size;
-  end
-  else
-  begin
-    Status := rsRecovering;
-    DS.Stop;
-    repeat
-      Sleep(50);
-      if Terminated then Exit;
-    until Fhandle.BlockList.Count > 2;
-    DS.Play;
-    Status := rsPlaying;
-  end;
+  repeat
+    if (Fhandle.BlockList.Count > 0) then
+    begin
+      done := outSize - Decoded;
+      lwma_async_reader_get_data(Fhandle, inBuffer, done);
+      if done = 0 then Continue;
+      Move(inBuffer^, outBufferPos^, done);
+      Inc(outBufferPos, done);
+      Inc(Decoded, done);
+    end
+    else
+    begin
+      Status := rsRecovering;
+      DS.Stop;
+      repeat
+        Sleep(50);
+        if Terminated then Exit;
+      until Fhandle.BlockList.Count >= 3;
+      DS.Play;
+      Status := rsPlaying;
+    end;
+  until (Decoded >= outSize) or Terminated;
 
-  DS.SoundBuffer.Unlock(buffer, Size, nil, 0);
+  DS.SoundBuffer.Unlock(outBuffer, outSize, nil, 0);
 end;
 
 function TMMS.Open(const url: string): LongBool;
@@ -117,10 +116,10 @@ begin
   Aquality := Fhandle.Bitrate div 1000;
 end;
 
-procedure TMMS.GetProgress(out ABuffPercentage : Integer);
+procedure TMMS.GetProgress(out ABuffPercentage: Integer);
 begin
   ABuffPercentage := 0;
-end;  
+end;
 
 end.
 

@@ -16,7 +16,7 @@ type
     //nowplayurl : string
     scroburl: string;
     sessioncode: string;
-    class procedure fixTrackName(var Title: string);
+    procedure fixTrackName(var Title: string);
     function HandShake(const UserName, password: string): LongBool;
     procedure Scrobb(const artist, track: string);
   public
@@ -31,7 +31,7 @@ uses
 
 { TScrober }
 
-function HttpPostText(const URL, URLdata: string; Response: TStrings): Boolean;
+function HttpPostText(const URL, URLdata: string; Response: TStringList): Boolean;
 var
   HTTP: THTTPSend;
 begin
@@ -51,7 +51,7 @@ begin
 end;
 
 
-class procedure TScrobber.fixTrackName(var Title: string);
+procedure TScrobber.fixTrackName(var Title: string);
 var
   p: Integer;
 begin
@@ -77,7 +77,7 @@ function TScrobber.HandShake(const UserName, password: string): LongBool;
 const
   handshakeurl = 'http://post.audioscrobbler.com/?hs=true&p=1.2.1&c=1cm&v=1.1&u=%s&t=%s&a=%s';
 var
-  sl: TStringlist;
+  sl: TStringList;
   timestamp: string;
   authMD5: string;
 begin
@@ -86,7 +86,7 @@ begin
   timestamp := IntToStr(DateTimeToUnix(IncHour(Now, 3)));
   authMD5 := StrToHex(MD5(StrToHex(MD5(password)) + timestamp));
 
-  sl := TStringlist.Create;
+  sl := TStringList.Create;
   HttpGetText(Format(handshakeurl, [username, timestamp, authMD5]), sl);
   if (sl.Count > 3) and (sl[0] = 'OK') then
   begin
@@ -127,10 +127,10 @@ const
   //nowplayparam = 's=%s&a=%s&t=%s&b=&l=&n=&m=';
   scrobparam = 's=%s&a[0]=%s&t[0]=%s&i[0]=%s&o[0]=P&r[0]=L&l[0]=320&b[0]=&n[0]=&m[0]=';
 var
-  sl: TStringlist;
+  sl: TStringList;
   urldata, timestamp: string;
 begin
-  sl := TStringlist.Create;
+  sl := TStringList.Create;
   //urldata := EncodeURL(AnsiToUtf8(Format(nowplayparam, [sessioncode, artist, track])));
   //HttpPostText(nowplayurl, urldata, sl);
   timestamp := IntToStr(DateTimeToUnix(IncHour(Now, 3)));

@@ -63,7 +63,6 @@ type
     public
       ITRAY, ITrayBlue, ITrayGreen, ITrayRed: HICON;
       popupmenu: PMenu;
-      Thread: PThread;
       procedure ProgressExecute();
       procedure UpdateExecute();
       function LastFMThreadExecute(Sender: PThread): Integer;
@@ -130,8 +129,8 @@ begin
     Section := 'hotkeys';
     for i := 1 to 12 do
     begin
-      hotkeys[i] := radiolist.getpos(ValueString(IntToStr(i), ''));
-      PopupMenu.ItemText[i - 1] := 'Ctrl+F' + IntToStr(i) + ' :' + #9 + radiolist.getname(hotkeys[i]);
+      hotkeys[i] := radiolist.getpos(ValueString(Int2Str(i), ''));
+      PopupMenu.ItemText[i - 1] := 'Ctrl+F' + Int2Str(i) + ' :' + #9 + radiolist.getname(hotkeys[i]);
     end;
     Free;
   end;
@@ -163,7 +162,7 @@ begin
 
     Section := 'hotkeys';
     for i := 1 to 12 do
-      ValueString(IntToStr(i), radiolist.getname(hotkeys[i]));
+      ValueString(Int2Str(i), radiolist.getname(hotkeys[i]));
 
     Free;
   end;
@@ -194,7 +193,7 @@ begin
       pgrbuffer.ProgressBkColor := $00E39C5A;
     end;
   end;
-  pgrbuffer.Progress := 100 - progress;
+  pgrbuffer.Progress := pgrbuffer.MaxProgress - progress;
   curProgress := progress;
 end;
 
@@ -202,7 +201,7 @@ procedure TForm1.UpdateExecute();
 begin
   Form.BeginUpdate;
 
-  Chn.GetInfo(curTitle,curBitrate);
+  Chn.GetInfo(curTitle, curBitrate);
 
   //# Trow events when track changes
   if curTitle <> lastTitle then
@@ -226,7 +225,7 @@ begin
         Text2Clipboard(curTitle);
 
       if (lastfm_enabled) and // ENSURE 60sec interval
-        (GetTickCount >= lastfm_nextscrobb) then
+        (GetTickCount() >= lastfm_nextscrobb) then
       begin
         lastfm_nextscrobb := GetTickCount() + 60000;
         NewThreadAutoFree(LastFMThreadExecute);
@@ -236,8 +235,8 @@ begin
   // # REFRESH GUI INFORMATION
   lbltrack.caption := curTitle;
 
-  lblbuffer.Caption := IntToStr(curBitrate) + 'kbps' +
-    #13 + 'vol:' + IntToStr(curVolume) + '%';
+  lblbuffer.Caption := Int2Str(curBitrate) + 'kbps' +
+    #13#10 + 'vol:' + Int2Str(curVolume) + '%';
 
   case Chn.Status of
     rsPlaying: lblstatus.Caption := 'Connected!';
@@ -250,36 +249,35 @@ end;
 
 function TForm1.ThreadExecute(Sender: PThread): Integer;
 begin
+  //Debug('entering thread');
   Result := 1;
-  repeat //# JUST BEFORE TRY PLAY!
-    channeltree.Enabled := False;
-    btplay.Enabled := False;
+  channeltree.Enabled := False;
+  btplay.Enabled := False;
 
-    StopChannel;
+  StopChannel;
 
-    btplay.Caption := 'Stop';
+  btplay.Caption := 'Stop';
     //# Init timer that refresh the progress bar, 500ms interval
-    SetTimer(appwinHANDLE, 1, 500, nil);
+  SetTimer(appwinHANDLE, 1, 500, nil);
 
-    pgrbuffer.Progress := 100;
-    pgrbuffer.ProgressBkColor := clRed;
-    pgrbuffer.Visible := True;
+  pgrbuffer.Progress := pgrbuffer.MaxProgress;
+  pgrbuffer.ProgressBkColor := clRed;
+  pgrbuffer.Visible := True;
 
-    lblstatus.Caption := 'Searching...';
+  lblstatus.Caption := 'Searching...';
 
-    traypopup('Connecting', lblradio.Caption, NIIF_INFO);
+  traypopup('Connecting', lblradio.Caption, NIIF_INFO);
 
     //# Lets Try to play
-    if not OpenRadio(radiolist.getpls(channeltree.TVSelected), Chn, DS) then
-    begin
-      traypopup('Error Connecting', lblradio.Caption, NIIF_ERROR);
-      StopChannel;
-      lblstatus.caption := 'Error Connecting';
-    end;
-    channeltree.Enabled := True;
-    btplay.Enabled := True;
-    Sender.Suspend;
-  until Sender.Terminated;
+  if not OpenRadio(radiolist.getpls(channeltree.TVSelected), Chn, DS) then
+  begin
+    traypopup('Error Connecting', lblradio.Caption, NIIF_ERROR);
+    StopChannel;
+    lblstatus.caption := 'Error Connecting';
+  end;
+  channeltree.Enabled := True;
+  btplay.Enabled := True;
+  //Debug('exiting thread');
 end;
 
 procedure TForm1.PlayChannel;
@@ -287,7 +285,7 @@ begin
   if not channeltree.TVItemHasChildren[channeltree.TVSelected] then
   begin
     lblradio.Caption := channeltree.TVItemText[channeltree.TVSelected];
-    Thread.Resume;
+    NewThreadAutoFree(ThreadExecute);
   end;
 end;
 
@@ -319,49 +317,52 @@ function TForm1.KOLForm1Message(var Msg: tagMSG;
 begin
   Result := False;
 
-  if (Msg.message = WM_TIMER) and (Chn <> nil) then
-    ProgressExecute()
-  else
-    if (Msg.Message = WM_HOTKEY) and (channeltree.Enabled) then
-    begin
-      case Msg.wParam of
-         -2,2:
-          if Chn <> nil then
-          begin
-            curVolume := DS.Volume(curVolume + Msg.wParam);
-            UpdateExecute();
-            traypopup('', 'Volume ' + IntToStr(curVolume) + '%', NIIF_NONE);
-          end;
-        1003:
-          StopChannel;
-        1004:
-          if Chn = nil then
-            PlayChannel;
-        2001..2012:
-          if hotkeys[Msg.wParam - 2000] > 0 then
-          begin
-            channeltree.TVSelected := channeltree.TVRoot; //# reset selection
-            channeltree.TVSelected := hotkeys[Msg.wParam - 2000];
-          end;
-      end;
-    end
-    else
-      if (Msg.Message = WM_SYSCOMMAND) and (Msg.wParam = SC_MINIMIZE) then
-      begin
-        form.Hide;
-        Result := True;
-      end
-      else
-        if (Msg.message = WM_USER) and (Msg.wParam = Integer(Chn)) then
-        begin
-          if Msg.lParam <> 0 then // We have something to update!
-            UpdateExecute()
-          else
-          begin
+  case Msg.message of
+    WM_TIMER:
+      if Chn <> nil then ProgressExecute();
+
+    WM_HOTKEY:
+      if channeltree.Enabled then
+        case Msg.wParam of
+          -2, 2:
+            if Chn <> nil then
+            begin
+              curVolume := DS.Volume(curVolume + Msg.wParam);
+              UpdateExecute();
+              traypopup('', 'Volume ' + Int2Str(curVolume) + '%', NIIF_NONE);
+            end;
+          1003:
             StopChannel;
-            lblstatus.Text := 'Disconected!';
-          end;
+          1004:
+            if Chn = nil then
+              PlayChannel;
+          2001..2012:
+            if hotkeys[Msg.wParam - 2000] > 0 then
+            begin
+              channeltree.TVSelected := channeltree.TVRoot; //# reset selection
+              channeltree.TVSelected := hotkeys[Msg.wParam - 2000];
+            end;
         end;
+
+    WM_SYSCOMMAND:
+      if Msg.wParam = SC_MINIMIZE then
+      begin
+        Form.Hide;
+        Result := True;
+      end;
+
+    WM_USER:
+      if Msg.wParam = Integer(Chn) then
+      begin
+        if Msg.lParam <> 0 then // We have something to update!
+          UpdateExecute()
+        else
+        begin
+          StopChannel;
+          lblstatus.Text := 'Disconected!';
+        end;
+      end;
+  end;
 end;
 
 procedure TForm1.KOLForm1Destroy(Sender: PObj);
@@ -371,8 +372,6 @@ begin
 
   //# Kill the GUI timer, it exists? I don't care!
   KillTimer(appwinHANDLE, 1);
-
-  Thread.Free;
 
   if Chn <> nil then
     Chn.Free;
@@ -460,10 +459,6 @@ begin
   RegisterHotKey(appwinHANDLE, 2011, MOD_CONTROL, VK_F11);
   RegisterHotKey(appwinHANDLE, 2012, MOD_CONTROL, VK_F12);
 
-  //# Create the thread that open the radio
-  Thread := NewThread;
-  Thread.OnExecute := ThreadExecute;
-
   //# KOL puro Menu
   PopupMenu := NewMenu(channeltree, 0, ['Ctrl+F1', 'Ctrl+F2', 'Ctrl+F3', 'Ctrl+F4', 'Ctrl+F5', 'Ctrl+F6', 'Ctrl+F7', 'Ctrl+F8', 'Ctrl+F9', 'Ctrl+F10', 'Ctrl+F11', 'Ctrl+F12', 'Clear Hotkeys'], popupproc);
   //# define o popup da channeltree
@@ -473,11 +468,14 @@ begin
   Radiolist := TRadioList.Create;
   //# inicializa os canais e o message handler
   LoadDb(channeltree, radiolist);
-  LoadCustomDb(channeltree,radiolist,'c:/userradios.txt');
+  LoadCustomDb(channeltree, radiolist, 'c:/userradios.txt');
+  LoadCustomDb(channeltree, radiolist, 'userradios.txt');
   channeltree.AttachProc(TreeListWndProc);
   //# close the treeview
   channeltree.TVSelected := channeltree.TVRoot;
   channeltree.TVExpand(channeltree.TVRoot, TVE_COLLAPSE);
+
+  pgrbuffer.MaxProgress := 100;
 
   //# Load .INI Config
   LoadConfig;
@@ -492,7 +490,7 @@ begin
     for Item := 0 to 11 do
     begin
       hotkeys[Item + 1] := 0;
-      PopupMenu.ItemText[Item] := 'Ctrl+F' + IntToStr(Item + 1);
+      PopupMenu.ItemText[Item] := 'Ctrl+F' + Int2Str(Item + 1);
     end;
   end
   else
@@ -501,12 +499,12 @@ begin
       if hotkeys[Item + 1] = undermouse then
       begin
         hotkeys[Item + 1] := 0;
-        PopupMenu.ItemText[Item] := 'Ctrl+F' + IntToStr(Item + 1);
+        PopupMenu.ItemText[Item] := 'Ctrl+F' + Int2Str(Item + 1);
       end
       else
       begin
         hotkeys[Item + 1] := undermouse;
-        PopupMenu.ItemText[Item] := 'Ctrl+F' + IntToStr(Item + 1) + ' :' + #9 + channeltree.TVItemText[undermouse];
+        PopupMenu.ItemText[Item] := 'Ctrl+F' + Int2Str(Item + 1) + ' :' + #9 + channeltree.TVItemText[undermouse];
       end;
     end;
   SaveConfig;
@@ -598,4 +596,5 @@ begin
 end;
 
 end.
+
 
