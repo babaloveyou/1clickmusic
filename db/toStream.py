@@ -1,8 +1,8 @@
 import struct, string, time, os
 
-dst = open("db.dat", "wb")
-src = open("radios.pas", "r")
 pasw = 704
+
+dst = []
 
 def crypt(text):
     key = len(text) % 10
@@ -13,12 +13,12 @@ def crypt(text):
 
 def writeint8(num):
     data = struct.pack("B",num)
-    dst.write(data)
+    dst.append(data)
 
 def writestring(text):
     l = len(text)
     data = struct.pack("B" + str(l) + "s",l,text)
-    dst.write(data)
+    dst.append(data)
 
 def getarraysize(line):
     return int(line[line.find("..") + 2 : line.find("]")]) + 1
@@ -27,7 +27,8 @@ def getarraycontent(line):
     return line[line.find("'") + 1 : line.rfind("'")].replace("''","'")
 	
 def error(msg):
-	print 'Houston, we have a problem on',msg
+	print 'Houston, we have a problem'
+	print msg
 	raw_input()
 
 bParse = False
@@ -39,16 +40,19 @@ count = 0
 totalcount = 0
 tStart = time.clock()
 
-#-2 genrelist array
-#-1 content
+srcfile = open("radios.pas", "r")
+dstfile = open("db.dat", "wb")
 
-# 0 chn_ array
-# 1 content
+#   -2    genrelist array
+#   -1    content
 
-# 2 pls_ array
-# 3 content
+#   0     chn_ array
+#   1     content
 
-for line in src:
+#   2     pls_ array
+#   3     content
+
+for line in srcfile:
     if "// " in line: # comented line
         continue
     
@@ -64,7 +68,7 @@ for line in src:
             
 	    # check if both lists have same size
             if (len(chn) <> len(pls)) or (len(chn) <> count):
-                error(genres.pop(0))
+                error("%s chn=%d pls=%d" % (genres[0], len(chn), len(pls)))
 
             slist = [] # a list that we will sort
             for i1, i2 in zip(chn,pls):
@@ -97,28 +101,28 @@ for line in src:
         elif iLevel == 3:
             pls.append(crypt(getarraycontent(line)))
 
-dst.close()
-src.close()
+dst = "".join(dst)
+dstfile.write(dst)
+dstfile.close()
+srcfile.close()
 
-srcsize = os.stat("db.dat").st_size
-src = open("db.dat","rb")
-dst = open("../engine/db.inc","w")
+dstsize = len(dst)
+dstfile = open("../engine/db.inc","w")
 
-dst.write("const dbdata : array[0..%d] of byte = (\n" % (srcsize -1 ,))
+dstfile.write("const dbdata : array[0..%d] of Byte = (\n" % (dstsize -1 ,))
 
 srcpos = 0
-while srcpos < srcsize:
+for c in dst:
     if srcpos > 0:
-        dst.write(",")
+        dstfile.write(",")
         if srcpos % 12 == 0:
-            dst.write("\n")
-    dst.write(str(ord(src.read(1))))
+            dstfile.write("\n")
+    dstfile.write(str(ord(c)))
     srcpos += 1
     
-dst.write("\n);");
+dstfile.write("\n);");
 
-src.close()
-dst.close()
+dstfile.close()
 
 print "OK, %d radios sorted and saved in %fs" % (totalcount, time.clock() - tStart)
 raw_input()

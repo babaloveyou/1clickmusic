@@ -23,13 +23,13 @@ type
     FStream: THTTPSTREAM;
   protected
     procedure updatebuffer(const offset: Cardinal); override;
-    procedure initdecoder; override;
-    procedure initbuffer; override;
+    procedure initbuffer;
     procedure prebuffer; override;
   public
     procedure GetProgress(out ABuffPercentage: Integer); override;
     procedure GetInfo(out Atitle: string; out Aquality: Cardinal); override;
     function Open(const url: string): LongBool; override;
+    constructor Create(ADevice: TDSoutput);
     destructor Destroy; override;
   end;
 
@@ -101,18 +101,13 @@ begin
   until (r <> MP3_ERROR) or (Fstream.BuffFilled = 0);
 
   if r = MP3_ERROR then
-    RaiseError('');
+    RaiseError('Discovering Audio Format');
 
   Fchannels := Fhandle.stereo;
   Frate := freqs[Fhandle.sampling_frequency];
 
   //Debug('DS.InitializeBuffer(%d, %d);', [Frate, Fchannels]);
   Fhalfbuffersize := DS.InitializeBuffer(Frate, Fchannels);
-end;
-
-procedure TMP3.initdecoder;
-begin
-  FStream := THTTPSTREAM.Create;
 end;
 
 function TMP3.Open(const url: string): LongBool;
@@ -132,6 +127,7 @@ begin
     Sleep(50);
     if Terminated then Exit;
   until FStream.BuffFilled > BUFFPRE;
+  initbuffer();
 end;
 
 procedure TMP3.updatebuffer(const offset: Cardinal);
@@ -206,6 +202,12 @@ begin
   until (Decoded >= outsize) or (Terminated);
 
   DS.SoundBuffer.Unlock(outbuf, outsize, nil, 0);
+end;
+
+constructor TMP3.Create(ADevice: TDSoutput);
+begin
+  inherited;
+  FStream := THTTPSTREAM.Create;
 end;
 
 end.

@@ -31,7 +31,6 @@ type
   protected
     procedure Execute; override;
   public
-    //CS : TRTLCriticalSection;
     //# n buff packets filled
     BuffFilled: Integer;
     //# Get ShoutCast info
@@ -208,13 +207,10 @@ begin
       if bytestoreceive > BytesUntilMeta then
         bytestoreceive := BytesUntilMeta;
 
-      //EnterCriticalSection(CS);
       FHTTP.RecvBufferEx(@inbuffer[Feed, bytesreceived], bytestoreceive, MaxInt);
-      //LeaveCriticalSection(CS);
 
       if (FHTTP.LastError <> 0) and (not Terminated) then
       begin
-        Writeln(FHTTP.LastErrorDesc);
         Terminate;
         NotifyForm(0);
       end;
@@ -240,7 +236,6 @@ begin
   BuffFilled := 0;
   MetaInterval := 0;
   MetaBitrate := 0;
-  //InitializeCriticalSection(CS);
 end;
 
 destructor THTTPSTREAM.Destroy;
@@ -253,7 +248,6 @@ begin
   inherited;
   // now we can free the Socket
   FHTTP.Free;
-  //DeleteCriticalSection(CS);
 end;
 
 procedure THTTPSTREAM.Execute;

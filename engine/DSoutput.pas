@@ -45,8 +45,6 @@ type
     Fhalfbuffersize: Cardinal;
     FStatus: TRadioStatus;
     procedure updatebuffer(const offset: Cardinal); virtual; abstract;
-    procedure initbuffer; virtual; abstract;
-    procedure initdecoder; virtual; abstract;
     procedure prebuffer; virtual; abstract;
     procedure Execute; override;
   public
@@ -211,7 +209,6 @@ begin
   inherited Create(True);
   Priority := tpTimeCritical;
   FStatus := rsStoped;
-  initdecoder();
 end;
 
 destructor TRadioPlayer.Destroy;
@@ -227,12 +224,9 @@ var
   offset, lastoffset: Cardinal;
 begin
   prebuffer();
-  //Debug('prebuffered');
   // If terminated while prebuffering Exit
   if Terminated then Exit;
-
-  initbuffer();
-  //Debug('buffer inited');
+  //Debug('prebuffered');
   // Fill buffer at offset 0
   updatebuffer(0);
   //Debug('our 1 buffer update');

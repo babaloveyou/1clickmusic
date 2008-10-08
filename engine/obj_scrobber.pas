@@ -75,28 +75,30 @@ end;
 
 function TScrobber.HandShake(const UserName, password: string): LongBool;
 const
-  handshakeurl = 'http://post.audioscrobbler.com/?hs=true&p=1.2.1&c=1cm&v=1.1&u=%s&t=%s&a=%s';
+  handshakeurl = 'http://post.audioscrobbler.com/?hs=true&p=1.2.1&c=1cm&v=1.2&u=%s&t=%s&a=%s';
 var
   sl: TStringList;
   timestamp: string;
   authMD5: string;
 begin
   ///////////// http://www.last.fm/api/submissions
-  Result := False;
+  Result := True;
   timestamp := IntToStr(DateTimeToUnix(IncHour(Now, 3)));
   authMD5 := StrToHex(MD5(StrToHex(MD5(password)) + timestamp));
 
   sl := TStringList.Create;
-  HttpGetText(Format(handshakeurl, [username, timestamp, authMD5]), sl);
-  if (sl.Count > 3) and (sl[0] = 'OK') then
-  begin
-    Result := True;
-    sessioncode := sl[1]; // SESSION CODE
+  if HttpGetText(Format(handshakeurl, [username, timestamp, authMD5]), sl) then
+    if (sl.Count > 3) and (sl[0] = 'OK') then
+    begin
+      sessioncode := sl[1]; // SESSION CODE
     //nowplayurl := sl[2]; // Now Playing URL
-    scroburl := sl[3]; // SCROB URL
-  end
-  else
-    ErrorStr := 'Last.FM plugin handshake ERROR :' + #10#13 + sl[0];
+      scroburl := sl[3]; // SCROB URL
+    end
+    else
+    begin
+      ErrorStr := 'Last.FM plugin handshake' + #10#13 + sl.Text;
+      Result := False;
+    end;
 
   sl.Free;
 end;

@@ -12,13 +12,13 @@ type
     Fhandle: wma_async_reader;
   protected
     procedure updatebuffer(const offset: Cardinal); override;
-    procedure initdecoder; override;
-    procedure initbuffer; override;
+    procedure initbuffer;
     procedure prebuffer; override;
   public
     procedure GetProgress(out ABuffPercentage: Integer); override;
     procedure GetInfo(out Atitle: string; out Aquality: Cardinal); override;
     function Open(const url: string): LongBool; override;
+    constructor Create(ADevice: TDSoutput);
     destructor Destroy; override;
   end;
 
@@ -36,15 +36,6 @@ begin
     lwma_async_reader_free(Fhandle);
 end;
 
-procedure TMMS.initdecoder;
-begin
-  if not WMInited then
-    RaiseError('WMP engine not found');
-  lwma_async_reader_init(Fhandle);
-  if Fhandle.reader = nil then
-    RaiseError('could not initialize WMP engine');
-end;
-
 procedure TMMS.initbuffer;
 begin
   Fhalfbuffersize := DS.InitializeBuffer(Frate, Fchannels);
@@ -57,6 +48,7 @@ begin
     Sleep(50);
     if Terminated then Exit;
   until Fhandle.BlockList.Count >= 6;
+  InitBuffer();
 end;
 
 procedure TMMS.updatebuffer(const offset: Cardinal);
@@ -91,7 +83,7 @@ begin
       DS.Play;
       Status := rsPlaying;
     end;
-  until (Decoded >= outSize) or Terminated;
+  until (Decoded >= outSize) or (Terminated);
 
   DS.SoundBuffer.Unlock(outBuffer, outSize, nil, 0);
 end;
@@ -119,6 +111,16 @@ end;
 procedure TMMS.GetProgress(out ABuffPercentage: Integer);
 begin
   ABuffPercentage := 0;
+end;
+
+constructor TMMS.Create(ADevice: TDSoutput);
+begin
+  inherited;
+  if not WMInited then
+    RaiseError('WMP engine not found');
+  lwma_async_reader_init(Fhandle);
+  if Fhandle.reader = nil then
+    RaiseError('could not initialize WMP engine');
 end;
 
 end.
