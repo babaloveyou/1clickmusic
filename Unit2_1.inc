@@ -17,7 +17,7 @@ begin
     Result.Form.SetName( Applet, 'Form2' );
    {$ENDIF}
     Result.Form.Style := Result.Form.Style and not WS_MAXIMIZEBOX;
-    Result.Form.SetClientSize( 293, 336 );
+    Result.Form.SetClientSize( 293, 335 );
     // Result.lblpass.TabOrder = -1
     Result.lblpass := NewLabel( Result.Form, 'Pass :' ).SetPosition( 16, 84 ).SetSize( 41, 0 );
    {$IFDEF USE_NAMES}
@@ -216,18 +216,18 @@ begin
     Result.tabs.TabStop := FALSE;
     Result.tabs.Font.FontHeight := 15;
     Result.tabs.Font.FontName := 'Arial';
-    Result.edtpass.Color := TColor(clWindow);
-    Result.edtuser.Color := TColor(clWindow);
-      Result.ckbxlastfm.OnClick := Result.ckbxlastfmClick;
+      Result.ckbxmsnenabled.OnClick := Result.ckbxmsnenabledClick;
       Result.ckbxlistenabled.OnClick := Result.ckbxlistenabledClick;
     Result.edtlistname.Color := TColor(clWindow);
-      Result.ckbxmsnenabled.OnClick := Result.ckbxmsnenabledClick;
-      Result.btupdate.OnClick := Result.btupdateClick;
-    Result.edtproxyhost.Color := TColor(clWindow);
-    Result.edtproxyport.Color := TColor(clWindow);
+      Result.ckbxlastfm.OnClick := Result.ckbxlastfmClick;
       Result.ckbxproxyenabled.OnClick := Result.ckbxproxyenabledClick;
+    Result.edtproxyhost.Color := TColor(clWindow);
+    Result.edtuser.Color := TColor(clWindow);
+    Result.edtpass.Color := TColor(clWindow);
+    Result.edtproxyport.Color := TColor(clWindow);
       Result.btapply.OnClick := Result.btapplyClick;
     Result.btapply.DefaultBtn := TRUE;
+      Result.btupdate.OnClick := Result.btupdateClick;
     Result.Form.CenterOnParent.CanResize := False;
     Result.Form.Perform( WM_INITMENU, 0, 0 );
     Result.KOLForm1FormCreate( Result );

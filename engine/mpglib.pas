@@ -2,9 +2,7 @@ unit mpglib;
 
 interface
 
-uses Windows, SysUtils, Classes,
-  uDllfromMem;
-//MSVCRT;
+uses Windows, SysUtils, Classes, uDllfromMem;
 
 function FindFrame(buf: PByte; size: Integer): Integer;
 
@@ -68,7 +66,7 @@ function FindFrame(buf: PByte; size: Integer): Integer;
 begin
   for Result := 0 to size - 5 do
   begin
-    if check(PCardinal(buf)^) then
+    if check(PLongInt(buf)^) then
     //OK, it looks like frame we are looking for
       Exit;
 
@@ -77,47 +75,6 @@ begin
 
   Result := -1;
 end;
-
-
-//function _getbits(n: LongInt): DWORD; cdecl; external;
-//
-//function _getbits_fast(n: LongInt): DWORD; cdecl; external;
-//
-//procedure _dct64(a, b, c: PDouble); cdecl; external;
-//
-//function _decode_header(fr: Pointer; n: DWORD): LongInt; cdecl; external;
-//
-//function _set_pointer(n: LongInt): LongInt; cdecl; external;
-//
-//function _synth_1to1_mono(bandPtr: PDouble; samples: Pointer; pnt: Pointer): Integer; cdecl; external;
-//
-//function _synth_1to1(bandPtr: PDouble; chn: LongInt; samples: Pointer; pnt: Pointer): Integer; cdecl; external;
-//
-//function _InitMp3(var mp: TMp3Handle): LongBool; cdecl; external;
-//
-//procedure _ExitMp3(var mp: TMp3Handle); cdecl; external;
-//
-//function _DecodeMp3(var mp: TMp3Handle; inmem: PByte; insize: LongInt; outmem: PByte; outsize: LongInt; var done: LongInt): TMp3Result; cdecl; external;
-//
-//function __ftol(x: Double): LongInt; cdecl;
-//begin
-//  Result := Trunc(x);
-//end;
-//
-//
-//{$L engine/objs/common.obj}
-//{$L engine/objs/dct64_i386.obj}
-//{$L engine/objs/decode_i386.obj}
-//{$L engine/objs/interface.obj}
-//{$L engine/objs/layer3.obj}
-//{$L engine/objs/tabinit.obj}
-//
-//
-//initialization
-//  InitMp3 := _InitMp3;
-//  ExitMp3 := _ExitMp3;
-//  DecodeMp3 := _DecodeMp3;
-
 
 {$I mpglib.inc}
 
@@ -146,5 +103,6 @@ initialization
 
 finalization
   mpglibDLL.Free;}
+  
 end.
 

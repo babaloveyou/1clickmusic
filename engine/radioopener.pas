@@ -4,8 +4,6 @@ interface
 
 uses
   SysUtils,
-  Windows,
-  Classes,
   DSoutput,
   mmsstream,
   mp3stream,

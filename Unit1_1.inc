@@ -8,7 +8,7 @@ begin
   {$ELSE OBJECTS}
   New( Result, Create );
   {$ENDIF KOL CLASSES/OBJECTS}
-  Result.Form := NewForm( AParent, '1ClickMusic' ).SetPosition( 458, 461 );
+  Result.Form := NewForm( AParent, '1ClickMusic' ).SetPosition( 418, 432 );
   Applet :=  Result.Form;
   Result.Form.Add2AutoFree( Result );
 {$IFDEF UNICODE_CTRLS}
@@ -20,6 +20,7 @@ begin
     Result.Form.Style := Result.Form.Style and not WS_MAXIMIZEBOX;
     Result.Form.SetClientSize( 619, 278 );
     Result.Form.IconLoad( hInstance, 'MAINICON' );
+    Result.Form.Font.FontName := 'MS Sans Serif';
     Result.Form.Font.FontPitch := fpFixed;
       Result.Form.OnMessage := Result.KOLForm1Message;
       Result.Form.OnDestroy := Result.KOLForm1Destroy;

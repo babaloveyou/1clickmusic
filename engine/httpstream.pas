@@ -7,12 +7,11 @@ uses
   Classes,
   Windows,
   synautil,
-  blcksock,
-  DSoutput;
+  blcksock;
 
 const // CONFIGURATION
   BUFFPACKET = 1024;
-  BUFFPACKETCOUNT = 128; // 28 extra buffers
+  BUFFPACKETCOUNT = 128; // 28 extra buffers  xD
   BUFFSIZETOTAL = 1024 * BUFFPACKETCOUNT;
 
   BUFFRESTORE = 55;
@@ -48,15 +47,15 @@ implementation
 
 uses utils, main;
 
-procedure SplitValue(const data: string; out field, value: string);
+procedure SplitValue(var data, value: string);
 var
   p: Integer;
 begin
   p := Pos(':', data);
   if p > 0 then
   begin
-    field := Trim(Copy(data, 1, p - 1));
-    value := Trim(Copy(data, p + 1, Length(data) - p));
+    value := Trim(Copy(data, p + 1, MaxInt));
+    data := Trim(Copy(data, 1, p - 1));
   end;
 end;
 
@@ -66,12 +65,12 @@ const
   ICYHEADERSTUB =
     'GET %s HTTP/1.0' + #13#10 +
     'Host: %s' + #13#10 +
-    'Accept: */*' + #13#10 +
+    'Accept: audio/mpeg' + #13#10 +
     'Icy-MetaData: 1' + #13#10 +
-    'User-Agent: 1ClickMusic' + #13#10 +
+    'User-Agent: oneclick' + #13#10 +
     #13#10;
 var
-  prot, user, pass,path, para: string;
+  prot, user, pass, path, para: string;
 begin
   ParseURL(url, prot, user, pass, host, port, path, para);
   icyheader := Format(ICYHEADERSTUB, [path, host + ':' + port]);
@@ -136,26 +135,29 @@ begin
   if meta = '' then Exit;
 
   MetaData := TStringlist.Create;
-  MetaData.Text := meta;
+  MetaData.Text := Lowercase(meta);
 
   if Pos('200', MetaData[0]) > 0 then
   begin
     for i := 1 to MetaData.Count - 1 do
     begin
-      SplitValue(MetaData[i], field, value);
-
+      field := MetaData[i];
+      SplitValue(field, value);
       if field = 'icy-metaint' then MetaInterval := StrToInt(value)
       else if field = 'icy-br' then MetaBitrate := StrToInt(value)
-      else if value = 'audio/mpeg' then Result := 1;
+      else if field = 'content-type' then
+        if value <> 'audio/mpeg' then
+        begin
+          MetaData.Free;
+          Exit;
+        end;  
         //else if field='icy-description' then StreamInfo.Desc:=Value
         //else if field='icy-genre' then StreamInfo.Genre:=Value
         //else if field= 'icy-name' then StreamInfo.Name := value
         //else if field='icy-pub' then StreamInfo.Pub:=Value
         //else if field='icy-url' then StreamInfo.URL:=Value
-      ;
     end;
-    if (MetaInterval = 0) or (MetaBitrate = 0) then
-      Result := 0;
+    Result := Ord(MetaInterval <> 0);
   end
   else
   // 302, 303, 301
@@ -163,12 +165,13 @@ begin
     begin
       for i := 1 to MetaData.Count - 1 do
       begin
-        SplitValue(MetaData[i], field, value);
-        if field = 'Location' then
+        field := MetaData[i];
+        SplitValue(field, value);
+        if field = 'location' then
         begin
           Result := -1;
           Meta := value;
-          break;
+          Break;
         end;
       end;
     end;
@@ -177,9 +180,9 @@ begin
 end;
 
 procedure ParseMetaData(const meta: string; out MetaTitle: string);
-const
-  field = 'StreamTitle=''';
-  fieldlen = Length(field);
+//const
+//  field = 'StreamTitle=''';
+//  fieldlen = Length(field);
 begin
   MetaTitle := Copy(meta, 14, Pos(''';', meta) - 14);
 end;
@@ -209,6 +212,7 @@ begin
 
       FHTTP.RecvBufferEx(@inbuffer[Feed, bytesreceived], bytestoreceive, MaxInt);
 
+
       if (FHTTP.LastError <> 0) and (not Terminated) then
       begin
         Terminate;
@@ -218,9 +222,13 @@ begin
       Dec(BytesUntilMeta, bytestoreceive);
       Inc(bytesreceived, bytestoreceive);
     end;
-  until bytesreceived >= BUFFPACKET;
+  until (bytesreceived >= BUFFPACKET);
 
-  if Feed = BUFFPACKETCOUNT - 1 then Feed := 0 else Inc(Feed);
+  if Feed = BUFFPACKETCOUNT - 1 then
+    Feed := 0
+  else
+    Inc(Feed);
+
 
   Inc(BuffFilled);
 end;

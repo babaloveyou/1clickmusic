@@ -15,7 +15,7 @@ type
     procedure initbuffer;
     procedure prebuffer; override;
   public
-    procedure GetProgress(out ABuffPercentage: Integer); override;
+    function GetProgress(): Integer; override;
     procedure GetInfo(out Atitle: string; out Aquality: Cardinal); override;
     function Open(const url: string): LongBool; override;
     constructor Create(ADevice: TDSoutput);
@@ -47,19 +47,18 @@ begin
   repeat
     Sleep(50);
     if Terminated then Exit;
-  until Fhandle.BlockList.Count >= 6;
+  until Fhandle.BlockList.Count >= 4;
   InitBuffer();
 end;
 
 procedure TMMS.updatebuffer(const offset: Cardinal);
 var
-  outBuffer, outBufferPos: PByte;
+  outBuffer: PByteArray;
   inBuffer : Pointer;
   outSize, Decoded, done: Cardinal;
 begin
   DSERROR(DS.SoundBuffer.Lock(offset, Fhalfbuffersize, @outBuffer, @outSize, nil, nil, 0), 'ERRO, locking buffer');
 
-  outBufferPos := outBuffer;
   Decoded := 0;
 
   repeat
@@ -68,8 +67,7 @@ begin
       done := outSize - Decoded;
       lwma_async_reader_get_data(Fhandle, inBuffer, done);
       if done = 0 then Continue;
-      Move(inBuffer^, outBufferPos^, done);
-      Inc(outBufferPos, done);
+      Move(inBuffer^, outBuffer[Decoded], done);
       Inc(Decoded, done);
     end
     else
@@ -79,7 +77,7 @@ begin
       repeat
         Sleep(50);
         if Terminated then Exit;
-      until Fhandle.BlockList.Count >= 3;
+      until Fhandle.BlockList.Count >= 2;
       DS.Play;
       Status := rsPlaying;
     end;
@@ -108,9 +106,9 @@ begin
   Aquality := Fhandle.Bitrate div 1000;
 end;
 
-procedure TMMS.GetProgress(out ABuffPercentage: Integer);
+function TMMS.GetProgress(): Integer;
 begin
-  ABuffPercentage := 0;
+  Result := 0;
 end;
 
 constructor TMMS.Create(ADevice: TDSoutput);

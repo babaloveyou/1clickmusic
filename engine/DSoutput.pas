@@ -50,7 +50,7 @@ type
   public
     property Status : TRadioStatus read FStatus write SetStatus;
     property DS: TDSoutput read FDevice write FDevice;
-    procedure GetProgress(out ABuffPercentage : Integer); virtual; abstract;
+    function GetProgress(): Integer; virtual; abstract;
     procedure GetInfo(out Atitle: string; out Aquality: Cardinal); virtual; abstract;
     function Open(const url: string): LongBool; virtual; abstract;
     constructor Create(ADevice: TDSoutput);
@@ -118,8 +118,7 @@ end;
 
 function TDSoutput.GetPlayCursorPos: Cardinal;
 begin
-  if FSecondary <> nil then
-    FSecondary.GetCurrentPosition(@Result, nil);
+  FSecondary.GetCurrentPosition(@Result, nil);
 end;
 
 function TDSoutput.Volume(value: Integer): Integer;

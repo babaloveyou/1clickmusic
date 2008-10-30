@@ -16,7 +16,7 @@ const
     );
 
 const
-  chn_eletronic: array[0..67] of string = (
+  chn_eletronic: array[0..68] of string = (
     'House Funky ( kif )',
     'Hardstyle ( hard.fm )',
     'Hardstyle ( hardbase )',
@@ -81,14 +81,15 @@ const
     'Psy Dark ( psychedelik )',
     'Psy Dark ( triplag )',
     'Psy Darkbient ( triplag )',
-    'Dance ( frisky )',
+    'Progressive ( frisky )',
     'Alternative ( 1.fm )',
     'Dance ( fg radio )',
-    'Dance ( ibizaglobal )'
+    'Dance ( ibizaglobal )',
+    'Dance ( beatbox )',
     );
 
 const
-  pls_eletronic: array[0..67] of string = (
+  pls_eletronic: array[0..68] of string = (
     'http://www.kifradio.com/www.kifradio.com.m3u',
     'http://files.hard.fm/128.pls',
     'http://mp3.hardbase.fm/listen.pls',
@@ -156,7 +157,8 @@ const
     'http://friskyradio.com/frisky.m3u',
     'http://www.1.fm/electronica.pls',
     'http://fg.impek.tv/listen.pls',
-    'http://s6.viastreaming.net:7010/listen.pls'
+    'http://s6.viastreaming.net:7010/listen.pls',
+    'http://www.beatbox.fm/streams/listen.pls'
     );
 
 
@@ -355,7 +357,8 @@ const
     );
 
 const
-  chn_oldmusic: array[0..18] of string = (
+  chn_oldmusic: array[0..19] of string = (
+    'New Wave ( nigel )',
     '60''s ( sky )',
     '70''s ( sky )',
     '80''s ( sky )',
@@ -378,7 +381,8 @@ const
     );
 
 const
-  pls_oldmusic: array[0..18] of string = (
+  pls_oldmusic: array[0..19] of string = (
+    'http://stream.radionigel.com:8010/listen.pls',
     'http://www.sky.fm/mp3/oldies.pls',
     'http://www.sky.fm/mp3/hit70s.pls',
     'http://www.sky.fm/mp3/the80s.pls',
@@ -431,7 +435,8 @@ const
     );
 
 const
-  chn_misc: array[0..39] of string = (
+  chn_misc: array[0..40] of string = (
+    'Tango ( tangorosario )',
     'Latino ( romanticafm )',
     'Folk ( liveireland )',
     'Jazz Acid ( soma )',
@@ -475,7 +480,8 @@ const
     );
 
 const
-  pls_misc: array[0..39] of string = (
+  pls_misc: array[0..40] of string = (
+    'http://200.69.237.185:8000/listen.pls',
     'http://www.romanticafm.net/winampst128.m3u',
     'http://www.liveireland.com/live.pls',
     'http://somafm.com/secretagent.pls',
@@ -511,7 +517,7 @@ const
     'http://www.sky.fm/mp3/jazz.pls',
     'http://kawaii-radio.net/listen.m3u',
     'http://209.250.239.98:8676/listen.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=7504&file=filename.pls',
+    'http://www.animeacademyradio.net/listen.m3u',
     'http://www.animenfo.com/radio/listen.m3u',
     'http://www.vgamp.com/listen128.pls',
     'http://207.200.96.228:8078/listen.pls',
@@ -519,17 +525,17 @@ const
     );
 
 const
-  chn_brasil: array[0..35] of string = (
+  chn_brasil: array[0..31] of string = (
     'Rock ( cidadewebrock )',
-	'Ecletic ( classicpan )'
-    'Ecletic ( jovempop )',
+	// 'Ecletic ( classicpan )'
+    // 'Ecletic ( jovempop )',
     'Ecletic ( circuitomix )',
     'Ecletic ( ritmobrasil )',
-    'Ecletic ( megasom )',
+    // 'Ecletic ( megasom )',
     'Ecletic ( radioblast )',
     'Ecletic ( tribunafm )',
-    'Ecletic ( 89fm )',
-    'Noticias ( cbn sp )',
+    // 'Ecletic ( 89fm )',
+    'Noticias ( cbn.sp )',
     'Noticias ( cbn.rj )',
     'Noticias ( cbn.brasilia )',
     'Noticias ( cbn.bh )',
@@ -559,16 +565,16 @@ const
     );
 
 const
-  pls_brasil: array[0..35] of string = (
+  pls_brasil: array[0..31] of string = (
     'mms://200.222.115.50/cidadewebrock_cidadewebrock128',
-	'http://server09.virgula.com.br:8000/listen.pls',
-    'http://www.superstreaming.com.br/~jovempop/media/stream.m3u',
+	// 'http://server09.virgula.com.br:8000/listen.pls',
+    // 'http://www.superstreaming.com.br/~jovempop/media/stream.m3u',
     'http://www.circuitomix.com.br/circuitomix.pls',
     'http://www.ritmobrasil.com/RitmoBrasil.pls',
-    'http://www.radiowebtv.com/server/megasom/megasom.m3u',
+    // 'http://www.radiowebtv.com/server/megasom/megasom.m3u',
     'http://ouvir.radioblast.com.br:9000/listen.pls',
     'mms://radio.e-tribuna.com.br/tribuna',
-    'http://www.89fm.com.br/aovivo/aovivo.asx',
+    // 'http://www.89fm.com.br/aovivo/aovivo.asx',
     'http://cbn.globoradio.globo.com/cbn/wma/radiosp/asx.asp?audio=',
     'http://cbn.globoradio.globo.com/cbn/wma/radiorj/asx.asp?audio=',
     'http://cbn.globoradio.globo.com/cbn/wma/radiobsb/asx.asp?audio=',
@@ -576,9 +582,9 @@ const
     'http://www.crossdigital.com.br/servidor1/8080/listen.pls',
     'mms://dedicado.tupi.am:8000/tupiaudio',
     'http://www.crosshost.com.br/cbs/tupifm/listen.pls',
-    'http://198.106.109.53/radio.mp3.m3u',
+    'http://www.piatafm.com.br/radiopiata.m3u',
     'http://www.crosshost.com.br/cbs/kiss/ouvir.m3u',
-    'http://www.redeblitz.com.br/redeblitz.m3u',
+    'http://www.redeblitz.com.br/redeblitz.wmx',
     'mms://server09.virgula.com.br/jovempanfm/',
     'http://radiorox.oi.com.br/listen.m3u',
     'mms://wmedia.telium.com.br/transsphits',

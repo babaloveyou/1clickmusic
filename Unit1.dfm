@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 458
-  Top = 461
+  Left = 418
+  Top = 432
   Width = 627
   Height = 306
   HorzScrollBar.Visible = False
@@ -532,6 +532,16 @@ object Form1: TForm1
     ReportDetailed = False
     GeneratePCode = False
     NewIF = True
+    DefaultFont.Color = clWindowText
+    DefaultFont.FontStyle = []
+    DefaultFont.FontHeight = 0
+    DefaultFont.FontWidth = 0
+    DefaultFont.FontWeight = 0
+    DefaultFont.FontName = 'System'
+    DefaultFont.FontOrientation = 0
+    DefaultFont.FontCharset = 1
+    DefaultFont.FontPitch = fpDefault
+    DefaultFont.FontQuality = fqDefault
     Left = 80
     Top = 16
   end
@@ -581,6 +591,7 @@ object Form1: TForm1
     Font.FontCharset = 1
     Font.FontPitch = fpFixed
     Font.FontQuality = fqDefault
+    FontDefault = False
     Brush.Color = clBtnFace
     Brush.BrushStyle = bsSolid
     DoubleBuffered = False

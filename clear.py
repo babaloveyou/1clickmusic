@@ -1,4 +1,4 @@
-extlist = [".$$$",".local",".a",".tmp",".drc",".o",".cfg",".ddp",
+extlist = [".bk1",".bk2",".$$$",".local",".a",".tmp",".drc",".o",".cfg",".ddp",
            ".stat",".pec2bac",".identcache",".dcu",".ppu",".depend",".layout",".win"] #put extensions to delete
 
 import sys, os, subprocess

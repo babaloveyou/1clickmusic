@@ -24,11 +24,11 @@ Dialogs, mirror;
 type
 {$IF Defined(KOL_MCK)}
 {$I MCKfakeClasses.inc}
-{$IFDEF KOLCLASSES}{$I TForm2class.inc}{$ELSE OBJECTS}PForm2 = ^TForm2; {$ENDIF CLASSES/OBJECTS}
-{$IFDEF KOLCLASSES}{$I TForm2.inc}{$ELSE}TForm2 = object(TObj){$ENDIF}
+  {$IFDEF KOLCLASSES} {$I TForm2class.inc} {$ELSE OBJECTS} PForm2 = ^TForm2; {$ENDIF CLASSES/OBJECTS}
+  {$IFDEF KOLCLASSES}{$I TForm2.inc}{$ELSE} TForm2 = object(TObj) {$ENDIF}
     Form: PControl;
 {$ELSE not_KOL_MCK}
-    TForm2 = class(TForm)
+  TForm2 = class(TForm)
 {$IFEND KOL_MCK}
       KOLForm1: TKOLForm;
       ckbxmsnenabled: TKOLCheckBox;
@@ -204,4 +204,5 @@ begin
 end;
 
 end.
+
 

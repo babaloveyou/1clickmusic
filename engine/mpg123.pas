@@ -3,8 +3,9 @@ unit mpg123;
 interface
 
 uses
-  SysUtils,
-  Windows;
+  Types;
+
+{.$DEFINE LOADALL}
 
 type
   PDWord = ^DWORD;
@@ -36,6 +37,7 @@ var
 
   mpg123_delete: procedure(mh: Pmpg123_handle); cdecl;
 
+{$IFDEF LOADALL}
 type
   Tmpg123_parms = Longint;
 const
@@ -80,6 +82,7 @@ var
   mpg123_param: function(mh: Pmpg123_handle; _type: Tmpg123_parms; value: Longint; fvalue: double): Longint; cdecl;
 
   mpg123_getparam: function(mh: Pmpg123_handle; _type: Tmpg123_parms; val: Plongint; fval: Pdouble): Longint; cdecl;
+{$ENDIF}
 
 type
   Tmpg123_errors = Longint;
@@ -118,6 +121,7 @@ const
   MPG123_OUT_OF_SYNC = 27;
   MPG123_RESYNC_FAIL = 28;
 
+{$IFDEF LOADALL}
 var
   mpg123_plain_strerror: function(errcode: Longint): PChar; cdecl;
 
@@ -130,6 +134,7 @@ var
   mpg123_supported_decoders: function: PPchar; cdecl;
 
   mpg123_decoder: function(mh: Pmpg123_handle; decoder_name: PChar): Longint; cdecl;
+{$ENDIF}
 
 type
   Tmpg123_enc_enum = Longint;
@@ -152,6 +157,16 @@ const
   MPG123_STEREO = 2;
 
 var
+  mpg123_decode: function(mh: Pmpg123_handle; inmemory: PByte; inmemsize: size_t; outmemory: PByte; outmemsize: size_t;
+    done: Psize_t): Longint; cdecl;
+
+  mpg123_open_feed: function(mh: Pmpg123_handle): Longint; cdecl;
+
+  mpg123_getformat: function(mh: Pmpg123_handle; rate: Plongint; channels: Plongint; encoding: Plongint): Longint; cdecl;
+
+{$IFDEF LOADALL}
+  mpg123_close: function(mh: Pmpg123_handle): Longint; cdecl;
+
   mpg123_rates: procedure(list: PPlongint; number: Psize_t); cdecl;
 
   mpg123_encodings: procedure(list: PPlongint; number: Psize_t); cdecl;
@@ -164,20 +179,11 @@ var
 
   mpg123_format_support: function(mh: Pmpg123_handle; rate: Longint; encoding: Longint): Longint; cdecl;
 
-  mpg123_getformat: function(mh: Pmpg123_handle; rate: Plongint; channels: Plongint; encoding: Plongint): Longint; cdecl;
-
   mpg123_open: function(mh: Pmpg123_handle; path: PChar): Longint; cdecl;
 
   mpg123_open_fd: function(mh: Pmpg123_handle; fd: Longint): Longint; cdecl;
 
-  mpg123_open_feed: function(mh: Pmpg123_handle): Longint; cdecl;
-
-  mpg123_close: function(mh: Pmpg123_handle): Longint; cdecl;
-
   mpg123_read: function(mh: Pmpg123_handle; outmemory: PByte; outmemsize: size_t; done: Psize_t): Longint; cdecl;
-
-  mpg123_decode: function(mh: Pmpg123_handle; inmemory: PByte; inmemsize: size_t; outmemory: PByte; outmemsize: size_t;
-    done: Psize_t): Longint; cdecl;
 
   mpg123_decode_frame: function(mh: Pmpg123_handle; num: Poff_t; audio: PPbyte; bytes: Psize_t): Longint; cdecl;
 
@@ -385,91 +391,89 @@ var
   mpg123_outblock: function(mh: Pmpg123_handle): size_t; cdecl;
 
   //mpg123_replace_reader : function(mh:Pmpg123_handle; r_read:function (_para1:longint; _para2:pointer; _para3:size_t):Tssize_t; r_lseek:function (_para1:longint; _para2:off_t; _para3:longint):off_t):longint;
+{$ENDIF}
 
 implementation
 
 uses
-  utils, DLLLoader;
+  utils, uDllfromMem;
 
 {$I mpg123.inc}
 
 var
-  DLLData: TPointerStream;
-  libmpg123DLL: TDLLLoader;
+  libmpg123DLL: Pointer;
 
 initialization
-  libmpg123DLL := TDLLLoader.Create;
-  DLLData := TPointerStream.Create(@libmpg123Data,libmpg123Size);
-  libmpg123DLL.Load(DLLData);
-  DLLData.Free;
-  mpg123_add_string := libmpg123DLL.FindExport('mpg123_add_string');
-  mpg123_clip := libmpg123DLL.FindExport('mpg123_clip');
-  mpg123_close := libmpg123DLL.FindExport('mpg123_close');
-  mpg123_copy_string := libmpg123DLL.FindExport('mpg123_copy_string');
-  mpg123_decode := libmpg123DLL.FindExport('mpg123_decode');
-  mpg123_decode_frame := libmpg123DLL.FindExport('mpg123_decode_frame');
-  mpg123_decoder := libmpg123DLL.FindExport('mpg123_decoder');
-  mpg123_decoders := libmpg123DLL.FindExport('mpg123_decoders');
-  mpg123_delete := libmpg123DLL.FindExport('mpg123_delete');
-  mpg123_delete_pars := libmpg123DLL.FindExport('mpg123_delete_pars');
-  mpg123_encodings := libmpg123DLL.FindExport('mpg123_encodings');
-  mpg123_eq := libmpg123DLL.FindExport('mpg123_eq');
-  mpg123_errcode := libmpg123DLL.FindExport('mpg123_errcode');
-  mpg123_exit := libmpg123DLL.FindExport('mpg123_exit');
-  mpg123_feedseek := libmpg123DLL.FindExport('mpg123_feedseek');
-  mpg123_fmt := libmpg123DLL.FindExport('mpg123_fmt');
-  mpg123_fmt_all := libmpg123DLL.FindExport('mpg123_fmt_all');
-  mpg123_fmt_none := libmpg123DLL.FindExport('mpg123_fmt_none');
-  mpg123_fmt_support := libmpg123DLL.FindExport('mpg123_fmt_support');
-  mpg123_format := libmpg123DLL.FindExport('mpg123_format');
-  mpg123_format_all := libmpg123DLL.FindExport('mpg123_format_all');
-  mpg123_format_none := libmpg123DLL.FindExport('mpg123_format_none');
-  mpg123_format_support := libmpg123DLL.FindExport('mpg123_format_support');
-  mpg123_free_string := libmpg123DLL.FindExport('mpg123_free_string');
-  mpg123_getformat := libmpg123DLL.FindExport('mpg123_getformat');
-  mpg123_getpar := libmpg123DLL.FindExport('mpg123_getpar');
-  mpg123_getparam := libmpg123DLL.FindExport('mpg123_getparam');
-  mpg123_getvolume := libmpg123DLL.FindExport('mpg123_getvolume');
-  mpg123_icy_ := libmpg123DLL.FindExport('mpg123_icy');
-  mpg123_id3_ := libmpg123DLL.FindExport('mpg123_id3');
-  mpg123_index := libmpg123DLL.FindExport('mpg123_index');
-  mpg123_info := libmpg123DLL.FindExport('mpg123_info');
-  mpg123_init := libmpg123DLL.FindExport('mpg123_init');
-  mpg123_init_string := libmpg123DLL.FindExport('mpg123_init_string');
-  mpg123_length := libmpg123DLL.FindExport('mpg123_length');
-  mpg123_meta_check := libmpg123DLL.FindExport('mpg123_meta_check');
-  mpg123_new := libmpg123DLL.FindExport('mpg123_new');
-  mpg123_new_pars := libmpg123DLL.FindExport('mpg123_new_pars');
-  mpg123_open := libmpg123DLL.FindExport('mpg123_open');
-  mpg123_open_fd := libmpg123DLL.FindExport('mpg123_open_fd');
-  mpg123_open_feed := libmpg123DLL.FindExport('mpg123_open_feed');
-  mpg123_outblock := libmpg123DLL.FindExport('mpg123_outblock');
-  mpg123_par := libmpg123DLL.FindExport('mpg123_par');
-  mpg123_param := libmpg123DLL.FindExport('mpg123_param');
-  mpg123_parnew := libmpg123DLL.FindExport('mpg123_parnew');
-  mpg123_plain_strerror := libmpg123DLL.FindExport('mpg123_plain_strerror');
-  mpg123_position := libmpg123DLL.FindExport('mpg123_position');
-  mpg123_rates := libmpg123DLL.FindExport('mpg123_rates');
-  mpg123_read := libmpg123DLL.FindExport('mpg123_read');
-  mpg123_replace_buffer := libmpg123DLL.FindExport('mpg123_replace_buffer');
-  //mpg123_replace_reader := libmpg123DLL.FindExport('mpg123_replace_reader');
-  mpg123_reset_eq := libmpg123DLL.FindExport('mpg123_reset_eq');
-  mpg123_resize_string := libmpg123DLL.FindExport('mpg123_resize_string');
-  mpg123_safe_buffer := libmpg123DLL.FindExport('mpg123_safe_buffer');
-  mpg123_scan := libmpg123DLL.FindExport('mpg123_scan');
-  mpg123_seek := libmpg123DLL.FindExport('mpg123_seek');
-  mpg123_seek_frame := libmpg123DLL.FindExport('mpg123_seek_frame');
-  mpg123_set_string := libmpg123DLL.FindExport('mpg123_set_string');
-  mpg123_strerror := libmpg123DLL.FindExport('mpg123_strerror');
-  mpg123_supported_decoders := libmpg123DLL.FindExport('mpg123_supported_decoders');
-  mpg123_tell := libmpg123DLL.FindExport('mpg123_tell');
-  mpg123_tellframe := libmpg123DLL.FindExport('mpg123_tellframe');
-  mpg123_timeframe := libmpg123DLL.FindExport('mpg123_timeframe');
-  mpg123_tpf := libmpg123DLL.FindExport('mpg123_tpf');
-  mpg123_volume := libmpg123DLL.FindExport('mpg123_volume');
-  mpg123_volume_change := libmpg123DLL.FindExport('mpg123_volume_change');
-
+  libmpg123DLL := memLoadLibrary(@libmpg123Data);
+  mpg123_open_feed := memGetProcAddress(libmpg123DLL, 'mpg123_open_feed');
+  mpg123_exit := memGetProcAddress(libmpg123DLL, 'mpg123_exit');
+  mpg123_decode := memGetProcAddress(libmpg123DLL, 'mpg123_decode');
+  mpg123_getformat := memGetProcAddress(libmpg123DLL, 'mpg123_getformat');
+  mpg123_init := memGetProcAddress(libmpg123DLL, 'mpg123_init');
+  mpg123_new := memGetProcAddress(libmpg123DLL, 'mpg123_new');
+  mpg123_delete := memGetProcAddress(libmpg123DLL, 'mpg123_delete');
+{$IFDEF LOADALL}
+  mpg123_close := memGetProcAddress(libmpg123DLL, 'mpg123_close');
+  mpg123_copy_string := memGetProcAddress(libmpg123DLL, 'mpg123_copy_string');
+  mpg123_decode_frame := memGetProcAddress(libmpg123DLL, 'mpg123_decode_frame');
+  mpg123_decoder := memGetProcAddress(libmpg123DLL, 'mpg123_decoder');
+  mpg123_decoders := memGetProcAddress(libmpg123DLL, 'mpg123_decoders');
+  mpg123_delete_pars := memGetProcAddress(libmpg123DLL, 'mpg123_delete_pars');
+  mpg123_encodings := memGetProcAddress(libmpg123DLL, 'mpg123_encodings');
+  mpg123_eq := memGetProcAddress(libmpg123DLL, 'mpg123_eq');
+  mpg123_errcode := memGetProcAddress(libmpg123DLL, 'mpg123_errcode');
+  mpg123_feedseek := memGetProcAddress(libmpg123DLL, 'mpg123_feedseek');
+  mpg123_fmt := memGetProcAddress(libmpg123DLL, 'mpg123_fmt');
+  mpg123_fmt_all := memGetProcAddress(libmpg123DLL, 'mpg123_fmt_all');
+  mpg123_fmt_none := memGetProcAddress(libmpg123DLL, 'mpg123_fmt_none');
+  mpg123_fmt_support := memGetProcAddress(libmpg123DLL, 'mpg123_fmt_support');
+  mpg123_format := memGetProcAddress(libmpg123DLL, 'mpg123_format');
+  mpg123_format_all := memGetProcAddress(libmpg123DLL, 'mpg123_format_all');
+  mpg123_format_none := memGetProcAddress(libmpg123DLL, 'mpg123_format_none');
+  mpg123_format_support := memGetProcAddress(libmpg123DLL, 'mpg123_format_support');
+  mpg123_free_string := memGetProcAddress(libmpg123DLL, 'mpg123_free_string');
+  mpg123_getpar := memGetProcAddress(libmpg123DLL, 'mpg123_getpar');
+  mpg123_getparam := memGetProcAddress(libmpg123DLL, 'mpg123_getparam');
+  mpg123_getvolume := memGetProcAddress(libmpg123DLL, 'mpg123_getvolume');
+  mpg123_icy_ := memGetProcAddress(libmpg123DLL, 'mpg123_icy');
+  mpg123_id3_ := memGetProcAddress(libmpg123DLL, 'mpg123_id3');
+  mpg123_index := memGetProcAddress(libmpg123DLL, 'mpg123_index');
+  mpg123_info := memGetProcAddress(libmpg123DLL, 'mpg123_info');
+  mpg123_init_string := memGetProcAddress(libmpg123DLL, 'mpg123_init_string');
+  mpg123_length := memGetProcAddress(libmpg123DLL, 'mpg123_length');
+  mpg123_meta_check := memGetProcAddress(libmpg123DLL, 'mpg123_meta_check');
+  mpg123_new_pars := memGetProcAddress(libmpg123DLL, 'mpg123_new_pars');
+  mpg123_open := memGetProcAddress(libmpg123DLL, 'mpg123_open');
+  mpg123_open_fd := memGetProcAddress(libmpg123DLL, 'mpg123_open_fd');
+  mpg123_outblock := memGetProcAddress(libmpg123DLL, 'mpg123_outblock');
+  mpg123_par := memGetProcAddress(libmpg123DLL, 'mpg123_par');
+  mpg123_param := memGetProcAddress(libmpg123DLL, 'mpg123_param');
+  mpg123_parnew := memGetProcAddress(libmpg123DLL, 'mpg123_parnew');
+  mpg123_plain_strerror := memGetProcAddress(libmpg123DLL, 'mpg123_plain_strerror');
+  mpg123_position := memGetProcAddress(libmpg123DLL, 'mpg123_position');
+  mpg123_rates := memGetProcAddress(libmpg123DLL, 'mpg123_rates');
+  mpg123_read := memGetProcAddress(libmpg123DLL, 'mpg123_read');
+  mpg123_replace_buffer := memGetProcAddress(libmpg123DLL, 'mpg123_replace_buffer');
+  //mpg123_replace_reader := memGetProcAddress(libmpg123DLL,'mpg123_replace_reader');
+  mpg123_reset_eq := memGetProcAddress(libmpg123DLL, 'mpg123_reset_eq');
+  mpg123_resize_string := memGetProcAddress(libmpg123DLL, 'mpg123_resize_string');
+  mpg123_safe_buffer := memGetProcAddress(libmpg123DLL, 'mpg123_safe_buffer');
+  mpg123_scan := memGetProcAddress(libmpg123DLL, 'mpg123_scan');
+  mpg123_seek := memGetProcAddress(libmpg123DLL, 'mpg123_seek');
+  mpg123_seek_frame := memGetProcAddress(libmpg123DLL, 'mpg123_seek_frame');
+  mpg123_set_string := memGetProcAddress(libmpg123DLL, 'mpg123_set_string');
+  mpg123_strerror := memGetProcAddress(libmpg123DLL, 'mpg123_strerror');
+  mpg123_supported_decoders := memGetProcAddress(libmpg123DLL, 'mpg123_supported_decoders');
+  mpg123_tell := memGetProcAddress(libmpg123DLL, 'mpg123_tell');
+  mpg123_tellframe := memGetProcAddress(libmpg123DLL, 'mpg123_tellframe');
+  mpg123_timeframe := memGetProcAddress(libmpg123DLL, 'mpg123_timeframe');
+  mpg123_tpf := memGetProcAddress(libmpg123DLL, 'mpg123_tpf');
+  mpg123_volume := memGetProcAddress(libmpg123DLL, 'mpg123_volume');
+  mpg123_volume_change := memGetProcAddress(libmpg123DLL, 'mpg123_volume_change');
+  mpg123_add_string := memGetProcAddress(libmpg123DLL, 'mpg123_add_string');
+  mpg123_clip := memGetProcAddress(libmpg123DLL, 'mpg123_clip');
+{$ENDIF}
 finalization
-  libmpg123DLL.Free;
+  memFreeLibrary(libmpg123DLL);
 end.
 

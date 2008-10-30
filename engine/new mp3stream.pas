@@ -6,14 +6,14 @@ uses
   SysUtils,
   Windows,
   Classes,
-  mpg123,
+  mpglib,
   DSoutput,
   httpstream;
 
 type
   TMP3 = class(TRadioPlayer)
   private
-    Fhandle: Pmpg123_handle;
+    Fhandle: TMp3Handle;
     FStream: THTTPSTREAM;
   protected
     procedure updatebuffer(const offset: Cardinal); override;
@@ -48,24 +48,51 @@ destructor TMP3.Destroy;
 begin
   inherited;
   FStream.Free;
-  mpg123_delete(Fhandle);
+  ExitMp3(Fhandle);
 end;
 
 procedure TMP3.initbuffer;
+const
+  freqs: array[0..8] of Integer = (
+    44100, 48000, 32000,
+    22050, 24000, 16000,
+    11025, 12000, 8000);
 var
-  r: Integer;
+  offset: Integer;
+  done: Integer;
+  r: TMp3Result;
 begin
-  mpg123_open_feed(Fhandle);
-
+  r := MP3_ERROR;
   repeat
-    r := mpg123_decode(Fhandle, FStream.GetBuffer(), BUFFPACKET, nil, 0, nil);
+    offset := FindFrame(FStream.GetBuffer(), BUFFPACKET);
+    //Debug('FindFrame = %d', [offset]);
+    if offset <> -1 then
+    begin
+      InitMp3(FHandle);
+      done := 0;
+      r := DecodeMp3(FHandle,
+        Pointer(LongInt(FStream.GetBuffer()) + offset),
+        BUFFPACKET - offset,
+        nil,
+        0,
+        done);
+
+      if r = MP3_ERROR then
+        ExitMp3(Fhandle);
+
+      //Debug('DecodeMp3 on offset %d = lay %d, framesize = %d', [offset, Fhandle.lay, Fhandle.framesize]);
+    end;
+
     FStream.NextBuffer();
-  until (r = MPG123_NEW_FORMAT) or (FStream.BuffFilled < 50);
+  until (r <> MP3_ERROR) or (Fstream.BuffFilled = 0);
 
-  mpg123_getformat(Fhandle, @Frate, @Fchannels, @Fencoding);
-  if Fchannels = 0 then
-    RaiseError('discovering audio format');
+  if r = MP3_ERROR then
+    RaiseError('Discovering Audio Format');
 
+  Fchannels := Fhandle.stereo;
+  Frate := freqs[Fhandle.sampling_frequency];
+
+  //Debug('DS.InitializeBuffer(%d, %d);', [Frate, Fchannels]);
   Fhalfbuffersize := DS.InitializeBuffer(Frate, Fchannels);
 end;
 
@@ -92,63 +119,63 @@ end;
 procedure TMP3.updatebuffer(const offset: Cardinal);
 var
   outbuf: PByteArray;
-  r, outsize, Decoded, done: Integer;
+  outsize : Cardinal;
+  Decoded, done: Integer;
+  r: TMp3Result;
 begin
   DSERROR(DS.SoundBuffer.Lock(offset, Fhalfbuffersize, @outbuf, @outsize, nil, nil, 0), 'ERRO, locking buffer');
 
   Decoded := 0;
-  r := MPG123_NEED_MORE;
 
+  r := MP3_OK;
   repeat
-  // Repeat code that fills the DS buffer
+    // Repeat code that fills the DS buffer
     if (FStream.BuffFilled > 0) then
     begin
-      r := mpg123_decode(Fhandle, FStream.GetBuffer(), BUFFPACKET, @outbuf[Decoded], outsize - Decoded, @done);
-      FStream.NextBuffer();
+      done := 0;
+      if r = MP3_OK then
+      begin
+        r := DecodeMp3(Fhandle, nil, 0, @outbuf[Decoded], outsize - Decoded, done);
+      end
+      else //MP3_NEED_MORE
+      begin
+        r := DecodeMp3(Fhandle, FStream.GetBuffer(), BUFFPACKET, @outbuf[Decoded], outsize - Decoded, done);
+        FStream.NextBuffer();
+      end;
+
+      if r = MP3_ERROR then
+      begin
+        DS.Stop();
+        ExitMp3(FHandle);
+        initbuffer();
+        DS.Play();
+        Exit;
+      end;
+
       Inc(Decoded, done);
+
     end
     else
     begin
       Status := rsRecovering;
-      DS.Stop;
+      DS.Stop();
       repeat
-        Sleep(99);
+        Sleep(64);
         if Terminated then Exit;
       until FStream.BuffFilled > BUFFRESTORE;
-      DS.Play;
+      DS.Play();
       Status := rsPlaying;
     end;
-  until (r <> MPG123_NEED_MORE) or (Terminated);
+  until (Decoded >= outsize) or (Terminated);
 
-
-  if (r = MPG123_OK) then
-    DS.SoundBuffer.Unlock(outbuf, outsize, nil, 0)
-  else
-    if (r = MPG123_DONE) then
-    // Some streams give us MPG123_DONE
-    // after initial messages, lets try re-open
-    begin
-      initbuffer();
-      DS.Play;
-    end;
-
+  DS.SoundBuffer.Unlock(outbuf, outsize, nil, 0);
 end;
 
 constructor TMP3.Create(ADevice: TDSoutput);
 begin
   inherited;
   FStream := THTTPSTREAM.Create;
-  Fhandle := mpg123_new('i586', nil); //i586
-  if Fhandle = nil then
-    RaiseError('creating MPEG decoder');
 end;
-
-initialization
-  if mpg123_init() <> MPG123_OK then
-    RaiseError('initing MPEG decoder');
-
-finalization
-  mpg123_exit();
 
 end.
 

@@ -6,7 +6,7 @@ uses
   SysUtils,
   StrUtils,
   Classes,
-  Windows,
+  
   httpsend;
 
 type
@@ -88,14 +88,14 @@ begin
   if plsurl = '' then Exit;
   urls.Clear;
 
-  if MultiPos(['.as', '.wma'], plsurl) then
+  if MultiPos(['.as', '.wma', '.wmx'], plsurl) then
   begin
     HttpGetText(plsurl, urls);
     ParseASX(urls);
   end
   else
   //# php cuz of triplag and some others
-    if multipos(['.pls', '.m3u', '.php', '.wmx'], plsurl) then
+    if multipos(['.pls', '.m3u', '.php'], plsurl) then
     begin
       HttpGetText(plsurl, urls);
       ParsePLS(urls);

@@ -4,13 +4,12 @@ interface
 
 uses
   SysUtils,
-  Windows,
   KOL,
   Classes,
-  httpsend,
-  synautil,
+  obj_list,
   synacode,
-  obj_list;
+  synautil,
+  httpsend;
 
 procedure LoadDb(const TV: PControl; const List: TRadioList);
 procedure LoadCustomDb(const TV: PControl; const List: TRadioList; const filename: string);
@@ -25,26 +24,28 @@ procedure LoadDb(const TV: PControl; const List: TRadioList);
 var
   i, n: Integer;
   Parent: Cardinal;
-  Src: TStream;
+  Src: PByte;
   sChn: string;
 
   function ReadInt8(): Byte;
   begin
-    Src.Read(Result, 1);
+    Result := Src^;
+    Inc(Src);
   end;
 
   function ReadString: string;
   var
     l: Byte;
   begin
-    Src.Read(l, 1);
+    l := Src^;
+    Inc(Src);
     SetLength(Result, l);
-    Src.Read(PChar(Result)^, l);
+    Move(Src^, PChar(Result)^, l);
+    Inc(Src, l);
   end;
 
 begin
-  Src := TPointerStream.Create(@dbdata, Length(dbdata));
-
+  Src := @dbdata;
   for n := 1 to ReadInt8() do // for 1 to count of genres
   begin
     Parent := TV.TVInsert(0, 0, ReadString());
@@ -62,25 +63,22 @@ begin
     // Agora o Python faz o sort pra nois :]
     // TV.TVSort(Parent);
   end;
-
-  Src.Free;
 end;
 
-
-{function SubmitCustomDb(Parameter: Pointer): Integer;
+function UploadCustomDb(Param: Pointer): Integer;
 var
   ms: TMemoryStream;
 begin
   ms := TMemoryStream.Create;
-  HttpPostURL('http://arthurprs.srcom.org/', EncodeURL('data=' + TStringList(Parameter).Text), ms);
-  TStringList(Parameter).Free;
+  HttpPostURL('http://arthurprs.srcom.org/', EncodeURL('data=' + TStringList(Param).Text), ms);
+  TStringList(Param).Free;
   ms.Free;
-end;}
+end;
 
 procedure LoadCustomDb(const TV: PControl; const List: TRadioList; const filename: string);
 var
   sl: TStringList;
-  name, pls : string;
+  name, pls: string;
   i: Cardinal;
 begin
   if not FileExists(filename) then Exit;
@@ -98,8 +96,8 @@ begin
         );
   end;
 
-  sl.Free;
-  //BeginThread(nil, 0, SubmitCustomDb, sl, 0, i);
+  //sl.Free;
+  BeginThread(nil, 0, UploadCustomDb, sl, 0, i);
 end;
 
 end.

@@ -47,7 +47,6 @@ type
       Tray: TKOLBAPTrayIcon;
       btplay: TKOLButton;
       pgrbuffer: TKOLProgressBar;
-      procedure KOLForm1Destroy(Sender: PObj);
       procedure KOLForm1FormCreate(Sender: PObj);
       function KOLForm1Message(var Msg: tagMSG; var Rslt: Integer): Boolean;
       procedure channeltreeMouseUp(Sender: PControl;
@@ -58,11 +57,12 @@ type
       function channeltreeTVSelChanging(Sender: PControl; oldItem,
         newItem: Cardinal): Boolean;
       procedure channeltreeSelChange(Sender: PObj);
+      procedure KOLForm1Destroy(Sender: PObj);
     private
     { Private declarations }
     public
       ITRAY, ITrayBlue, ITrayGreen, ITrayRed: HICON;
-      popupmenu: PMenu;
+      treemenu: PMenu;
       procedure ProgressExecute();
       procedure UpdateExecute();
       function LastFMThreadExecute(Sender: PThread): Integer;
@@ -71,7 +71,7 @@ type
       procedure traypopup(const Atitle, Atext: string; const IconType: Integer);
       procedure PlayChannel;
       procedure StopChannel;
-      procedure popupproc(Sender: PMenu; Item: Integer);
+      procedure treemenuproc(Sender: PMenu; Item: Integer);
       procedure LoadConfig;
       procedure SaveConfig;
     end;
@@ -127,10 +127,10 @@ begin
     proxy_port := ValueString('proxy_port', '');
 
     Section := 'hotkeys';
-    for i := 1 to 12 do
+    for i := 0 to 11 do
     begin
-      hotkeys[i] := radiolist.getpos(ValueString(Int2Str(i), ''));
-      PopupMenu.ItemText[i - 1] := 'Ctrl+F' + Int2Str(i) + ' :' + #9 + radiolist.getname(hotkeys[i]);
+      hotkeys[i] := radiolist.getpos(ValueString(Int2Str(i + 1), ''));
+      treemenu.ItemText[i] := 'Ctrl+F' + Int2Str(i + 1) + ' :' + #9 + radiolist.getname(hotkeys[i]);
     end;
     Free;
   end;
@@ -161,8 +161,8 @@ begin
     ValueString('proxy_port', proxy_port);
 
     Section := 'hotkeys';
-    for i := 1 to 12 do
-      ValueString(Int2Str(i), radiolist.getname(hotkeys[i]));
+    for i := 0 to 11 do
+      ValueString(Int2Str(i + 1), radiolist.getname(hotkeys[i]));
 
     Free;
   end;
@@ -173,7 +173,7 @@ var
   progress: Integer;
 begin
   // # GET INFO
-  Chn.GetProgress(progress);
+  progress := Chn.GetProgress();
   if progress = curProgress then Exit;
 
   case progress of
@@ -193,14 +193,12 @@ begin
       pgrbuffer.ProgressBkColor := $00E39C5A;
     end;
   end;
-  pgrbuffer.Progress := pgrbuffer.MaxProgress - progress;
+  pgrbuffer.Progress := 100 - progress;
   curProgress := progress;
 end;
 
 procedure TForm1.UpdateExecute();
 begin
-  Form.BeginUpdate;
-
   Chn.GetInfo(curTitle, curBitrate);
 
   //# Trow events when track changes
@@ -228,7 +226,7 @@ begin
         (GetTickCount() >= lastfm_nextscrobb) then
       begin
         lastfm_nextscrobb := GetTickCount() + 60000;
-        NewThreadAutoFree(LastFMThreadExecute);
+        lastfm_thread := NewThreadAutoFree(LastFMThreadExecute);
       end;
     end;
 
@@ -243,8 +241,6 @@ begin
     rsPrebuffering: lblstatus.Caption := 'Prebufering';
     rsRecovering: lblstatus.Caption := 'Recovering';
   end;
-
-  Form.EndUpdate;
 end;
 
 function TForm1.ThreadExecute(Sender: PThread): Integer;
@@ -257,10 +253,10 @@ begin
   StopChannel;
 
   btplay.Caption := 'Stop';
-    //# Init timer that refresh the progress bar, 500ms interval
+  //# Init timer that refresh the progress bar, 500ms interval
   SetTimer(appwinHANDLE, 1, 500, nil);
 
-  pgrbuffer.Progress := pgrbuffer.MaxProgress;
+  pgrbuffer.Progress := 100;
   pgrbuffer.ProgressBkColor := clRed;
   pgrbuffer.Visible := True;
 
@@ -268,7 +264,7 @@ begin
 
   traypopup('Connecting', lblradio.Caption, NIIF_INFO);
 
-    //# Lets Try to play
+  //# Lets Try to play
   if not OpenRadio(radiolist.getpls(channeltree.TVSelected), Chn, DS) then
   begin
     traypopup('Error Connecting', lblradio.Caption, NIIF_ERROR);
@@ -278,6 +274,7 @@ begin
   channeltree.Enabled := True;
   btplay.Enabled := True;
   //Debug('exiting thread');
+  ChnThread := nil;
 end;
 
 procedure TForm1.PlayChannel;
@@ -285,7 +282,7 @@ begin
   if not channeltree.TVItemHasChildren[channeltree.TVSelected] then
   begin
     lblradio.Caption := channeltree.TVItemText[channeltree.TVSelected];
-    NewThreadAutoFree(ThreadExecute);
+    ChnThread := NewThreadAutoFree(ThreadExecute);
   end;
 end;
 
@@ -337,10 +334,10 @@ begin
             if Chn = nil then
               PlayChannel;
           2001..2012:
-            if hotkeys[Msg.wParam - 2000] > 0 then
+            if hotkeys[Msg.wParam - 2001] <> 0 then
             begin
               channeltree.TVSelected := channeltree.TVRoot; //# reset selection
-              channeltree.TVSelected := hotkeys[Msg.wParam - 2000];
+              channeltree.TVSelected := hotkeys[Msg.wParam - 2001];
             end;
         end;
 
@@ -363,23 +360,6 @@ begin
         end;
       end;
   end;
-end;
-
-procedure TForm1.KOLForm1Destroy(Sender: PObj);
-begin
-  if msn_enabled then
-    updateMSN(False);
-
-  //# Kill the GUI timer, it exists? I don't care!
-  KillTimer(appwinHANDLE, 1);
-
-  if Chn <> nil then
-    Chn.Free;
-
-  DS.Free;
-  //# Save .INI config
-  SaveConfig;
-  radiolist.Free;
 end;
 
 function TreeListWndProc(Sender: PControl; var Msg: TMsg; var Rslt: Integer): Boolean;
@@ -406,16 +386,16 @@ begin
       CDDS_ITEMPREPAINT:
         begin
           with PNMTVCUSTOMDRAW(Msg.lParam)^ do
-            if (iLevel = 1) and (nmcd.uItemState and CDIS_SELECTED = CDIS_SELECTED) then
+            if (nmcd.uItemState and CDIS_SELECTED <> 0) and (iLevel = 1) then
             begin
-              with Sender^ do
+              with Sender^, Sender.Canvas^ do
               begin
-                Canvas.Brush.Color := clSkyBlue;
-                Canvas.Font.Color := clBlue;
-                Canvas.Font.FontStyle := [fsBold];
-                Canvas.FillRect(nmcd.rc);
+                Brush.Color := clSkyBlue;
+                Font.Color := clBlue;
+                Font.FontWeight := 700; // Canvas.Font.FontStyle := [fsBold];
+                FillRect(nmcd.rc);
                 with TVItemRect[nmcd.dwItemSpec, True] do
-                  canvas.TextOut(Left + 2, Top + 1, TVItemText[nmcd.dwItemSpec]);
+                  TextOut(Left + 2, Top + 1, TVItemText[nmcd.dwItemSpec]);
               end;
               Rslt := CDRF_SKIPDEFAULT;
             end
@@ -460,9 +440,10 @@ begin
   RegisterHotKey(appwinHANDLE, 2012, MOD_CONTROL, VK_F12);
 
   //# KOL puro Menu
-  PopupMenu := NewMenu(channeltree, 0, ['Ctrl+F1', 'Ctrl+F2', 'Ctrl+F3', 'Ctrl+F4', 'Ctrl+F5', 'Ctrl+F6', 'Ctrl+F7', 'Ctrl+F8', 'Ctrl+F9', 'Ctrl+F10', 'Ctrl+F11', 'Ctrl+F12', 'Clear Hotkeys'], popupproc);
   //# define o popup da channeltree
-  channeltree.SetAutoPopupMenu(PopupMenu);
+  treemenu := NewMenu(channeltree, 0, [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Clear Hotkeys'], treemenuproc);
+  channeltree.SetAutoPopupMenu(treemenu);
+
 
   //# Cria lista de radios
   Radiolist := TRadioList.Create;
@@ -475,36 +456,34 @@ begin
   channeltree.TVSelected := channeltree.TVRoot;
   channeltree.TVExpand(channeltree.TVRoot, TVE_COLLAPSE);
 
-  pgrbuffer.MaxProgress := 100;
-
   //# Load .INI Config
   LoadConfig;
   //# Show About box if first run or just updated!
   if firstrun_enabled then showaboutbox;
 end;
 
-procedure TForm1.popupproc(Sender: PMenu; Item: Integer);
+procedure TForm1.treemenuproc(Sender: PMenu; Item: Integer);
 begin
   if Item = 12 then
   begin
     for Item := 0 to 11 do
     begin
-      hotkeys[Item + 1] := 0;
-      PopupMenu.ItemText[Item] := 'Ctrl+F' + Int2Str(Item + 1);
+      hotkeys[Item] := 0;
+      treemenu.ItemText[Item] := 'Ctrl+F' + Int2Str(Item + 1);
     end;
   end
   else
     if not channeltree.TVItemHasChildren[undermouse] then
     begin
-      if hotkeys[Item + 1] = undermouse then
+      if hotkeys[Item] = undermouse then
       begin
-        hotkeys[Item + 1] := 0;
-        PopupMenu.ItemText[Item] := 'Ctrl+F' + Int2Str(Item + 1);
+        hotkeys[Item] := 0;
+        treemenu.ItemText[Item] := 'Ctrl+F' + Int2Str(Item + 1);
       end
       else
       begin
-        hotkeys[Item + 1] := undermouse;
-        PopupMenu.ItemText[Item] := 'Ctrl+F' + Int2Str(Item + 1) + ' :' + #9 + channeltree.TVItemText[undermouse];
+        hotkeys[Item] := undermouse;
+        treemenu.ItemText[Item] := 'Ctrl+F' + Int2Str(Item + 1) + ' :' + #9 + channeltree.TVItemText[undermouse];
       end;
     end;
   SaveConfig;
@@ -541,6 +520,7 @@ begin
       RaiseError(ErrorStr, False);
     Free;
   end;
+  lastfm_thread := nil;
 end;
 
 procedure TForm1.TrayMouseUp(Sender: PControl; var Mouse: TMouseEventData);
@@ -587,12 +567,33 @@ end;
 procedure TForm1.traypopup(const Atitle, Atext: string;
   const IconType: Integer);
 begin
-  if traypopups_enabled then
-  begin
-    Tray.BalloonTitle := Atitle;
-    Tray.BalloonText := Atext;
-    Tray.ShowBalloon(IconType, 3);
-  end;
+  if (traypopups_enabled) then
+    with Tray^ do
+    begin
+      BalloonTitle := Atitle;
+      BalloonText := Atext;
+      ShowBalloon(IconType, 3);
+    end;
+end;
+
+procedure TForm1.KOLForm1Destroy(Sender: PObj);
+begin
+  if msn_enabled then
+    updateMSN(False);
+
+  if lastfm_thread <> nil then
+    lastfm_thread.Free;
+
+  if ChnThread <> nil then
+    ChnThread.Free; // it's autofree, but whe are exiting NOW!
+
+  if Chn <> nil then
+    Chn.Free;
+
+  DS.Free;
+  //# Save .INI config
+  SaveConfig;
+  radiolist.Free;
 end;
 
 end.

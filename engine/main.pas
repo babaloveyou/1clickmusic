@@ -28,6 +28,7 @@ var
   //# Core Global Variables
   DS: TDSoutput;
   Chn: TRadioPlayer = nil;
+  ChnThread: PThread = nil;
   curProgress: Integer;
   curVolume: Integer = 100;
   //
@@ -46,13 +47,14 @@ var
   msn_iconi: Integer;
   msn_icons: string;
   //# Hotkeys
-  hotkeys: array[1..12] of Cardinal;
+  hotkeys: array[0..11] of Cardinal;
   //# list
   list_enabled: LongBool;
   list_file: string;
   //
   clipboard_enabled: LongBool;
   // lastfm plugin
+  lastfm_thread: PThread = nil;
   lastfm_enabled: LongBool;
   lastfm_user, lastfm_pass: string;
   lastfm_nextscrobb: Cardinal = 0;
@@ -118,7 +120,7 @@ begin
   Text := TStringList.Create;
   Result := HttpGetText(updateurl, Text);
   if Result then
-    if StrToIntDef(Text[0],-1) > APPVERSION then
+    if StrToIntDef(Text[0], 0) > APPVERSION then
     begin
       if MessageBox(0,
         PChar(Format('Version %s is avaliable, download and update?', [Text[0]])),

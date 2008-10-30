@@ -36,7 +36,7 @@ var
 begin
   if fListSize = fListCapacity then
   begin
-    fListCapacity := fListCapacity shl 2;
+    fListCapacity := fListCapacity * 2;
     ReallocMem(fList,fListCapacity * SizeOf(TRadioEntry));
   end;
 

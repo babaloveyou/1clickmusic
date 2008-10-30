@@ -68,7 +68,7 @@ for line in srcfile:
             
 	    # check if both lists have same size
             if (len(chn) <> len(pls)) or (len(chn) <> count):
-                error("%s chn=%d pls=%d" % (genres[0], len(chn), len(pls)))
+                error("%s chn=%d pls=%d count=%d" % (genres[0], len(chn), len(pls), count))
 
             slist = [] # a list that we will sort
             for i1, i2 in zip(chn,pls):
