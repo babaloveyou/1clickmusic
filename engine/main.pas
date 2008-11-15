@@ -17,7 +17,7 @@ uses
   httpsend;
 
 const
-  APPVERSION = 187;
+  APPVERSION = 1870;
   APPVERSIONSTR = '1.8.7';
 
   // GLOBAL VARS, IF NECESSARY INITIALIZED
@@ -82,7 +82,6 @@ var
   msnwindow: HWND;
   buffer: WideString;
 begin
-
   buffer := WideFormat('1ClickMusic\0%s\0%d\0{0}\0%s\0\0\0\0\0', [msn_icons, Ord(write), curTitle]);
   msndata.dwData := $547;
   msndata.cbData := (Length(buffer) * 2) + 2;
@@ -105,13 +104,12 @@ begin
     'kamikazze, BomGaroto, SnowHill, Ricardo, Greel, The_Terminator,' + #13#10
     + 'jotaeme, Mouse Pad, Lokinhow, Mario Bros, Blurkness, -dnb-,' + #13#10 +
     'e a toda a galera que tem me incentivado.',
-    '1ClickMusic ' + APPVERSIONSTR, MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
+    '1ClickMusic ' + APPVERSIONSTR, MB_OK or MB_ICONINFORMATION or MB_TOPMOST );
 end;
 
 function AutoUpdate(): LongBool;
 const
-  updateurl = 'http://arthurprs.srcom.org/update.txt';
-  updatefile = 'http://arthurprs.srcom.org/oneclick.exe';
+  updateurl = 'http://1clickmusic.net/update/update';
 var
   Text: TStringList;
   newfile: TFileStream;
@@ -123,12 +121,12 @@ begin
     if StrToIntDef(Text[0], 0) > APPVERSION then
     begin
       if MessageBox(0,
-        PChar(Format('Version %s is avaliable, download and update?', [Text[0]])),
+        PChar(Format('Version %s is avaliable, download and update?', [Text[1]])),
         '1ClickMusic update avaliable', MB_YESNO + MB_ICONQUESTION) = IDYES then
       begin
         tempfilepath := GetTempDir + 'oneclick.exe';
         newfile := TFileStream.Create(tempfilepath, fmCreate);
-        Result := HttpGetBinary(updatefile, newfile);
+        Result := HttpGetBinary(Text[2], newfile);
         if Result then
         begin
           batpath := GetTempDir + 'oneclickupdate.bat';
@@ -140,7 +138,7 @@ begin
           Text.Add('Call "' + ParamStr(0) + '"');
           Text.Add('del "' + batpath + '"');
           Text.SaveToFile(batpath);
-          Result := WinExec(PChar(batpath), SW_HIDE) > 0;
+          Result := WinExec(PChar(batpath), SW_HIDE) <> 0;
         end
         else
           RaiseError('DOWNLOADING THE UPDATE FILE', False);

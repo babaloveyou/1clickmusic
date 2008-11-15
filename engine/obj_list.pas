@@ -6,11 +6,14 @@ type
   PRadioEntry = ^TRadioEntry;
   TRadioEntry = record
     pos: Cardinal;
-    Name: string;
-    pls: string;
+    Name: AnsiString;
+    pls: AnsiString;
   end;
 
-{ a perfect performance/size implementation for the program needs}
+  {
+  a perfect performance/size implementation for the program needs,
+  WARNING! the class assumes that it at least 1 entry
+  }
 type
   TRadioList = class
   private
@@ -18,10 +21,10 @@ type
     fListSize: Integer;
     fListCapacity: Integer;
   public
-    procedure Add(const Apos: Cardinal; const AName, Apls: string);
-    function getpos(const AName: string): Cardinal;
-    function getname(const Apos: Cardinal): string;
-    function getpls(const Apos: Cardinal): string;
+    procedure Add(const Apos: Cardinal; const AName, Apls: AnsiString);
+    function getpos(const AName: AnsiString): Cardinal;
+    function getname(const Apos: Cardinal): AnsiString;
+    function getpls(const Apos: Cardinal): AnsiString;
     constructor Create;
     destructor Destroy; override;
   end;
@@ -30,19 +33,19 @@ implementation
 
 { TRadioList }
 
-procedure TRadioList.Add(const Apos: Cardinal; const AName, Apls: string);
+procedure TRadioList.Add(const Apos: Cardinal; const AName, Apls: AnsiString);
 var
   entry: PRadioEntry;
 begin
   if fListSize = fListCapacity then
   begin
     fListCapacity := fListCapacity * 2;
-    ReallocMem(fList,fListCapacity * SizeOf(TRadioEntry));
+    ReallocMem(fList, fListCapacity * SizeOf(TRadioEntry));
   end;
 
   //entry := fList;
   //Inc(entry,fListsize);
-  entry := Pointer(Integer(fList) + (fListSize * SizeOf(TRadioEntry))); 
+  entry := Pointer(Integer(fList) + (fListSize * SizeOf(TRadioEntry)));
   with entry^ do
   begin
     pos := Apos;
@@ -62,66 +65,64 @@ end;
 
 destructor TRadioList.Destroy;
 begin
+  // there is a string memory leak here
   FreeMem(fList);
 end;
 
-function TRadioList.getname(const Apos: Cardinal): string;
+function TRadioList.getname(const Apos: Cardinal): AnsiString;
 var
   i: Integer;
   entry: PRadioEntry;
 begin
   i := 0;
   entry := fList;
-  while i < fListSize do
-  begin
+  repeat
     if entry.pos = Apos then
     begin
       Result := entry.Name;
       Exit;
     end;
-    Inc(i);
+    Dec(i);
     Inc(entry);
-  end;
+  until i = 0; // no remaining items to search
   Result := '';
 end;
 
-function TRadioList.getpls(const Apos: Cardinal): string;
+function TRadioList.getpls(const Apos: Cardinal): AnsiString;
 var
   i: Integer;
   entry: PRadioEntry;
 begin
-  i := 0;
+  i := fListSize;
   entry := fList;
-  while i < fListSize do
-  begin
+  repeat
     if entry.pos = Apos then
     begin
       Result := entry.pls;
       Exit;
     end;
-    Inc(i);
+    Dec(i);
     Inc(entry);
-  end;
+  until i = 0; // no remaining items to search
   Result := '';
 end;
 
-function TRadioList.getpos(const AName: string): Cardinal;
+function TRadioList.getpos(const AName: AnsiString): Cardinal;
 var
   i: Integer;
   entry: PRadioEntry;
 begin
-  i := 0;
+  i := fListSize;
   entry := fList;
-  while i < fListSize do
-  begin
+  repeat
     if entry.Name = AName then
     begin
       Result := entry.pos;
       Exit;
     end;
-    Inc(i);
+    Dec(i);
     Inc(entry);
-  end;
+  until i = 0; // no remaining items to search
   Result := 0;
 end;
 

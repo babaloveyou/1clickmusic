@@ -6,6 +6,7 @@ uses
   SysUtils,
   Windows,
   Classes,
+  static_mpg123,
   mpg123,
   DSoutput,
   httpstream;
@@ -60,7 +61,7 @@ begin
   repeat
     r := mpg123_decode(Fhandle, FStream.GetBuffer(), BUFFPACKET, nil, 0, nil);
     FStream.NextBuffer();
-  until (r = MPG123_NEW_FORMAT) or (FStream.BuffFilled < 50);
+  until (r = MPG123_NEW_FORMAT) or (FStream.BuffFilled = 0);
 
   mpg123_getformat(Fhandle, @Frate, @Fchannels, @Fencoding);
   if Fchannels = 0 then
@@ -94,7 +95,7 @@ var
   outbuf: PByteArray;
   r, outsize, Decoded, done: Integer;
 begin
-  DSERROR(DS.SoundBuffer.Lock(offset, Fhalfbuffersize, @outbuf, @outsize, nil, nil, 0), 'ERRO, locking buffer');
+  DSERROR(DS.SoundBuffer.Lock(offset, Fhalfbuffersize, @outbuf, @outsize, nil, nil, 0), 'locking buffer');
 
   Decoded := 0;
   r := MPG123_NEED_MORE;
@@ -112,7 +113,7 @@ begin
       Status := rsRecovering;
       DS.Stop;
       repeat
-        Sleep(99);
+        Sleep(64);
         if Terminated then Exit;
       until FStream.BuffFilled > BUFFRESTORE;
       DS.Play;
@@ -124,13 +125,10 @@ begin
   if (r = MPG123_OK) then
     DS.SoundBuffer.Unlock(outbuf, outsize, nil, 0)
   else
-    if (r = MPG123_DONE) then
-    // Some streams give us MPG123_DONE
-    // after initial messages, lets try re-open
-    begin
-      initbuffer();
-      DS.Play;
-    end;
+  begin
+    initbuffer();
+    DS.Play;
+  end;
 
 end;
 

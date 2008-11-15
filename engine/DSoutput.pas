@@ -91,7 +91,7 @@ begin
     dwBufferBytes := 0;
   end;
 
-  DSERROR(FDS.CreateSoundBuffer(Fpdesc, Fprimary, nil), 'Creating Primary buffer');
+  DSERROR(FDS.CreateSoundBuffer(Fpdesc, Fprimary, nil), 'Creating P. buffer');
 
   FillChar(Fpwfm, SizeOf(TWAVEFORMATEX), 0);
   with Fpwfm do
@@ -105,7 +105,7 @@ begin
     nAvgBytesPerSec := 44100 * 4;
   end;
 
-  DSERROR(FPrimary.SetFormat(@Fpwfm), 'Changing Primary buffer format');
+  DSERROR(FPrimary.SetFormat(@Fpwfm), 'Changing P. buffer format');
 end;
 
 destructor TDSoutput.Destroy;
@@ -180,7 +180,7 @@ begin
     dwBufferBytes := 64 * 1024;
   end;
 
-  DSERROR(FDS.CreateSoundBuffer(Fsdesc, Fsecondary, nil), 'ERRO, criando o buffer secundario');
+  DSERROR(FDS.CreateSoundBuffer(Fsdesc, Fsecondary, nil), 'Creating S. buffer');
 
   Volume(Fvolume);
 

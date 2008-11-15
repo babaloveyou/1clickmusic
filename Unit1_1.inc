@@ -8,7 +8,7 @@ begin
   {$ELSE OBJECTS}
   New( Result, Create );
   {$ENDIF KOL CLASSES/OBJECTS}
-  Result.Form := NewForm( AParent, '1ClickMusic' ).SetPosition( 418, 432 );
+  Result.Form := NewForm( AParent, '1ClickMusic' ).SetPosition( 561, 497 );
   Applet :=  Result.Form;
   Result.Form.Add2AutoFree( Result );
 {$IFDEF UNICODE_CTRLS}
@@ -26,6 +26,7 @@ begin
       Result.Form.OnDestroy := Result.KOLForm1Destroy;
 
     Result.Tray := NewBAPTrayIcon(Applet);
+    Result.Tray.Active := True;
    {$IFDEF USE_NAMES}
     Result.Tray.SetName( Result.Form, 'Tray' ); 
    {$ENDIF}
@@ -142,4 +143,5 @@ begin
     Result.KOLForm1FormCreate( Result );
 
 end;
+
 

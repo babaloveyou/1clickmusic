@@ -5,21 +5,7 @@ unit Unit1;
 interface
 
 {$IFDEF KOL_MCK}
-uses Windows,
-  Messages,
-  KOL,
-  KOLBAPTrayIcon
-{$IF Defined(KOL_MCK)}{$ELSE},
-mirror,
-Classes,
-Controls,
-mckControls,
-mckObjs,
-Graphics,
-mckCtrls,
-mckBAPTrayIcon
-{$IFEND (place your units here->)},
-SysUtils;
+uses Windows, Messages, KOL, KOLBAPTrayIcon {$IFNDEF KOL_MCK},mirror,Classes,Controls,mckControls,mckObjs,Graphics,mckCtrls,mckBAPTrayIcon{$ENDIF (place your units here->)},SysUtils;
 {$ELSE}
 {$I uses.inc}
 Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
@@ -27,14 +13,14 @@ Dialogs;
 {$ENDIF}
 
 type
-{$IF Defined(KOL_MCK)}
+{$IFDEF KOL_MCK}
 {$I MCKfakeClasses.inc}
   {$IFDEF KOLCLASSES} {$I TForm1class.inc} {$ELSE OBJECTS} PForm1 = ^TForm1; {$ENDIF CLASSES/OBJECTS}
   {$IFDEF KOLCLASSES}{$I TForm1.inc}{$ELSE} TForm1 = object(TObj) {$ENDIF}
     Form: PControl;
 {$ELSE not_KOL_MCK}
   TForm1 = class(TForm)
-{$IFEND KOL_MCK}
+{$ENDIF KOL_MCK}
       KOLProject1: TKOLProject;
       lbltrack: TKOLLabel;
       lblbuffer: TKOLLabel;
@@ -44,9 +30,9 @@ type
       lblradio: TKOLLabel;
       btoptions: TKOLButton;
       KOLForm1: TKOLForm;
-      Tray: TKOLBAPTrayIcon;
       btplay: TKOLButton;
       pgrbuffer: TKOLProgressBar;
+    Tray: TKOLBAPTrayIcon;
       procedure KOLForm1FormCreate(Sender: PObj);
       function KOLForm1Message(var Msg: tagMSG; var Rslt: Integer): Boolean;
       procedure channeltreeMouseUp(Sender: PControl;
@@ -62,7 +48,7 @@ type
     { Private declarations }
     public
       ITRAY, ITrayBlue, ITrayGreen, ITrayRed: HICON;
-      treemenu: PMenu;
+      treemenu, traymenu : PMenu;
       procedure ProgressExecute();
       procedure UpdateExecute();
       function LastFMThreadExecute(Sender: PThread): Integer;
@@ -96,7 +82,7 @@ uses
   obj_db;
 
 
-{$IF Defined(KOL_MCK)}{$ELSE}{$R *.DFM}{$IFEND}
+{$IFNDEF KOL_MCK}{$R *.DFM}{$ENDIF}
 
 {$IFDEF KOL_MCK}
 {$I Unit1_1.inc}
@@ -250,7 +236,7 @@ begin
   channeltree.Enabled := False;
   btplay.Enabled := False;
 
-  StopChannel;
+  StopChannel();
 
   btplay.Caption := 'Stop';
   //# Init timer that refresh the progress bar, 500ms interval
@@ -268,7 +254,7 @@ begin
   if not OpenRadio(radiolist.getpls(channeltree.TVSelected), Chn, DS) then
   begin
     traypopup('Error Connecting', lblradio.Caption, NIIF_ERROR);
-    StopChannel;
+    StopChannel();
     lblstatus.caption := 'Error Connecting';
   end;
   channeltree.Enabled := True;
@@ -329,10 +315,10 @@ begin
               traypopup('', 'Volume ' + Int2Str(curVolume) + '%', NIIF_NONE);
             end;
           1003:
-            StopChannel;
+            StopChannel();
           1004:
             if Chn = nil then
-              PlayChannel;
+              PlayChannel();
           2001..2012:
             if hotkeys[Msg.wParam - 2001] <> 0 then
             begin
@@ -373,6 +359,7 @@ type
   PNMTVCustomDraw = ^TNMTVCustomDraw;
 begin
   Result := False;
+
   if (Msg.message = WM_NOTIFY) and (PNMHdr(Msg.lParam).code = NM_CUSTOMDRAW) then
   begin
     Result := True;
@@ -419,7 +406,7 @@ begin
   ITrayRed := LoadIcon(HInstance, 'TRAYRED');
 
   Tray.Icon := ITRAY;
-  Tray.Active := True;
+  //Tray.Active := True;
 
   //# HOTKEYS
   RegisterHotKey(appwinHANDLE, 2, MOD_CONTROL, VK_UP);
@@ -441,9 +428,9 @@ begin
 
   //# KOL puro Menu
   //# define o popup da channeltree
+
   treemenu := NewMenu(channeltree, 0, [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Clear Hotkeys'], treemenuproc);
   channeltree.SetAutoPopupMenu(treemenu);
-
 
   //# Cria lista de radios
   Radiolist := TRadioList.Create;
@@ -457,7 +444,7 @@ begin
   channeltree.TVExpand(channeltree.TVRoot, TVE_COLLAPSE);
 
   //# Load .INI Config
-  LoadConfig;
+  LoadConfig();
   //# Show About box if first run or just updated!
   if firstrun_enabled then showaboutbox;
 end;
@@ -486,7 +473,7 @@ begin
         treemenu.ItemText[Item] := 'Ctrl+F' + Int2Str(Item + 1) + ' :' + #9 + channeltree.TVItemText[undermouse];
       end;
     end;
-  SaveConfig;
+  SaveConfig();
 end;
 
 procedure TForm1.channeltreeMouseUp(Sender: PControl;
@@ -536,15 +523,15 @@ begin
     end;
   end
   else
-    ShowAboutbox;
+    ShowAboutbox();
 end;
 
 procedure TForm1.btplayClick(Sender: PObj);
 begin
   if Chn = nil then
-    PlayChannel
+    PlayChannel()
   else
-    StopChannel;
+    StopChannel();
 end;
 
 procedure TForm1.ChangeTrayIcon(const NewIcon: HICON);
@@ -561,7 +548,7 @@ end;
 
 procedure TForm1.channeltreeSelChange(Sender: PObj);
 begin
-  PlayChannel;
+  PlayChannel();
 end;
 
 procedure TForm1.traypopup(const Atitle, Atext: string;
@@ -592,10 +579,19 @@ begin
 
   DS.Free;
   //# Save .INI config
-  SaveConfig;
+  SaveConfig();
   radiolist.Free;
 end;
 
 end.
+
+
+
+
+
+
+
+
+
 
 

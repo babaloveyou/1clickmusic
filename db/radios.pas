@@ -158,7 +158,7 @@ const
     'http://www.1.fm/electronica.pls',
     'http://fg.impek.tv/listen.pls',
     'http://s6.viastreaming.net:7010/listen.pls',
-    'http://www.beatbox.fm/streams/listen.pls'
+    'http://stream.beatbox.fm:8000/listen.pls'
     );
 
 
@@ -283,7 +283,7 @@ const
     );
 
 const
-  chn_ecletic: array[0..16] of string = (
+  chn_ecletic: array[0..15] of string = (
 	'Ecletic ( mixnation )',
     'Ecletic ( eye97 )',
     'Ecletic ( fusionchicago )',
@@ -297,14 +297,13 @@ const
     'Ecletic ( mix.181.fm )',
     'Ecletic ( point.181.fm )',
     'Ecletic ( party.181.fm )',
-    'Ecletic ( mix.181.fm )',
     'Ecletic ( office.181.fm )',
     'Ecletic ( rautemusik )',
     'Ecletic ( HitzRadio )'
     );
 
 const
-  pls_ecletic: array[0..16] of string = (
+  pls_ecletic: array[0..15] of string = (
 	'http://www.mixnation.de/listen.pls',
     'http://loudcity.com/stations/eye97/files/show/eye97.pls',
     'http://streams.fusionchicago.com/128.pls',
@@ -318,7 +317,6 @@ const
     'http://www.181.fm/winamp.pls?station=181-themix&bitrate=hi',
     'http://www.181.fm/winamp.pls?station=181-thepoint&bitrate=hi',
     'http://www.181.fm/winamp.pls?station=181-party&bitrate=hi',
-    'http://www.181.fm/winamp.pls?station=181-themix&bitrate=hi',
     'http://www.181.fm/winamp.pls?station=181-office&bitrate=hi',
     'http://main-office.rautemusik.fm/listen.pls',
     'http://www.hitzradio.com/hitzradio.pls'

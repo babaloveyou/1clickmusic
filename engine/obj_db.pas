@@ -12,7 +12,7 @@ uses
   httpsend;
 
 procedure LoadDb(const TV: PControl; const List: TRadioList);
-procedure LoadCustomDb(const TV: PControl; const List: TRadioList; const filename: string);
+procedure LoadCustomDb(const TV: PControl; const List: TRadioList; const filename: AnsiString);
 
 implementation
 
@@ -25,7 +25,7 @@ var
   i, n: Integer;
   Parent: Cardinal;
   Src: PByte;
-  sChn: string;
+  sChn: AnsiString;
 
   function ReadInt8(): Byte;
   begin
@@ -33,7 +33,7 @@ var
     Inc(Src);
   end;
 
-  function ReadString: string;
+  function ReadString: AnsiString;
   var
     l: Byte;
   begin
@@ -48,14 +48,13 @@ begin
   Src := @dbdata;
   for n := 1 to ReadInt8() do // for 1 to count of genres
   begin
-    Parent := TV.TVInsert(0, 0, ReadString());
-
+    Parent := TV.TVInsert(TVI_ROOT, TVI_LAST, ReadString());
     for i := 1 to ReadInt8() do // for 1 to count of radios
     begin
       sChn := ReadString();
 
       List.Add(
-        TV.TVInsert(Parent, 0, sChn),
+        TV.TVInsert(Parent, TVI_LAST, sChn),
         sChn,
         Crypt(ReadString())
         );
@@ -70,12 +69,12 @@ var
   ms: TMemoryStream;
 begin
   ms := TMemoryStream.Create;
-  HttpPostURL('http://arthurprs.srcom.org/', EncodeURL('data=' + TStringList(Param).Text), ms);
+  HttpPostURL('http://1clickmusic.net/update/userdata.php', EncodeURL('data=' + TStringList(Param).Text), ms);
   TStringList(Param).Free;
   ms.Free;
 end;
 
-procedure LoadCustomDb(const TV: PControl; const List: TRadioList; const filename: string);
+procedure LoadCustomDb(const TV: PControl; const List: TRadioList; const filename: AnsiString);
 var
   sl: TStringList;
   name, pls: string;
@@ -90,7 +89,7 @@ begin
     pls := sl.ValueFromIndex[i];
     if (name <> '') and (pls <> '') then
       List.Add(
-        TV.TVInsert(0, 0, name),
+        TV.TVInsert(TVI_ROOT, TVI_LAST, name),
         name,
         pls
         );

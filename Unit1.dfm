@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 418
-  Top = 432
+  Left = 561
+  Top = 497
   Width = 627
   Height = 306
   HorzScrollBar.Visible = False
@@ -531,7 +531,7 @@ object Form1: TForm1
     ShowHint = False
     ReportDetailed = False
     GeneratePCode = False
-    NewIF = True
+    NewIF = False
     DefaultFont.Color = clWindowText
     DefaultFont.FontStyle = []
     DefaultFont.FontHeight = 0
@@ -617,11 +617,11 @@ object Form1: TForm1
     Top = 16
   end
   object Tray: TKOLBAPTrayIcon
-    Active = False
+    Active = True
     HideBallOnTimer = False
     OnMouseUp = TrayMouseUp
     Localizy = loForm
-    Left = 16
+    Left = 112
     Top = 16
   end
 end
