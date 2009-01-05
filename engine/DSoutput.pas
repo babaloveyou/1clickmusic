@@ -48,7 +48,7 @@ type
     procedure prebuffer; virtual; abstract;
     procedure Execute; override;
   public
-    property Status : TRadioStatus read FStatus write SetStatus;
+    property Status: TRadioStatus read FStatus write SetStatus;
     property DS: TDSoutput read FDevice write FDevice;
     function GetProgress(): Integer; virtual; abstract;
     procedure GetInfo(out Atitle: string; out Aquality: Cardinal); virtual; abstract;
@@ -123,9 +123,6 @@ end;
 
 function TDSoutput.Volume(value: Integer): Integer;
 begin
-  Result := Fvolume;
-  if FSecondary = nil then Exit;
-
   if value >= 100 then
   begin
     Fvolume := 100;
@@ -145,7 +142,9 @@ begin
         );
     end;
 
-  FSecondary.SetVolume(value);
+  if FSecondary <> nil then
+    FSecondary.SetVolume(value);
+
   Result := Fvolume;
 end;
 

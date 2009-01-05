@@ -5,11 +5,10 @@ unit Unit1;
 interface
 
 {$IFDEF KOL_MCK}
-uses Windows, Messages, KOL, KOLBAPTrayIcon {$IFNDEF KOL_MCK},mirror,Classes,Controls,mckControls,mckObjs,Graphics,mckCtrls,mckBAPTrayIcon{$ENDIF (place your units here->)},SysUtils;
+uses Windows, Messages, KOL, KOLBAPTrayIcon{$IFNDEF KOL_MCK}, mirror, Classes, Controls, mckControls, mckObjs, Graphics, mckCtrls, mckBAPTrayIcon{$ENDIF (place your units here->)}, SysUtils;
 {$ELSE}
 {$I uses.inc}
-Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-Dialogs;
+Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs;
 {$ENDIF}
 
 type
@@ -21,58 +20,55 @@ type
 {$ELSE not_KOL_MCK}
   TForm1 = class(TForm)
 {$ENDIF KOL_MCK}
-      KOLProject1: TKOLProject;
-      lbltrack: TKOLLabel;
-      lblbuffer: TKOLLabel;
-      lblstatus: TKOLLabel;
-      channeltree: TKOLTreeView;
-      lblhelp: TKOLLabel;
-      lblradio: TKOLLabel;
-      btoptions: TKOLButton;
-      KOLForm1: TKOLForm;
-      btplay: TKOLButton;
-      pgrbuffer: TKOLProgressBar;
+    KOLProject1: TKOLProject;
+    lbltrack: TKOLLabel;
+    lblbuffer: TKOLLabel;
+    lblstatus: TKOLLabel;
+    channeltree: TKOLTreeView;
+    lblhelp: TKOLLabel;
+    lblradio: TKOLLabel;
+    KOLForm1: TKOLForm;
+    btplay: TKOLButton;
+    pgrbuffer: TKOLProgressBar;
     Tray: TKOLBAPTrayIcon;
-      procedure KOLForm1FormCreate(Sender: PObj);
-      function KOLForm1Message(var Msg: tagMSG; var Rslt: Integer): Boolean;
-      procedure channeltreeMouseUp(Sender: PControl;
-        var Mouse: TMouseEventData);
-      procedure btoptionsClick(Sender: PObj);
-      procedure TrayMouseUp(Sender: PControl; var Mouse: TMouseEventData);
-      procedure btplayClick(Sender: PObj);
-      function channeltreeTVSelChanging(Sender: PControl; oldItem,
-        newItem: Cardinal): Boolean;
-      procedure channeltreeSelChange(Sender: PObj);
-      procedure KOLForm1Destroy(Sender: PObj);
-    private
-    { Private declarations }
-    public
-      ITRAY, ITrayBlue, ITrayGreen, ITrayRed: HICON;
-      treemenu, traymenu : PMenu;
-      procedure ProgressExecute();
-      procedure UpdateExecute();
-      function LastFMThreadExecute(Sender: PThread): Integer;
-      function ThreadExecute(Sender: PThread): Integer;
-      procedure ChangeTrayIcon(const NewIcon: HICON);
-      procedure traypopup(const Atitle, Atext: string; const IconType: Integer);
-      procedure PlayChannel;
-      procedure StopChannel;
-      procedure treemenuproc(Sender: PMenu; Item: Integer);
-      procedure LoadConfig;
-      procedure SaveConfig;
-    end;
+    procedure KOLForm1FormCreate(Sender: PObj);
+    function KOLForm1Message(var Msg: tagMSG; var Rslt: Integer): Boolean;
+    procedure channeltreeMouseUp(Sender: PControl;
+      var Mouse: TMouseEventData);
+    procedure TrayMouseUp(Sender: PControl; var Mouse: TMouseEventData);
+    procedure btplayClick(Sender: PObj);
+    function channeltreeTVSelChanging(Sender: PControl; oldItem,
+      newItem: Cardinal): Boolean;
+    procedure channeltreeSelChange(Sender: PObj);
+    procedure KOLForm1Destroy(Sender: PObj);
+  private
 
-  var
-    Form1{$IFDEF KOL_MCK}: PForm1{$ELSE}: TForm1{$ENDIF};
+  public
+    ITRAY, ITrayBlue, ITrayGreen, ITrayRed: HICON;
+    treemenu, traymenu: PMenu;
+    procedure ProgressExecute();
+    procedure UpdateExecute();
+    function LastFMThreadExecute(Sender: PThread): Integer;
+    function ThreadExecute(Sender: PThread): Integer;
+    procedure ChangeTrayIcon(const NewIcon: HICON);
+    procedure traypopup(const Atitle, Atext: AnsiString; const IconType: Integer);
+    procedure PlayChannel;
+    procedure StopChannel;
+    procedure treemenuproc(Sender: PMenu; Item: Integer);
+    procedure traymenuproc(sender: PMenu; Item: Integer);
+    procedure LoadConfig;
+    procedure SaveConfig;
+  end;
 
-{$IFDEF KOL_MCK}
-procedure NewForm1(var Result: PForm1; AParent: PControl);
-{$ENDIF}
+var
+  Form1{$IFDEF KOL_MCK}: PForm1{$ELSE}: TForm1{$ENDIF};
+
+{$IFDEF KOL_MCK}procedure NewForm1(var Result: PForm1; AParent: PControl); {$ENDIF}
 
 implementation
 
 uses
-  Unit2,
+  InputQuery,
   DSoutput,
   radioopener,
   obj_list,
@@ -84,11 +80,22 @@ uses
 
 {$IFNDEF KOL_MCK}{$R *.DFM}{$ENDIF}
 
-{$IFDEF KOL_MCK}
-{$I Unit1_1.inc}
-{$ENDIF}
+{$IFDEF KOL_MCK}{$I Unit1_1.inc}{$ENDIF}
 
-procedure Tform1.LoadConfig;
+const
+  _Radios = 1;
+  _About = 27;
+  _Exit = 28;
+  _Traypopup = 14;
+  _Traycolor = 15;
+  _MsnNowplaying = 17;
+  _SaveTrackList = 19;
+  _SaveTrackClipboard = 21;
+  _LastFm = 22;
+  _AutoRun = 24;
+  _PlayOnStart = 25;
+
+procedure TForm1.LoadConfig;
 var
   i: Integer;
 begin
@@ -96,21 +103,23 @@ begin
   begin
     Mode := ifmRead;
     Section := 'options';
-    trayiconcolor_enabled := ValueBoolean('trayiconcolor_enabled', True);
-    traypopups_enabled := ValueBoolean('traypopups_enabled', True);
+    traycolor_enabled := ValueBoolean('traycolor_enabled', True);
+    traypopup_enabled := ValueBoolean('traypopup_enabled', True);
     firstrun_enabled := ValueBoolean('firstrun_enabled', True);
     msn_enabled := ValueBoolean('msn_enabled', False);
-    msn_iconi := ValueInteger('msn_iconi', 0);
-    msn_icons := ValueString('msn_icons', 'Music');
+    //msn_iconi := ValueInteger('msn_iconi', 0);
+    //msn_icons := ValueString('msn_icons', 'Music');
     list_enabled := ValueBoolean('list_enabled', False);
-    list_file := ValueString('list_file', 'lista.txt');
+    list_file := ValueString('list_file', 'list.txt');
     clipboard_enabled := ValueBoolean('clipboard_enabled', False);
     lastfm_enabled := ValueBoolean('lastfm_enabled', False);
     lastfm_user := ValueString('lastfm_user', '');
     lastfm_pass := Crypt(ValueString('lastfm_pass', ''));
-    proxy_enabled := ValueBoolean('proxy_enabled', False);
+    autorun_enabled := ValueBoolean('autorun_enabled', False);
+    playonstart_enabled := ValueBoolean('playonstart_enabled', False);
+    {proxy_enabled := ValueBoolean('proxy_enabled', False);
     proxy_host := ValueString('proxy_host', '');
-    proxy_port := ValueString('proxy_port', '');
+    proxy_port := ValueString('proxy_port', '');}
 
     Section := 'hotkeys';
     for i := 0 to 11 do
@@ -120,9 +129,27 @@ begin
     end;
     Free;
   end;
+
+  with traymenu^ do
+  begin
+    for i := 0 to 11 do
+      if hotkeys[i] = 0 then
+        ItemVisible[i + _Radios] := False
+      else
+        ItemText[i + _radios] := treemenu.ItemText[i];
+
+    ItemChecked[_Traypopup] := traypopup_enabled;
+    ItemChecked[_Traycolor] := traycolor_enabled;
+    ItemChecked[_MsnNowplaying] := msn_enabled;
+    ItemChecked[_SaveTrackList] := list_enabled;
+    ItemChecked[_SaveTrackClipboard] := clipboard_enabled;
+    ItemChecked[_LastFm] := lastfm_enabled;
+    ItemChecked[_AutoRun] := autorun_enabled;
+    ItemChecked[_PlayOnStart] := playonstart_enabled;
+  end;
 end;
 
-procedure Tform1.SaveConfig;
+procedure TForm1.SaveConfig;
 var
   i: Integer;
 begin
@@ -130,21 +157,23 @@ begin
   begin
     Mode := ifmWrite;
     Section := 'options';
-    ValueBoolean('trayiconcolor_enabled', trayiconcolor_enabled);
-    ValueBoolean('traypopups_enabled', traypopups_enabled);
+    ValueBoolean('traycolor_enabled', traycolor_enabled);
+    ValueBoolean('traypopup_enabled', traypopup_enabled);
     ValueBoolean('firstrun_enabled', False);
     ValueBoolean('msn_enabled', msn_enabled);
-    ValueInteger('msn_iconi', msn_iconi);
-    ValueString('msn_icons', msn_icons);
+    //ValueInteger('msn_iconi', msn_iconi);
+    //ValueString('msn_icons', msn_icons);
     ValueBoolean('list_enabled', list_enabled);
     ValueString('list_file', list_file);
     ValueBoolean('clipboard_enabled', clipboard_enabled);
     ValueBoolean('lastfm_enabled', lastfm_enabled);
     ValueString('lastfm_user', lastfm_user);
     ValueString('lastfm_pass', Crypt(lastfm_pass));
-    ValueBoolean('proxy_enabled', proxy_enabled);
+    ValueBoolean('autorun_enabled', autorun_enabled);
+    ValueBoolean('playonstart_enabled', playonstart_enabled);
+    {ValueBoolean('proxy_enabled', proxy_enabled);
     ValueString('proxy_host', proxy_host);
-    ValueString('proxy_port', proxy_port);
+    ValueString('proxy_port', proxy_port); }
 
     Section := 'hotkeys';
     for i := 0 to 11 do
@@ -162,6 +191,7 @@ begin
   progress := Chn.GetProgress();
   if progress = curProgress then Exit;
 
+  pgrbuffer.BeginUpdate;
   case progress of
     0..40:
       begin
@@ -181,6 +211,7 @@ begin
   end;
   pgrbuffer.Progress := 100 - progress;
   curProgress := progress;
+  pgrbuffer.EndUpdate;
 end;
 
 procedure TForm1.UpdateExecute();
@@ -200,7 +231,7 @@ begin
       traypopup('Track change', curTitle, NIIF_INFO);
 
       if msn_enabled then
-        updateMSN(True);
+        UpdateMsn(True);
 
       if list_enabled then
         writeFile(list_file, curTitle);
@@ -275,7 +306,7 @@ end;
 procedure TForm1.StopChannel;
 begin
   if msn_enabled then
-    updateMSN(False);
+    UpdateMsn(False);
   if Chn <> nil then
     FreeAndNil(Chn);
 
@@ -308,10 +339,11 @@ begin
       if channeltree.Enabled then
         case Msg.wParam of
           -2, 2:
-            if Chn <> nil then
+            //if Chn <> nil then
             begin
               curVolume := DS.Volume(curVolume + Msg.wParam);
-              UpdateExecute();
+              if Chn <> nil then
+                UpdateExecute();
               traypopup('', 'Volume ' + Int2Str(curVolume) + '%', NIIF_NONE);
             end;
           1003:
@@ -341,7 +373,7 @@ begin
           UpdateExecute()
         else
         begin
-          StopChannel;
+          StopChannel();
           lblstatus.Text := 'Disconected!';
         end;
       end;
@@ -406,7 +438,7 @@ begin
   ITrayRed := LoadIcon(HInstance, 'TRAYRED');
 
   Tray.Icon := ITRAY;
-  //Tray.Active := True;
+  Tray.Active := True;
 
   //# HOTKEYS
   RegisterHotKey(appwinHANDLE, 2, MOD_CONTROL, VK_UP);
@@ -426,11 +458,22 @@ begin
   RegisterHotKey(appwinHANDLE, 2011, MOD_CONTROL, VK_F11);
   RegisterHotKey(appwinHANDLE, 2012, MOD_CONTROL, VK_F12);
 
-  //# KOL puro Menu
-  //# define o popup da channeltree
+  // MENUS!
+  NewMenu(Form, 0, [], nil);
 
   treemenu := NewMenu(channeltree, 0, [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Clear Hotkeys'], treemenuproc);
   channeltree.SetAutoPopupMenu(treemenu);
+
+  traymenu := NewMenu(Form, 0, [
+    'Favorites', '(', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ')',
+      'Options', '(',
+      '-Tray popups', '-Tray colors', '-', '-Messenger Now Playing', '-', '-Save track list', '-Copy track to clipboard', '-', '-Last.fm Scrobber', '-', 'Autorun with windows', 'Play fav-1 automaticaly',
+      ')',
+      '-',
+      'About', 'Exit'
+      ], traymenuproc);
+
+  Tray.PopupMenu := traymenu.Handle;
 
   //# Cria lista de radios
   Radiolist := TRadioList.Create;
@@ -447,16 +490,23 @@ begin
   LoadConfig();
   //# Show About box if first run or just updated!
   if firstrun_enabled then showaboutbox;
+
+  if ParamCount <> 0 then Form.Hide;
+
+  if playonstart_enabled then channeltree.TVSelected := hotkeys[0];
 end;
 
 procedure TForm1.treemenuproc(Sender: PMenu; Item: Integer);
+const
+  _ClearHotkeys = 12;
 begin
-  if Item = 12 then
+  if Item = _ClearHotkeys then
   begin
     for Item := 0 to 11 do
     begin
       hotkeys[Item] := 0;
       treemenu.ItemText[Item] := 'Ctrl+F' + Int2Str(Item + 1);
+      traymenu.ItemVisible[Item + _Radios] := False;
     end;
   end
   else
@@ -466,13 +516,101 @@ begin
       begin
         hotkeys[Item] := 0;
         treemenu.ItemText[Item] := 'Ctrl+F' + Int2Str(Item + 1);
+        traymenu.ItemVisible[Item + _Radios] := False;
       end
       else
       begin
         hotkeys[Item] := undermouse;
         treemenu.ItemText[Item] := 'Ctrl+F' + Int2Str(Item + 1) + ' :' + #9 + channeltree.TVItemText[undermouse];
+        traymenu.ItemText[Item + _Radios] := treemenu.ItemText[Item];
+        traymenu.ItemVisible[Item + _Radios] := True;
       end;
     end;
+  SaveConfig();
+end;
+
+procedure TForm1.traymenuproc(Sender: PMenu; Item: Integer);
+begin
+  case Item of
+    _Traypopup:
+      begin
+        traypopup_enabled := not traypopup_enabled;
+        Sender.ItemChecked[_Traypopup] := traypopup_enabled;
+      end;
+
+    _Traycolor:
+      begin
+        traycolor_enabled := not traycolor_enabled;
+        Sender.ItemChecked[_Traycolor] := traycolor_enabled;
+        if not traycolor_enabled then
+          ChangeTrayIcon(ITRAY);
+      end;
+
+    _MsnNowplaying:
+      begin
+        msn_enabled := not msn_enabled;
+        UpdateMsn(msn_enabled);
+        Sender.ItemChecked[_MsnNowplaying] := msn_enabled;
+      end;
+
+    _SaveTrackList:
+      begin
+        list_enabled := not list_enabled;
+        if list_enabled then
+          list_enabled := InputBox('filename for the track list:', list_file);
+        sender.ItemChecked[_SaveTrackList] := list_enabled;
+      end;
+
+    _SaveTrackClipboard:
+      begin
+        clipboard_enabled := not clipboard_enabled;
+        sender.ItemChecked[_SaveTrackClipboard] := clipboard_enabled;
+      end;
+
+    _LastFm:
+      begin
+        lastfm_enabled := not lastfm_enabled;
+        if lastfm_enabled then
+          lastfm_enabled := (
+            InputBox('Last.fm username:', lastfm_user) and
+            InputBox('Last.fm password:', lastfm_pass, [eoPassword])
+            );
+
+        sender.ItemChecked[_LastFm] := lastfm_enabled;
+      end;
+
+    _AutoRun:
+      begin
+        autorun_enabled := not autorun_enabled;
+        sender.ItemChecked[_AutoRun] := autorun_enabled;
+        SetAutoRun();
+      end;
+
+    _PlayOnStart:
+      begin
+        playonstart_enabled := not playonstart_enabled;
+        sender.ItemChecked[_PlayOnStart] := playonstart_enabled;
+      end;
+
+    _Radios.._Radios + 11:
+      begin
+        Item := Item - _Radios;
+        if hotkeys[Item] <> 0 then channeltree.TVSelected := hotkeys[Item];
+        Exit;
+      end;
+
+    _About:
+      begin
+        ShowAboutbox();
+        Exit;
+      end;
+
+    _Exit:
+      begin
+        Form.Close;
+      end;
+  end;
+
   SaveConfig();
 end;
 
@@ -484,18 +622,6 @@ begin
   //# Store where the mouse is for popupmenu
   if Mouse.Button = mbright then
     undermouse := channeltree.TVItemAtPos(Mouse.X, Mouse.Y, where);
-end;
-
-procedure TForm1.btoptionsClick(Sender: PObj);
-begin
-  //# create and show
-  Form.AlphaBlend := 180;
-  NewForm2(Form2, Form);
-  Form2.Form.ShowModal;
-  //# get rid of it and set alpha back to 255
-  Form.AlphaBlend := 255;
-  Form2.Form.Free;
-  Form2 := nil;
 end;
 
 function TForm1.LastFMThreadExecute(Sender: PThread): Integer;
@@ -521,9 +647,7 @@ begin
       Form.Show;
       Form.Focused := True;
     end;
-  end
-  else
-    ShowAboutbox();
+  end;
 end;
 
 procedure TForm1.btplayClick(Sender: PObj);
@@ -536,7 +660,7 @@ end;
 
 procedure TForm1.ChangeTrayIcon(const NewIcon: HICON);
 begin
-  if (trayiconcolor_enabled) and (Tray.Icon <> NewIcon) then
+  if (traycolor_enabled) and (Tray.Icon <> NewIcon) then
     Tray.Icon := NewIcon;
 end;
 
@@ -551,10 +675,10 @@ begin
   PlayChannel();
 end;
 
-procedure TForm1.traypopup(const Atitle, Atext: string;
+procedure TForm1.traypopup(const Atitle, Atext: AnsiString;
   const IconType: Integer);
 begin
-  if (traypopups_enabled) then
+  if (traypopup_enabled) then
     with Tray^ do
     begin
       BalloonTitle := Atitle;
@@ -566,7 +690,7 @@ end;
 procedure TForm1.KOLForm1Destroy(Sender: PObj);
 begin
   if msn_enabled then
-    updateMSN(False);
+    UpdateMsn(False);
 
   if lastfm_thread <> nil then
     lastfm_thread.Free;
@@ -578,20 +702,9 @@ begin
     Chn.Free;
 
   DS.Free;
-  //# Save .INI config
-  SaveConfig();
   radiolist.Free;
 end;
 
 end.
-
-
-
-
-
-
-
-
-
 
 

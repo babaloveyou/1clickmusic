@@ -3,7 +3,7 @@ unit radios;
 interface
 
 const
-  genrelist: array[0..8] of string = (
+  genrelist: array[0..9] of string = (
     'Eletronic',
     'Downtempo',
     'Rock/Metal',
@@ -12,17 +12,20 @@ const
     'Old/Classical',
     'Industrial',
     'Others',
+    'Christmas',
     'Brasileiras'
     );
 
 const
   chn_eletronic: array[0..68] of string = (
     'House Funky ( kif )',
+    'Hardcore ( hardcoreradio )',
     'Hardstyle ( hard.fm )',
     'Hardstyle ( hardbase )',
     'House Eletro ( housetime )',
     'House SoulFull ( freshhouse )',
     'Trance ( afterhours )',
+    'Club ( club nature )',
 	'Club ( c89.5 )',
     'Club ( blitz )',
     'Club ( playdio )',
@@ -36,11 +39,9 @@ const
     'Dance ( 1.fm )',
     'Trance ( 1.fm )',
     'House Funky ( rautemusik )',
-    'Progressive ( xtcradio )',
     'Progressive ( RaveTrax )',
     'Progressive ( soma )',
     'IDM ( soma )',
-    'House Deep ( soma )',
     'Psy ( philosomatika )',
     'Psy ( psyradio )',
     'Psy Prog ( psyradio )',
@@ -85,17 +86,19 @@ const
     'Alternative ( 1.fm )',
     'Dance ( fg radio )',
     'Dance ( ibizaglobal )',
-    'Dance ( beatbox )',
+    'Dance ( beatbox )'
     );
 
 const
   pls_eletronic: array[0..68] of string = (
     'http://www.kifradio.com/www.kifradio.com.m3u',
+    'http://www.hardcoreradio.nl/rhr.m3u',
     'http://files.hard.fm/128.pls',
     'http://mp3.hardbase.fm/listen.pls',
     'http://high.housetime.fm/listen.pls',
     'http://listen.freshhouse.fm/listen.pls',
     'http://stats.ah.fm/dynamicplaylist.m3u?quality=96',
+    'http://www.clubnature.fm/listen/listen0.pls',
 	'http://c895worldwide.com/web/streaming/c895sc128.pls',
     'http://blitz-stream.de/stream/stream.m3u',
     'http://www.playdio.se/bredband.pls',
@@ -105,16 +108,14 @@ const
     'http://kim2.frenchkissfm.com/listen.pls',
     'http://www.radioseven.se/128.pls',
     'http://club-office.rautemusik.fm/listen.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=6057&file=filename.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=6201&file=filename.pls',
+    'http://www.1.fm/TuneIn/WM/energyclub128k/Listen.aspx',
+    'http://www.1.fm/TuneIn/WM/energydance128k/Listen.aspx',
     'http://www.1.fm/trance.pls',
     'http://funky-office.rautemusik.fm/listen.pls',
-    'http://stream.xtcradio.com:8069/listen.pls',
     'http://ravetrax.com/mp3_hi.pls',
-    'http://somafm.com/tagstrance.pls',
+    'http://somafm.com/tags.pls',
     'http://somafm.com/cliqhop.pls',
-    'http://somafm.com/beatblender.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=2933&file=filename.pls',
+    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=6488&file=filename.pls',
     'http://streamer.psyradio.org:8030/listen.pls',
     'http://streamer.psyradio.org:8010/listen.pls',
     'http://www.neradio.se/listen.pls',
@@ -163,7 +164,7 @@ const
 
 
 const
-  chn_downtempo: array[0..24] of string = (
+  chn_downtempo: array[0..25] of string = (
     'Dream Pop ( soma )',
     'Post Rock ( soma )',
     'Ambient ( bluemars )',
@@ -174,7 +175,8 @@ const
     'Lounge ( rautemusik )',
     'Lounge ( smoothlounge )',
     'Chillout ( soma )',
-    'Ambient Industrial ( soma )',
+    'Ambient House ( soma )',
+    'Ambient Dark ( soma )',
     'Ambient Space ( soma )',
     'Ambient Drone ( soma )',
     'Lounge Exotica ( soma )',
@@ -192,7 +194,7 @@ const
     );
 
 const
-  pls_downtempo: array[0..24] of string = (
+  pls_downtempo: array[0..25] of string = (
     'http://somafm.com/lush.pls',
     'http://somafm.com/digitalis.pls',
     'http://207.200.96.225:8024/listen.pls',
@@ -203,6 +205,7 @@ const
     'http://lounge-office.rautemusik.fm/listen.pls',
     'http://www.smoothlounge.com/streams/smoothlounge_128.pls',
     'http://somafm.com/groovesalad.pls',
+    'http://somafm.com/beatblender.pls',
     'http://somafm.com/doomed.pls',
     'http://somafm.com/spacestation.pls',
     'http://somafm.com/dronezone.pls',
@@ -283,7 +286,8 @@ const
     );
 
 const
-  chn_ecletic: array[0..15] of string = (
+  chn_ecletic: array[0..16] of string = (
+    'Ecletic ( disco beatz )',
 	'Ecletic ( mixnation )',
     'Ecletic ( eye97 )',
     'Ecletic ( fusionchicago )',
@@ -303,7 +307,8 @@ const
     );
 
 const
-  pls_ecletic: array[0..15] of string = (
+  pls_ecletic: array[0..16] of string = (
+    'http://www.disco-beatz.com/main.pls',
 	'http://www.mixnation.de/listen.pls',
     'http://loudcity.com/stations/eye97/files/show/eye97.pls',
     'http://streams.fusionchicago.com/128.pls',
@@ -323,7 +328,7 @@ const
     );
 
 const
-  chn_hiphop: array[0..11] of string = (
+  chn_hiphop: array[0..12] of string = (
     'HipHop ( blackbeats )',
     'HipHop ( powerhitz )',
     'HipHop ( thugzone )',
@@ -334,22 +339,24 @@ const
     'HipHop ( beat.181.fm )',
     'HipHop ( box.181.fm )',
     'HipHop ( sky )',
+    'R&B ( 181.fm )',
     'Classic Rap ( sky )',
     'HipHop ( smoothbeats )'
     );
 
 const
-  pls_hiphop: array[0..11] of string = (
+  pls_hiphop: array[0..12] of string = (
     'http://www.blackbeats.fm/listen.m3u',
     'http://www.powerhitz.com/ph.pls',
     'http://www.thugzone.com/broadband-128.pls',
     'http://www.defjay.com/listen.pls',
     'http://jam-office.rautemusik.fm/listen.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=5548&file=filename.pls',
+    'http://www.1.fm/TuneIn/WM/energyjamz128k/Listen.aspx',
     'http://www.hot108.com/hot108.pls',
     'http://www.181.fm/winamp.pls?station=181-beat&bitrate=hi',
     'http://www.181.fm/winamp.pls?station=181-thebox&bitrate=hi',
     'http://www.sky.fm/mp3/urbanjamz.pls',
+    'http://www.181.fm/winamp.pls?station=181-rnb&style=&description=True%20R&B',
     'http://www.sky.fm/mp3/classicrap.pls',
     'http://www.smoothbeats.com/listen.pls'
     );
@@ -421,10 +428,10 @@ const
   pls_industrial: array[0..9] of string = (
     // 'http://www.dunklewelle.de/modules/mod_internetradio/makeplaylist.php?ip=87.106.67.16&port=10000&format=M3U',
     'http://radio.darkness.com/listen.pls',
-    'http://playlist.tormentedradio.com/tormentedradio.pls',
+    'http://playlist.tormentedradio.com/radioG.pls',
     'http://www.digitalgunfire.com/playlist.pls',
     'http://www.ultradarkradio.com/listen.pls',
-    'http://38.96.148.24:6764/listen.pls',
+    'http://radiogolgotha.com:6764/listen.pls',
     'http://www.schwarze-welle.com/play.m3u',
     'http://www.r1live.de/player/winamp.pls',
     'http://www.rantmedia.ca/industrial/rr-industrial128.pls',
@@ -445,8 +452,8 @@ const
     'Jazz Smooth ( 1.fm )',
     'Jazz Smooth ( smoothjazz )',
     'Jazz Smooth ( 181.fm )',
-    'Lovesongs ( 181.fm )',
-    'Lovesongs ( slowradio )',
+    'Easy Listening ( 181.fm )',
+    'Easy Listening ( slowradio )',
     'Country ( 181.fm )',
     'Country Classic ( 181.fm )',
     'Country ( 1.fm )',
@@ -455,7 +462,7 @@ const
     'Reggae ( bigup )',
     'Reggae Dancehall ( bigup )',
     'Reggae ( sky )',
-    'Lovesongs ( sky )',
+    'Easy Listening ( sky )',
     'Beatles tribute ( sky )',
     'Jazz Smooth ( sky )',
     'Jazz Uptempo ( sky )',
@@ -474,7 +481,7 @@ const
     'Japan/Anime ( AnimeNfo )',
     'Games ( VGamp )',
     'Arabic ( darvish )',
-    'Arabic ( mazaj )'
+    'Soundtracks ( cinemix )'
     );
 
 const
@@ -488,7 +495,7 @@ const
     'http://www.977music.com/tunein/web/country.asx',
     'http://www.swissgroove.ch/listen.m3u',
     'http://www.1.fm/jazz.pls',
-    'http://www.shoutcast.com/sbin/shoutcast-playlist.pls?rn=1042&file=filename.pls',
+    'http://smoothjazz.com/streams/smoothjazz_128.pls',
     'http://www.181.fm/winamp.pls?station=181-breeze&bitrate=hi',
     'http://www.181.fm/winamp.pls?station=181-heart&bitrate=hi',
     'http://streams.slowradio.com/index.php?id=winamp',
@@ -519,11 +526,48 @@ const
     'http://www.animenfo.com/radio/listen.m3u',
     'http://www.vgamp.com/listen128.pls',
     'http://207.200.96.228:8078/listen.pls',
-    'http://listen.mazaj.fm/listen.pls'
+    'http://loudcity.com/stations/cinemix/files/show/mp3-High.pls'
+    );
+    
+const
+   chn_christmas: array[0..11] of string = (
+    'Christmas ( sky )',
+    'Christmas ( 1.fm )',
+    'Christmas Lounge ( soma )',
+    'Christmas Comedy ( soma )'
+    'Christmas ( xmasmelody )',
+    'Christmas ( rautemusik )',
+    'Christmas Country ( 181.fm )',
+    'Christmas Hits ( 181.fm )',
+    'Christmas Mix ( 181.fm )',
+    'Christmas R&B ( 181.fm )',
+    'Christmas Rock ( 181.fm )',
+    'Christmas Jazz ( 181.fm )',
+    );
+    
+const
+   pls_christmas: array[0..11] of string = (
+    'http://www.sky.fm/mp3/christmas.pls',
+    'http://www.1.fm/christmas.pls',
+    'http://somafm.com/christmas.pls',
+    'http://somafm.com/xmasinfrisko.pls',
+    'http://www.xmasmelody.com/128.pls',
+    'http://christmas-high.rautemusik.fm/listen.pls',
+    'http://www.181.fm/winamp.pls?station=181-xkkountry&style=&description=Christmas%20Kountry',
+    'http://www.181.fm/winamp.pls?station=181-xpower&style=&description=Christmas%20Power',
+    'http://www.181.fm/winamp.pls?station=181-xmix&style=&description=Christmas%20Mix',
+    'http://www.181.fm/winamp.pls?station=181-xtrue&style=&description=Christmas%20R&B',
+    'http://www.181.fm/winamp.pls?station=181-xrock&style=&description=Christmas%20Rock',
+    'http://www.181.fm/winamp.pls?station=181-xsmooth&style=&description=Christmas%20Smooth%20Jazz',
     );
 
 const
-  chn_brasil: array[0..31] of string = (
+  chn_brasil: array[0..36] of string = (
+    'Ecletic ( interativa )',
+    'Ecletic ( radiofusion )',
+    'Ecletic ( cyberradio )',
+    'Ecletic ( radiozone )',
+    'Psy ( radiodaweb )',
     'Rock ( cidadewebrock )',
 	// 'Ecletic ( classicpan )'
     // 'Ecletic ( jovempop )',
@@ -540,7 +584,6 @@ const
     'Noticias ( cbn.salvador )',
     'Popular ( tupi.rj )',
     'Popular ( tupi.fm )',
-    'Popular ( piatafm )',
     'Classic Rock ( Kissfm )',
     'Ecletic ( redeblitz )',
     'Ecletic ( jovempan.sp)',
@@ -556,21 +599,27 @@ const
     'Popular ( globo.am.sp )',
     'Popular ( globo.am.rj )',
     'Popular ( globo.am.mg )',
-    'Rock/Metal ( sporttv )',
+    'Rock ( sporttv )',
     'Ecletic ( multishow )',
     'Classicos ( gnt )',
+    'Sertanejo ( positifafm )',
     'Ecletic ( 97fm )'
     );
 
 const
-  pls_brasil: array[0..31] of string = (
+  pls_brasil: array[0..36] of string = (
+    'http://www.interativafm.net/interativa.pls',
+    'http://www.radiofusion.com.br/listen.m3u',
+    'http://www.cyberadiobrasil.com.br/player/ouvir.pls',
+    'http://www.radiozone.com.br/player/winamp.m3u',
+    'http://www.radiodaweb.com/aovivo.m3u',
     'mms://200.222.115.50/cidadewebrock_cidadewebrock128',
 	// 'http://server09.virgula.com.br:8000/listen.pls',
     // 'http://www.superstreaming.com.br/~jovempop/media/stream.m3u',
     'http://www.circuitomix.com.br/circuitomix.pls',
     'http://www.ritmobrasil.com/RitmoBrasil.pls',
     // 'http://www.radiowebtv.com/server/megasom/megasom.m3u',
-    'http://ouvir.radioblast.com.br:9000/listen.pls',
+    'http://ouvir.radioblast.com.br:2324/',
     'mms://radio.e-tribuna.com.br/tribuna',
     // 'http://www.89fm.com.br/aovivo/aovivo.asx',
     'http://cbn.globoradio.globo.com/cbn/wma/radiosp/asx.asp?audio=',
@@ -580,7 +629,6 @@ const
     'http://www.crossdigital.com.br/servidor1/8080/listen.pls',
     'mms://dedicado.tupi.am:8000/tupiaudio',
     'http://www.crosshost.com.br/cbs/tupifm/listen.pls',
-    'http://www.piatafm.com.br/radiopiata.m3u',
     'http://www.crosshost.com.br/cbs/kiss/ouvir.m3u',
     'http://www.redeblitz.com.br/redeblitz.wmx',
     'mms://server09.virgula.com.br/jovempanfm/',
@@ -599,6 +647,7 @@ const
     'http://wmsgr.globo.com/webmedia/ObterPathMidia?usuario=sgr01&tipo=live&path=/sgr_off_sportv_live.wma&midiaId=511317&ext=.asx&output=ASX',
     'http://wmsgr.globo.com/webmedia/ObterPathMidia?usuario=sgr01&tipo=live&path=/sgr_off_multishow_live.wma&midiaId=581681&ext.asx&output=ASX',
     'http://wmsgr.globo.com/webmedia/ObterPathMidia?usuario=sgr01&tipo=live&path=/sgr_off_gnt_live.wma&midiaId=510705&ext.asx&output=ASX',
+    'http://www.positivafm.com.br/radio_online/listen.pls',
     'http://relay.corptv.com.br/97fm.asp'
     );
 

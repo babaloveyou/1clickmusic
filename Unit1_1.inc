@@ -8,7 +8,7 @@ begin
   {$ELSE OBJECTS}
   New( Result, Create );
   {$ENDIF KOL CLASSES/OBJECTS}
-  Result.Form := NewForm( AParent, '1ClickMusic' ).SetPosition( 561, 497 );
+  Result.Form := NewForm( AParent, '1ClickMusic' ).SetPosition( 451, 400 );
   Applet :=  Result.Form;
   Result.Form.Add2AutoFree( Result );
 {$IFDEF UNICODE_CTRLS}
@@ -18,7 +18,7 @@ begin
     Result.Form.SetName( Applet, 'Form1' );
    {$ENDIF}
     Result.Form.Style := Result.Form.Style and not WS_MAXIMIZEBOX;
-    Result.Form.SetClientSize( 619, 278 );
+    Result.Form.SetClientSize( 619, 279 );
     Result.Form.IconLoad( hInstance, 'MAINICON' );
     Result.Form.Font.FontName := 'MS Sans Serif';
     Result.Form.Font.FontPitch := fpFixed;
@@ -26,7 +26,6 @@ begin
       Result.Form.OnDestroy := Result.KOLForm1Destroy;
 
     Result.Tray := NewBAPTrayIcon(Applet);
-    Result.Tray.Active := True;
    {$IFDEF USE_NAMES}
     Result.Tray.SetName( Result.Form, 'Tray' ); 
    {$ENDIF}
@@ -99,18 +98,8 @@ begin
    Result.channeltree.SetUnicode(TRUE);
    {$ENDIF UNICODE_CTRLS}
     Result.channeltree.Font.Color := TColor(clBlack);
-    // Result.btoptions.TabOrder = 1
-    Result.btoptions := NewButton( Result.Form, 'Options' ).SetPosition( 536, 248 ).SetSize( 76, 0 ).LikeSpeedButton;
-   {$IFDEF USE_NAMES}
-    Result.btoptions.SetName( Result.Form, 'btoptions' ); 
-   {$ENDIF}
-   {$IFDEF UNICODE_CTRLS}
-   Result.btoptions.SetUnicode(TRUE);
-   {$ENDIF UNICODE_CTRLS}
-    Result.btoptions.Font.FontStyle := [ fsBold ];
-    Result.btoptions.Style := Result.btoptions.Style or BS_FLAT;
     // Result.btplay.TabOrder = 1
-    Result.btplay := NewButton( Result.Form, 'Play' ).SetPosition( 536, 216 ).SetSize( 76, 0 ).LikeSpeedButton;
+    Result.btplay := NewButton( Result.Form, 'Play' ).SetPosition( 536, 248 ).SetSize( 76, 0 ).LikeSpeedButton;
    {$IFDEF USE_NAMES}
     Result.btplay.SetName( Result.Form, 'btplay' ); 
    {$ENDIF}
@@ -136,12 +125,10 @@ begin
     {$IFDEF OVERRIDE_SCROLLBARS}
     OverrideScrollbars( Result.channeltree);
     {$ENDIF OVERRIDE_SCROLLBARS}
-      Result.btoptions.OnClick := Result.btoptionsClick;
       Result.btplay.OnClick := Result.btplayClick;
     Result.Form.CenterOnParent.CanResize := False;
     Result.Form.Perform( WM_INITMENU, 0, 0 );
     Result.KOLForm1FormCreate( Result );
 
 end;
-
 

@@ -17,7 +17,7 @@ uses
   httpsend;
 
 const
-  APPVERSION = 1870;
+  APPVERSION = 1871;
   APPVERSIONSTR = '1.8.7';
 
   // GLOBAL VARS, IF NECESSARY INITIALIZED
@@ -39,55 +39,78 @@ var
   radiolist: TRadioList;
 
   //# OPTIONS
-  trayiconcolor_enabled: LongBool;
-  traypopups_enabled: LongBool;
+  //# autorun
+  autorun_enabled: LongBool;
+  playonstart_enabled: LongBool;
+  //# Tray
+  traycolor_enabled: LongBool;
+  traypopup_enabled: LongBool;
   firstrun_enabled: LongBool;
   //# MSN NOW PLAYING FEATURE
   msn_enabled: LongBool;
-  msn_iconi: Integer;
-  msn_icons: string;
+  //msn_iconi: Integer;
+  //msn_icons: string;
   //# Hotkeys
   hotkeys: array[0..11] of Cardinal;
   //# list
   list_enabled: LongBool;
   list_file: string;
-  //
   clipboard_enabled: LongBool;
-  // lastfm plugin
+  //# lastfm plugin
   lastfm_thread: PThread = nil;
   lastfm_enabled: LongBool;
   lastfm_user, lastfm_pass: string;
   lastfm_nextscrobb: Cardinal = 0;
   // proxy
-  proxy_enabled: LongBool;
-  proxy_host, proxy_port, proxy_pass: string;
+  {proxy_enabled: LongBool;
+  proxy_host, proxy_port, proxy_pass: string;}
 
-procedure updateMSN(write: LongBool);
+procedure SetAutoRun();
+procedure UpdateMsn(write: LongBool);
 procedure ShowAboutbox();
 function AutoUpdate(): LongBool;
-procedure NotifyForm(const lParam: Integer);
+procedure NotifyForm(lParam: Integer);
 
 implementation
 
 uses utils;
 
-procedure NotifyForm(const lParam: Integer);
+procedure SetAutoRun();
+const
+  AutoRunRegistryKey = 'SOFTWARE\Microsoft\Windows\CurrentVersion\Run';
+var
+  key: HKEY;
+begin
+  if autorun_enabled then
+  begin
+    RegCreateKey(HKEY_LOCAL_MACHINE, AutoRunRegistryKey, key);
+    RegSetValueEx(key, 'oneclick', 0, REG_SZ, PChar(ParamStr(0) + ' h'), Length(ParamStr(0)) + 3);
+  end
+  else
+  begin
+    RegOpenKey(HKEY_LOCAL_MACHINE, AutoRunRegistryKey, key);
+    RegDeleteValue(key, 'oneclick');
+  end;
+  RegCloseKey(key);
+end;
+
+procedure NotifyForm(lParam: Integer);
 begin
   PostMessage(appwinHANDLE, WM_USER, Integer(Chn), lParam);
 end;
 
-procedure updateMSN(write: LongBool);
+procedure UpdateMsn(write: LongBool);
 var
   msndata: CopyDataStruct;
   msnwindow: HWND;
   buffer: WideString;
 begin
-  buffer := WideFormat('1ClickMusic\0%s\0%d\0{0}\0%s\0\0\0\0\0', [msn_icons, Ord(write), curTitle]);
+  buffer := WideFormat('1ClickMusic\0Music\0%d\0{0}\0%s\0\0\0\0\0', [Ord(write), curTitle]);
   msndata.dwData := $547;
   msndata.cbData := (Length(buffer) * 2) + 2;
   msndata.lpData := Pointer(buffer);
 
-  msnwindow := FindWindowEx(0, 0, 'MsnMsgrUIManager', nil); ;
+  msnwindow := FindWindowEx(0, 0, 'MsnMsgrUIManager', nil);
   while msnwindow <> 0 do
   begin
     SendMessage(msnwindow, WM_COPYDATA, 0, Integer(@msndata));
@@ -99,12 +122,12 @@ procedure ShowAboutbox();
 begin
   MessageBox(0, '1ClickMusic ' + APPVERSIONSTR + #13#10 +
     'by arthurprs (arthurprs@gmail.com)' + #13#10#13#10 +
-    'Agradecimentos a:' + #13#10 +
+    'thanks to:' + #13#10 +
     'freak_insane, Blizzy, Kintoun Rlz, Paperback Writer,' + #13#10 +
-    'kamikazze, BomGaroto, SnowHill, Ricardo, Greel, The_Terminator,' + #13#10
-    + 'jotaeme, Mouse Pad, Lokinhow, Mario Bros, Blurkness, -dnb-,' + #13#10 +
-    'e a toda a galera que tem me incentivado.',
-    '1ClickMusic ' + APPVERSIONSTR, MB_OK or MB_ICONINFORMATION or MB_TOPMOST );
+    'kamikazze, BomGaroto, SnowHill, Ricardo, Greel, The_Terminator,' + #13#10 +
+    'jotaeme, Mouse Pad, Lokinhow, Mario Bros, Blurkness, -dnb-,' + #13#10 +
+    'Gouveia_Net, Gilson Junior­ and for all who have encouraged me.',
+    '1ClickMusic ' + APPVERSIONSTR, MB_OK or MB_ICONINFORMATION or MB_TOPMOST);
 end;
 
 function AutoUpdate(): LongBool;
@@ -138,10 +161,12 @@ begin
           Text.Add('Call "' + ParamStr(0) + '"');
           Text.Add('del "' + batpath + '"');
           Text.SaveToFile(batpath);
-          Result := WinExec(PChar(batpath), SW_HIDE) <> 0;
+          Result := LongBool(WinExec(PChar(batpath), SW_HIDE));
         end
         else
-          RaiseError('DOWNLOADING THE UPDATE FILE', False);
+        begin
+          RaiseError('Downloading update file', False);
+        end;
 
         newfile.Free;
       end
@@ -149,10 +174,12 @@ begin
     else
     begin
       Result := False;
-      MessageBox(0, 'Your version is up-to-date', '1ClickMusic', MB_ICONINFORMATION);
-    end
-  else
-    RaiseError('DOWNLOADING THE UPDATE FILE', False);
+      //MessageBox(0, 'Your version is up-to-date', '1ClickMusic', MB_ICONINFORMATION);
+    end;
+  //else
+  //begin
+    //RaiseError('DOWNLOADING THE UPDATE FILE', False);
+  //end;
 
   Text.Free;
 end;

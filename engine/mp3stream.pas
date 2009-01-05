@@ -6,7 +6,6 @@ uses
   SysUtils,
   Windows,
   Classes,
-  static_mpg123,
   mpg123,
   DSoutput,
   httpstream;
@@ -22,6 +21,7 @@ type
     procedure prebuffer; override;
   public
     function GetProgress(): Integer; override;
+    //function GetTrack(): string; override;
     procedure GetInfo(out Atitle: string; out Aquality: Cardinal); override;
     function Open(const url: string): LongBool; override;
     constructor Create(ADevice: TDSoutput);
@@ -101,7 +101,8 @@ begin
   r := MPG123_NEED_MORE;
 
   repeat
-  // Repeat code that fills the DS buffer
+    if Terminated then Exit;
+    // Repeat code that fills the DS buffer
     if (FStream.BuffFilled > 0) then
     begin
       r := mpg123_decode(Fhandle, FStream.GetBuffer(), BUFFPACKET, @outbuf[Decoded], outsize - Decoded, @done);
@@ -119,13 +120,13 @@ begin
       DS.Play;
       Status := rsPlaying;
     end;
-  until (r <> MPG123_NEED_MORE) or (Terminated);
-
+  until (r <> MPG123_NEED_MORE);
 
   if (r = MPG123_OK) then
     DS.SoundBuffer.Unlock(outbuf, outsize, nil, 0)
   else
   begin
+    DS.Stop;
     initbuffer();
     DS.Play;
   end;

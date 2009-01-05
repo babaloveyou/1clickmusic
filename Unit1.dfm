@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 561
-  Top = 497
+  Left = 451
+  Top = 400
   Width = 627
   Height = 306
   HorzScrollBar.Visible = False
@@ -21,7 +21,7 @@ object Form1: TForm1
     Left = 2
     Top = 2
     Width = 231
-    Height = 274
+    Height = 275
     HelpContext = 0
     IgnoreDefault = False
     AnchorLeft = False
@@ -344,67 +344,10 @@ object Form1: TForm1
     ShowAccelChar = False
     windowed = True
   end
-  object btoptions: TKOLButton
-    Tag = 0
-    Left = 536
-    Top = 248
-    Width = 76
-    Height = 22
-    HelpContext = 0
-    IgnoreDefault = True
-    AnchorLeft = False
-    AnchorTop = False
-    AnchorRight = False
-    AnchorBottom = False
-    AcceptChildren = False
-    MouseTransparent = False
-    TabOrder = 1
-    MinWidth = 0
-    MinHeight = 0
-    MaxWidth = 0
-    MaxHeight = 0
-    PlaceDown = False
-    PlaceRight = False
-    PlaceUnder = False
-    Visible = True
-    Enabled = True
-    DoubleBuffered = False
-    Align = caNone
-    CenterOnParent = False
-    Caption = 'Options'
-    Ctl3D = True
-    Color = clBtnFace
-    parentColor = False
-    Font.Color = clWindowText
-    Font.FontStyle = [fsBold]
-    Font.FontHeight = 0
-    Font.FontWidth = 0
-    Font.FontWeight = 0
-    Font.FontName = 'MS Sans Serif'
-    Font.FontOrientation = 0
-    Font.FontCharset = 1
-    Font.FontPitch = fpFixed
-    Font.FontQuality = fqDefault
-    parentFont = False
-    OnClick = btoptionsClick
-    EraseBackground = False
-    Localizy = loForm
-    Border = 2
-    TextAlign = taCenter
-    VerticalAlign = vaCenter
-    TabStop = True
-    autoSize = False
-    DefaultBtn = False
-    CancelBtn = False
-    windowed = True
-    Flat = True
-    WordWrap = False
-    LikeSpeedButton = True
-  end
   object btplay: TKOLButton
     Tag = 0
     Left = 536
-    Top = 216
+    Top = 248
     Width = 76
     Height = 22
     HelpContext = 0
@@ -617,7 +560,7 @@ object Form1: TForm1
     Top = 16
   end
   object Tray: TKOLBAPTrayIcon
-    Active = True
+    Active = False
     HideBallOnTimer = False
     OnMouseUp = TrayMouseUp
     Localizy = loForm

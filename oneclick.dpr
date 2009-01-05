@@ -1,10 +1,9 @@
 { KOL MCK } // Do not remove this line!
 program oneclick;
-{$R 'resources.res' 'resources.rc'}{$IFDEF DEBUG}{$APPTYPE CONSOLE}{$ENDIF}
+{$R 'resources.res' 'resources.rc'}//{$APPTYPE CONSOLE}
 uses
 KOL,
   Unit1 in 'Unit1.pas' {Form1},
-  Unit2 in 'Unit2.pas' {Form2},
   DSoutput in 'engine\DSoutput.pas',
   httpstream in 'engine\httpstream.pas',
   mmsstream in 'engine\mmsstream.pas',

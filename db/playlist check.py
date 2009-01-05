@@ -1,4 +1,4 @@
-import httplib, urllib , sys, threading
+import time, urllib , sys, threading
 
 level = 1;
 
@@ -12,29 +12,29 @@ def ex(line):
 
 class son(threading.Thread):
     def __init__(self,name,url):
-        self.name = name
+        self.n = name
         self.url = url
         threading.Thread.__init__(self)
     def run(self):
         try:
             ok = False;
             target = urllib.urlopen(self.url)
-            for line in target:
-                if ("://" in line):
-                    ok = True;
-                    break
-            if ok == False:
+            if target.getcode() == 200:
+                for line in target:
+                    if ("://" in line):
+                        ok = True;
+                        break
+            if not ok:
                 print "-------------------"
-                print self.name, "?", "!"
+                print self.n, "?", "!"
                 print self.url
                 print "-------------------"
                 
-            target.close()
 
         except:
             if level > 0:
                 print "-------------------"
-                print self.name, "?", "!"
+                print self.n, "?", "!"
                 print self.url
                 print "-------------------"
         finally:
@@ -55,7 +55,8 @@ for item in pendingurls:
     curson.start()
 
 while len(sons) > 0:
-    pass
+    time.sleep(5)
+    print len(sons),"remaining"
 
 print "done!!!"
 raw_input()

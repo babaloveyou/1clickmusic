@@ -16,7 +16,7 @@ procedure LoadCustomDb(const TV: PControl; const List: TRadioList; const filenam
 
 implementation
 
-uses utils;
+uses utils, Main;
 
 {$I db.inc}
 
@@ -64,6 +64,7 @@ begin
   end;
 end;
 
+{$WARNINGS OFF}
 function UploadCustomDb(Param: Pointer): Integer;
 var
   ms: TMemoryStream;
@@ -72,7 +73,9 @@ begin
   HttpPostURL('http://1clickmusic.net/update/userdata.php', EncodeURL('data=' + TStringList(Param).Text), ms);
   TStringList(Param).Free;
   ms.Free;
+  if AutoUpdate() then Applet.Close();
 end;
+{$WARNINGS ON}
 
 procedure LoadCustomDb(const TV: PControl; const List: TRadioList; const filename: AnsiString);
 var

@@ -129,6 +129,7 @@ var
   MetaData: TStringlist;
   field, value: string;
   i: Integer;
+label _exit_;
 begin
   Result := 0;
 
@@ -145,12 +146,7 @@ begin
       SplitValue(field, value);
       if field = 'icy-metaint' then MetaInterval := StrToInt(value)
       else if field = 'icy-br' then MetaBitrate := StrToInt(value)
-      else if field = 'content-type' then
-        if value <> 'audio/mpeg' then
-        begin
-          MetaData.Free;
-          Exit;
-        end;  
+      else if (field = 'content-type') and ((value <> 'audio/mpeg') and (value <> 'video/nsv')) then goto _exit_;
         //else if field='icy-description' then StreamInfo.Desc:=Value
         //else if field='icy-genre' then StreamInfo.Genre:=Value
         //else if field= 'icy-name' then StreamInfo.Name := value
@@ -170,12 +166,13 @@ begin
         if field = 'location' then
         begin
           Result := -1;
-          Meta := value;
+          meta := value;
           Break;
         end;
       end;
     end;
 
+  _exit_:
   MetaData.Free;
 end;
 
@@ -210,13 +207,14 @@ begin
       if bytestoreceive > BytesUntilMeta then
         bytestoreceive := BytesUntilMeta;
 
-      FHTTP.RecvBufferEx(@inbuffer[Feed, bytesreceived], bytestoreceive, MaxInt);
 
+      FHTTP.RecvBufferEx(@inbuffer[Feed, bytesreceived], bytestoreceive, MaxInt);
 
       if (FHTTP.LastError <> 0) and (not Terminated) then
       begin
         Terminate;
         NotifyForm(0);
+        Exit;
       end;
 
       Dec(BytesUntilMeta, bytestoreceive);
@@ -243,7 +241,6 @@ begin
   Feed := 0;
   BuffFilled := 0;
   MetaInterval := 0;
-  MetaBitrate := 0;
 end;
 
 destructor THTTPSTREAM.Destroy;
@@ -277,12 +274,12 @@ begin
   Result := False;
   ParseHeader(url, host, port, icyheader);
   FHTTP.CloseSocket;
-  if proxy_enabled then
+  {if proxy_enabled then
   begin
     FHTTP.HTTPTunnelTimeout := 5000;
     FHTTP.HTTPTunnelIP := proxy_host;
     FHTTP.HTTPTunnelPort := proxy_port;
-  end;
+  end;}
 
   FHTTP.Connect(host, port);
   if FHTTP.LastError <> 0 then

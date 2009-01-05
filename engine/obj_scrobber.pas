@@ -16,7 +16,6 @@ type
     //nowplayurl : string
     scroburl: string;
     sessioncode: string;
-    procedure fixTrackName(var Title: string);
     function HandShake(const UserName, password: string): LongBool;
     procedure Scrobb(const artist, track: string);
   public
@@ -51,7 +50,7 @@ begin
 end;
 
 
-procedure TScrobber.fixTrackName(var Title: string);
+procedure fixTrackName(var Title: string);
 var
   p: Integer;
 begin
@@ -135,7 +134,8 @@ begin
   sl := TStringList.Create;
   //urldata := EncodeURL(AnsiToUtf8(Format(nowplayparam, [sessioncode, artist, track])));
   //HttpPostText(nowplayurl, urldata, sl);
-  timestamp := IntToStr(DateTimeToUnix(IncHour(Now, 3)));
+  
+  timestamp := IntToStr(DateTimeToUnix(IncHour(Now, 4)));
   urldata := EncodeURL(AnsiToUtf8(Format(scrobparam, [sessioncode, artist, track, timestamp])));
   HttpPostText(scroburl, urldata, sl);
   sl.Free;

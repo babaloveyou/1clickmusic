@@ -10,6 +10,7 @@ type
   TMMS = class(TRadioPlayer)
   private
     Fhandle: wma_async_reader;
+    fUrl : string;
   protected
     procedure updatebuffer(const offset: Cardinal); override;
     procedure initbuffer;
@@ -54,7 +55,7 @@ end;
 procedure TMMS.updatebuffer(const offset: Cardinal);
 var
   outBuffer: PByteArray;
-  inBuffer : Pointer;
+  inBuffer: Pointer;
   outSize, Decoded, done: Cardinal;
 begin
   DSERROR(DS.SoundBuffer.Lock(offset, Fhalfbuffersize, @outBuffer, @outSize, nil, nil, 0), 'ERRO, locking buffer');
@@ -88,8 +89,9 @@ end;
 
 function TMMS.Open(const url: string): LongBool;
 begin
-  if proxy_enabled then
-    lwma_async_reader_set_proxy(Fhandle, 'http', proxy_host, StrToInt(proxy_port));
+  {if proxy_enabled then
+    lwma_async_reader_set_proxy(Fhandle, 'http', proxy_host, StrToInt(proxy_port));}
+  fUrl := url;
   lwma_async_reader_open(Fhandle, url);
   Result := Fhandle.has_audio;
   if Result then
@@ -102,8 +104,12 @@ begin
 end;
 
 procedure TMMS.GetInfo(out Atitle: string; out Aquality: Cardinal);
+var
+  Title: WideString;
 begin
-  Aquality := Fhandle.Bitrate div 1000;
+  Aquality := Fhandle.Bitrate div 1024;
+  lwma_async_reader_get_title(FHandle, Title);
+  Atitle := Title;
 end;
 
 function TMMS.GetProgress(): Integer;

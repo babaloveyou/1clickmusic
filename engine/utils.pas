@@ -3,6 +3,7 @@ unit utils;
 interface
 
 uses
+  KOL,
   SysUtils,
   Classes,
   Windows;
