@@ -9,8 +9,8 @@ uses SysUtils, Classes, Windows, DSoutput, wmfintf, libwma1;
 type
   TMMS = class(TRadioPlayer)
   private
-    Fhandle: wma_async_reader;
-    fUrl : string;
+    fhandle: wma_async_reader;
+    fUrl: string;
   protected
     procedure updatebuffer(const offset: Cardinal); override;
     procedure initbuffer;
@@ -31,10 +31,37 @@ uses
 { TMP3 }
 
 destructor TMMS.Destroy;
+var
+  i: Integer;
+  SI: PSampleInfo;
 begin
   inherited;
-  if Fhandle.reader <> nil then
-    lwma_async_reader_free(Fhandle);
+  with fhandle do
+  begin
+    if reader = nil then Exit;
+
+    reader.Stop;
+    reader.Close;
+    reader := nil;
+
+    WMReaderCallback := nil;
+
+    Event.SetEvent;
+    Event.Free;
+    CriticalSection.Release;
+    CriticalSection.Free;
+
+    if BlockList <> nil then
+    begin
+      for i := 0 to BlockList.Count - 1 do
+      begin
+        SI := BlockList.Items[i];
+        Freemem(SI.Data);
+        Freemem(SI);
+      end;
+      BlockList.Free;
+    end;
+  end;
 end;
 
 procedure TMMS.initbuffer;
@@ -46,9 +73,15 @@ procedure TMMS.prebuffer;
 begin
   // WAIT TO PREBUFFER!
   repeat
-    Sleep(50);
+    Sleep(64);
+    if fhandle.status = WMT_CLOSED then
+    begin
+      Terminate;
+      NotifyForm(0);
+      Exit;
+    end;
     if Terminated then Exit;
-  until Fhandle.BlockList.Count >= 4;
+  until fhandle.BlockList.Count >= 4;
   InitBuffer();
 end;
 
@@ -61,12 +94,12 @@ begin
   DSERROR(DS.SoundBuffer.Lock(offset, Fhalfbuffersize, @outBuffer, @outSize, nil, nil, 0), 'ERRO, locking buffer');
 
   Decoded := 0;
-
   repeat
-    if (Fhandle.BlockList.Count > 0) then
+    if Terminated then Exit;
+    if (fhandle.BlockList.Count > 0) then
     begin
       done := outSize - Decoded;
-      lwma_async_reader_get_data(Fhandle, inBuffer, done);
+      lwma_async_reader_get_data(fhandle, inBuffer, done);
       if done = 0 then Continue;
       Move(inBuffer^, outBuffer[Decoded], done);
       Inc(Decoded, done);
@@ -78,7 +111,7 @@ begin
       repeat
         Sleep(50);
         if Terminated then Exit;
-      until Fhandle.BlockList.Count >= 2;
+      until fhandle.BlockList.Count >= 2;
       DS.Play;
       Status := rsPlaying;
     end;
@@ -90,9 +123,9 @@ end;
 function TMMS.Open(const url: string): LongBool;
 begin
   {if proxy_enabled then
-    lwma_async_reader_set_proxy(Fhandle, 'http', proxy_host, StrToInt(proxy_port));}
+    lwma_async_reader_set_proxy(fhandle, 'http', proxy_host, StrToInt(proxy_port));}
   fUrl := url;
-  lwma_async_reader_open(Fhandle, url);
+  lwma_async_reader_open(fhandle, url);
   Result := Fhandle.has_audio;
   if Result then
   begin
@@ -107,7 +140,7 @@ procedure TMMS.GetInfo(out Atitle: string; out Aquality: Cardinal);
 var
   Title: WideString;
 begin
-  Aquality := Fhandle.Bitrate div 1024;
+  Aquality := Fhandle.Bitrate div 1000;
   lwma_async_reader_get_title(FHandle, Title);
   Atitle := Title;
 end;

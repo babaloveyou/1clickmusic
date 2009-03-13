@@ -13,12 +13,12 @@ uses
   mp3stream,
   obj_scrobber,
   obj_list,
-  obj_playlist,
   httpsend;
 
 const
-  APPVERSION = 1871;
-  APPVERSIONSTR = '1.8.7';
+  APPVERSION = 1880;
+  APPVERSIONSTR = '1.8.8';
+  INITIALVOL = 80;
 
   // GLOBAL VARS, IF NECESSARY INITIALIZED
 var
@@ -30,7 +30,7 @@ var
   Chn: TRadioPlayer = nil;
   ChnThread: PThread = nil;
   curProgress: Integer;
-  curVolume: Integer = 100;
+  curVolume: Integer = INITIALVOL;
   //
   curBitrate: Cardinal;
   lastTitle, curTitle: string;
@@ -150,9 +150,10 @@ begin
         tempfilepath := GetTempDir + 'oneclick.exe';
         newfile := TFileStream.Create(tempfilepath, fmCreate);
         Result := HttpGetBinary(Text[2], newfile);
+        newfile.Free;
         if Result then
         begin
-          batpath := GetTempDir + 'oneclickupdate.bat';
+          batpath := GetTempDir + 'oneclick.bat';
           Text.Clear;
           Text.Add(':Label1');
           Text.Add('del "' + ParamStr(0) + '"');
@@ -167,9 +168,9 @@ begin
         begin
           RaiseError('Downloading update file', False);
         end;
-
-        newfile.Free;
       end
+      else
+        Result := False;
     end
     else
     begin

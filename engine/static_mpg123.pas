@@ -4,7 +4,7 @@ interface
 uses windows, SysUtils;
 
 const
-  libmpg123 = 'libmpg123-0.dll';
+  libmpg123 = 'libmpg123.dll';
 
 type
   PDWord = ^DWORD;

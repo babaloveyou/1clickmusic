@@ -99,7 +99,6 @@ begin
 
   Decoded := 0;
   r := MPG123_NEED_MORE;
-
   repeat
     if Terminated then Exit;
     // Repeat code that fills the DS buffer
@@ -137,7 +136,7 @@ constructor TMP3.Create(ADevice: TDSoutput);
 begin
   inherited;
   FStream := THTTPSTREAM.Create;
-  Fhandle := mpg123_new('i586', nil); //i586
+  Fhandle := mpg123_new(nil, nil); //i586 :|
   if Fhandle = nil then
     RaiseError('creating MPEG decoder');
 end;
@@ -146,8 +145,8 @@ initialization
   if mpg123_init() <> MPG123_OK then
     RaiseError('initing MPEG decoder');
 
-finalization
-  mpg123_exit();
+//finalization
+//  mpg123_exit();
 
 end.
 

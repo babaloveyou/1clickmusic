@@ -36,7 +36,6 @@ iLevel = -2
 genres = []
 chn = []
 pls = []
-count = 0
 totalcount = 0
 tStart = time.clock()
 
@@ -67,8 +66,8 @@ for line in srcfile:
             iLevel = 0
             
 	    # check if both lists have same size
-            if (len(chn) <> len(pls)) or (len(chn) <> count):
-                error("%s chn=%d pls=%d count=%d" % (genres[0], len(chn), len(pls), count))
+            if len(chn) <> len(pls):
+                error("%s chn=%d pls=%d" % (genres[0], len(chn), len(pls)))
 
             slist = [] # a list that we will sort
             for i1, i2 in zip(chn,pls):
@@ -78,28 +77,31 @@ for line in srcfile:
             pls = []
             slist.sort()
             
-            totalcount += count
+            totalcount += len(slist)
+
+            print "%s %d" % (genres[0], len(slist))
             
             # write to file
             writestring(genres.pop(0))
-            writeint8(count)
-            for item in slist: # item = (chn, pls)
-                writestring(item[0])
-                writestring(item[1])
+            writeint8(len(slist))
+            for i1, i2 in slist:
+                writestring(i1)
+                writestring(crypt(i2))
                 
     elif bParse:
         if iLevel == -2:
-            writeint8(getarraysize(line))
+            size = getarraysize(line)
+            print "%d genres" % size
+            writeint8(size)
             iLevel += 1
         elif iLevel == -1:
             genres.append(getarraycontent(line))
         elif iLevel in (0,2):
-            count = getarraysize(line)
             iLevel += 1
         elif iLevel == 1:
             chn.append(getarraycontent(line))
         elif iLevel == 3:
-            pls.append(crypt(getarraycontent(line)))
+            pls.append(getarraycontent(line))
 
 dst = "".join(dst)
 dstfile.write(dst)

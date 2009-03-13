@@ -45,7 +45,7 @@ type
 
 implementation
 
-uses utils, main;
+uses main;
 
 procedure SplitValue(var data, value: string);
 var
@@ -64,10 +64,10 @@ procedure ParseHeader(const url: string; out host, port, icyheader: string);
 const
   ICYHEADERSTUB =
     'GET %s HTTP/1.0' + #13#10 +
-    'Host: %s' + #13#10 +
-    'Accept: audio/mpeg' + #13#10 +
-    'Icy-MetaData: 1' + #13#10 +
-    'User-Agent: oneclick' + #13#10 +
+    'Host:%s' + #13#10 +
+    'Accept:audio/mpeg' + #13#10 +
+    'Icy-MetaData:1' + #13#10 +
+    'User-Agent:oneclick' + #13#10 +
     #13#10;
 var
   prot, user, pass, path, para: string;
@@ -144,8 +144,8 @@ begin
     begin
       field := MetaData[i];
       SplitValue(field, value);
-      if field = 'icy-metaint' then MetaInterval := StrToInt(value)
-      else if field = 'icy-br' then MetaBitrate := StrToInt(value)
+      if (field = 'icy-metaint') then MetaInterval := StrToInt(value)
+      else if (field = 'icy-br') then MetaBitrate := StrToInt(value)
       else if (field = 'content-type') and ((value <> 'audio/mpeg') and (value <> 'video/nsv')) then goto _exit_;
         //else if field='icy-description' then StreamInfo.Desc:=Value
         //else if field='icy-genre' then StreamInfo.Genre:=Value

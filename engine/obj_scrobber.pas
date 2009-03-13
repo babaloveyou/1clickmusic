@@ -58,17 +58,17 @@ begin
   // get rid of some ad's!
   p := Pos('http', Title);
   if p > 0 then
-    Delete(Title, p, Length(Title) - p);
-  // get rid of 1.fm ad!
-  p := Pos('(1.FM', Title);
-  if p = 0 then p := Pos('(WWW', Title);
+    Delete(Title, p, MaxInt);
 
+  
+  p := Pos('(WWW', Title);
   if p > 0 then
-    Delete(Title, p, Length(Title) - p);
+    Delete(Title, p, MaxInt);
+
   // get rid of | album:
   p := Pos('| Album', Title);
   if p > 0 then
-    Delete(Title, p, Length(Title) - p);
+    Delete(Title, p, MaxInt);
   //
 end;
 
@@ -114,7 +114,7 @@ begin
 
   p := Pos(' - ', title);
 
-  if (p = 0) or MultiPos(['www', 'http', '.fm'], title) then
+  if (p = 0) or MultiPos(['www', 'http', '.fm', 'A suivre'], title) then
     Exit;
 
   artist := Copy(title, 1, p - 1);
@@ -135,7 +135,7 @@ begin
   //urldata := EncodeURL(AnsiToUtf8(Format(nowplayparam, [sessioncode, artist, track])));
   //HttpPostText(nowplayurl, urldata, sl);
   
-  timestamp := IntToStr(DateTimeToUnix(IncHour(Now, 4)));
+  timestamp := IntToStr(DateTimeToUnix(IncHour(Now, 3)));
   urldata := EncodeURL(AnsiToUtf8(Format(scrobparam, [sessioncode, artist, track, timestamp])));
   HttpPostText(scroburl, urldata, sl);
   sl.Free;

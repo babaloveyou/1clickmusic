@@ -8,7 +8,6 @@ KOL,
   httpstream in 'engine\httpstream.pas',
   mmsstream in 'engine\mmsstream.pas',
   mp3stream in 'engine\mp3stream.pas',
-  obj_playlist in 'engine\obj_playlist.pas',
   radioopener in 'engine\radioopener.pas',
   obj_db in 'engine\obj_db.pas';
 

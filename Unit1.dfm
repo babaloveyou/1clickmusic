@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 451
-  Top = 400
+  Left = 428
+  Top = 273
   Width = 627
   Height = 306
   HorzScrollBar.Visible = False
@@ -21,7 +21,7 @@ object Form1: TForm1
     Left = 2
     Top = 2
     Width = 231
-    Height = 275
+    Height = 274
     HelpContext = 0
     IgnoreDefault = False
     AnchorLeft = False
@@ -460,7 +460,7 @@ object Form1: TForm1
     projectName = 'oneclick'
     projectDest = 'oneclick'
     sourcePath = 'C:\Documents and Settings\Administrador\Desktop\1clickmusic\'
-    outdcuPath = 'C:\Documents and Settings\Administrador\Desktop\1clickmusic\'
+    outdcuPath = 'dcu\'
     dprResource = True
     protectFiles = True
     showReport = False

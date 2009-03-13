@@ -31,13 +31,13 @@ type
 var
   mpg123_init: function: Longint; cdecl;
 
-  mpg123_exit: procedure; cdecl;
-
   mpg123_new: function(decoder: PChar; Error: Plongint): Pmpg123_handle; cdecl;
 
   mpg123_delete: procedure(mh: Pmpg123_handle); cdecl;
 
 {$IFDEF LOADALL}
+  mpg123_exit: procedure; cdecl;
+
 type
   Tmpg123_parms = Longint;
 const
@@ -406,13 +406,13 @@ var
 initialization
   libmpg123DLL := memLoadLibrary(@libmpg123Data);
   mpg123_open_feed := memGetProcAddress(libmpg123DLL, 'mpg123_open_feed');
-  mpg123_exit := memGetProcAddress(libmpg123DLL, 'mpg123_exit');
   mpg123_decode := memGetProcAddress(libmpg123DLL, 'mpg123_decode');
   mpg123_getformat := memGetProcAddress(libmpg123DLL, 'mpg123_getformat');
   mpg123_init := memGetProcAddress(libmpg123DLL, 'mpg123_init');
   mpg123_new := memGetProcAddress(libmpg123DLL, 'mpg123_new');
   mpg123_delete := memGetProcAddress(libmpg123DLL, 'mpg123_delete');
 {$IFDEF LOADALL}
+  mpg123_exit := memGetProcAddress(libmpg123DLL, 'mpg123_exit');
   mpg123_close := memGetProcAddress(libmpg123DLL, 'mpg123_close');
   mpg123_copy_string := memGetProcAddress(libmpg123DLL, 'mpg123_copy_string');
   mpg123_decode_frame := memGetProcAddress(libmpg123DLL, 'mpg123_decode_frame');

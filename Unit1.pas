@@ -339,11 +339,10 @@ begin
       if channeltree.Enabled then
         case Msg.wParam of
           -2, 2:
-            //if Chn <> nil then
+            if Chn <> nil then
             begin
               curVolume := DS.Volume(curVolume + Msg.wParam);
-              if Chn <> nil then
-                UpdateExecute();
+              UpdateExecute();
               traypopup('', 'Volume ' + Int2Str(curVolume) + '%', NIIF_NONE);
             end;
           1003:
@@ -626,7 +625,7 @@ end;
 
 function TForm1.LastFMThreadExecute(Sender: PThread): Integer;
 begin
-  Result := 1;
+  Result := 0;
   with TScrobber.Create do
   begin
     if not Execute(lastTitle) then

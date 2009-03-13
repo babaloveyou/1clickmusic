@@ -11,6 +11,10 @@ uses
 
 {$MINENUMSIZE 4}
 
+
+const
+  DSBUFFSIZE = 64 * 1024;
+
 type
   TDSoutput = class
   private
@@ -77,7 +81,7 @@ var
   Fpwfm: TWAVEFORMATEX;
   Fpdesc: TDSBUFFERDESC;
 begin
-  Fvolume := 100;
+  Fvolume := INITIALVOL;
 
   DSERROR(DirectSoundCreate(nil, FDS, nil), 'Creating DS device');
   DSERROR(FDS.SetCooperativeLevel(WndHandle, DSSCL_PRIORITY), 'Setting the coop level');
@@ -93,7 +97,7 @@ begin
 
   DSERROR(FDS.CreateSoundBuffer(Fpdesc, Fprimary, nil), 'Creating P. buffer');
 
-  FillChar(Fpwfm, SizeOf(TWAVEFORMATEX), 0);
+  //FillChar(Fpwfm, SizeOf(TWAVEFORMATEX), 0);
   with Fpwfm do
   begin
     wFormatTag := WAVE_FORMAT_PCM;
@@ -101,8 +105,8 @@ begin
     nSamplesPerSec := 44100;
     nBlockAlign := 4;
     wBitsPerSample := 16;
-    cbSize := 0;
     nAvgBytesPerSec := 44100 * 4;
+    cbSize := 0;
   end;
 
   DSERROR(FPrimary.SetFormat(@Fpwfm), 'Changing P. buffer format');
@@ -137,9 +141,8 @@ begin
     else
     begin
       Fvolume := value;
-      value := Round(
-        ((100 - value) * DSBVOLUME_MIN) / 500
-        );
+      value := (100 - value) * (DSBVOLUME_MIN div 500);
+      //value := -Round(1000 * Log10(1 / (value / 100)));
     end;
 
   if FSecondary <> nil then
@@ -155,7 +158,7 @@ var
 begin
   FSecondary := nil;
 
-  FillChar(Fswfm, SizeOf(TWAVEFORMATEX), 0);
+  //FillChar(Fswfm, SizeOf(TWAVEFORMATEX), 0);
   with Fswfm do
   begin
     wFormatTag := WAVE_FORMAT_PCM;
@@ -164,6 +167,7 @@ begin
     nSamplesPerSec := Arate;
     nBlockAlign := Achannels * 2;
     nAvgBytesPerSec := Arate * nBlockAlign;
+    cbSize := 0;
   end;
 
   // set up the buffer
@@ -222,12 +226,12 @@ var
   offset, lastoffset: Cardinal;
 begin
   prebuffer();
-  // If terminated while prebuffering Exit
+  // if terminated while prebuffering Exit
   if Terminated then Exit;
-  //Debug('prebuffered');
+  // Debug('prebuffered');
   // Fill buffer at offset 0
   updatebuffer(0);
-  //Debug('our 1 buffer update');
+  // Debug('our 1º buffer update');
   lastoffset := 0;
   DS.Play;
   Status := rsPlaying;
