@@ -31,6 +31,7 @@ type
     btplay: TKOLButton;
     pgrbuffer: TKOLProgressBar;
     Tray: TKOLBAPTrayIcon;
+    treeimagelist: TKOLImageList;
     procedure KOLForm1FormCreate(Sender: PObj);
     function KOLForm1Message(var Msg: tagMSG; var Rslt: Integer): Boolean;
     procedure channeltreeMouseUp(Sender: PControl;
@@ -84,8 +85,9 @@ uses
 
 const
   _Radios = 1;
-  _About = 27;
-  _Exit = 28;
+  _PlayStop = 27;
+  _About = 28;
+  _Exit = 29;
   _Traypopup = 14;
   _Traycolor = 15;
   _MsnNowplaying = 17;
@@ -250,8 +252,7 @@ begin
   // # REFRESH GUI INFORMATION
   lbltrack.caption := curTitle;
 
-  lblbuffer.Caption := Int2Str(curBitrate) + 'kbps' +
-    #13#10 + 'vol:' + Int2Str(curVolume) + '%';
+  lblbuffer.Caption := curBitrate + #13#10 + 'vol:' + Int2Str(curVolume) + '%';
 
   case Chn.Status of
     rsPlaying: lblstatus.Caption := 'Connected!';
@@ -268,7 +269,7 @@ begin
   btplay.Enabled := False;
 
   StopChannel();
-
+  traymenu.ItemText[_PlayStop] := 'Stop';
   btplay.Caption := 'Stop';
   //# Init timer that refresh the progress bar, 500ms interval
   SetTimer(appwinHANDLE, 1, 500, nil);
@@ -282,7 +283,7 @@ begin
   traypopup('Connecting', lblradio.Caption, NIIF_INFO);
 
   //# Lets Try to play
-  if not OpenRadio(radiolist.getpls(channeltree.TVSelected), Chn, DS) then
+  if not OpenRadio(radiolist.getpls(channeltree.TVSelected), Chn) then
   begin
     traypopup('Error Connecting', lblradio.Caption, NIIF_ERROR);
     StopChannel();
@@ -314,15 +315,17 @@ begin
 
   pgrbuffer.Visible := False;
   curProgress := 0;
-  curBitrate := 0;
+  curBitrate := '';
   pgrbuffer.Progress := 100;
   btplay.Caption := 'Play';
   curTitle := '';
+  lastTitle := '';
   lblbuffer.Caption := '';
   lblstatus.Caption := '';
   lbltrack.Caption := '';
   Tray.ToolTip := '';
   Form.Caption := '1ClickMusic';
+  traymenu.ItemText[_PlayStop] := 'Play';
   ChangeTrayIcon(ITRAY);
 end;
 
@@ -341,7 +344,7 @@ begin
           -2, 2:
             if Chn <> nil then
             begin
-              curVolume := DS.Volume(curVolume + Msg.wParam);
+              curVolume := _DS.Volume(curVolume + Msg.wParam);
               UpdateExecute();
               traypopup('', 'Volume ' + Int2Str(curVolume) + '%', NIIF_NONE);
             end;
@@ -371,15 +374,12 @@ begin
         if Msg.lParam <> 0 then // We have something to update!
           UpdateExecute()
         else
-        begin
-          StopChannel();
-          lblstatus.Text := 'Disconected!';
-        end;
+          PlayChannel();
       end;
   end;
 end;
 
-function TreeListWndProc(Sender: PControl; var Msg: TMsg; var Rslt: Integer): Boolean;
+{function TreeListWndProc(Sender: PControl; var Msg: TMsg; var Rslt: Integer): Boolean;
 type
   TNMTVCUSTOMDRAW = packed record
     nmcd: TNMCustomDraw;
@@ -423,13 +423,15 @@ begin
       rslt := CDRF_DODEFAULT;
     end
   end;
-end;
+end;}
 
 procedure TForm1.KOLForm1FormCreate(Sender: PObj);
+var
+  i: Integer;
 begin
   appwinHANDLE := form.Handle;
   //# Inicializa o SOM
-  DS := TDSoutput.Create(appwinHANDLE);
+  _DS := TDSoutput.Create(appwinHANDLE);
 
   ITRAY := LoadIcon(HInstance, 'TRAY'); // gray icon
   ITrayBlue := LoadIcon(HInstance, 'TRAYBLUE');
@@ -444,7 +446,9 @@ begin
   RegisterHotKey(appwinHANDLE, -2, MOD_CONTROL, VK_DOWN);
   RegisterHotKey(appwinHANDLE, 1003, MOD_CONTROL, VK_END);
   RegisterHotKey(appwinHANDLE, 1004, MOD_CONTROL, VK_HOME);
-  RegisterHotKey(appwinHANDLE, 2001, MOD_CONTROL, VK_F1);
+  for i := 0 to 11 do
+    RegisterHotKey(appwinHANDLE, 2001 + i, MOD_CONTROL, VK_F1 + i);
+  {RegisterHotKey(appwinHANDLE, 2001, MOD_CONTROL, VK_F1);
   RegisterHotKey(appwinHANDLE, 2002, MOD_CONTROL, VK_F2);
   RegisterHotKey(appwinHANDLE, 2003, MOD_CONTROL, VK_F3);
   RegisterHotKey(appwinHANDLE, 2004, MOD_CONTROL, VK_F4);
@@ -455,7 +459,7 @@ begin
   RegisterHotKey(appwinHANDLE, 2009, MOD_CONTROL, VK_F9);
   RegisterHotKey(appwinHANDLE, 2010, MOD_CONTROL, VK_F10);
   RegisterHotKey(appwinHANDLE, 2011, MOD_CONTROL, VK_F11);
-  RegisterHotKey(appwinHANDLE, 2012, MOD_CONTROL, VK_F12);
+  RegisterHotKey(appwinHANDLE, 2012, MOD_CONTROL, VK_F12);}
 
   // MENUS!
   NewMenu(Form, 0, [], nil);
@@ -469,7 +473,7 @@ begin
       '-Tray popups', '-Tray colors', '-', '-Messenger Now Playing', '-', '-Save track list', '-Copy track to clipboard', '-', '-Last.fm Scrobber', '-', 'Autorun with windows', 'Play fav-1 automaticaly',
       ')',
       '-',
-      'About', 'Exit'
+      'Play', 'About', 'Exit'
       ], traymenuproc);
 
   Tray.PopupMenu := traymenu.Handle;
@@ -478,9 +482,8 @@ begin
   Radiolist := TRadioList.Create;
   //# inicializa os canais e o message handler
   LoadDb(channeltree, radiolist);
-  LoadCustomDb(channeltree, radiolist, 'c:/userradios.txt');
-  LoadCustomDb(channeltree, radiolist, 'userradios.txt');
-  channeltree.AttachProc(TreeListWndProc);
+  LoadCustomDb(channeltree, radiolist);
+  //channeltree.AttachProc(TreeListWndProc);
   //# close the treeview
   channeltree.TVSelected := channeltree.TVRoot;
   channeltree.TVExpand(channeltree.TVRoot, TVE_COLLAPSE);
@@ -598,6 +601,14 @@ begin
         Exit;
       end;
 
+    _PlayStop:
+      begin
+        if Chn = nil then
+          PlayChannel()
+        else
+          StopChannel();
+      end;
+
     _About:
       begin
         ShowAboutbox();
@@ -666,7 +677,10 @@ end;
 function TForm1.channeltreeTVSelChanging(Sender: PControl; oldItem,
   newItem: Cardinal): Boolean;
 begin
-  Result := channeltree.Enabled;
+  Result := channeltree.Enabled
+  {Result := channeltree.Enabled and (not channeltree.TVItemHasChildren[newItem]);
+  if channeltree.TVItemHasChildren[newItem] then
+    channeltree.TVExpand(newItem, TVE_TOGGLE);}
 end;
 
 procedure TForm1.channeltreeSelChange(Sender: PObj);
@@ -688,6 +702,7 @@ end;
 
 procedure TForm1.KOLForm1Destroy(Sender: PObj);
 begin
+  SaveConfig();
   if msn_enabled then
     UpdateMsn(False);
 
@@ -700,8 +715,8 @@ begin
   if Chn <> nil then
     Chn.Free;
 
-  DS.Free;
   radiolist.Free;
+  _DS.Free;
 end;
 
 end.

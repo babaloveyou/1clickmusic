@@ -2,9 +2,13 @@ unit mmsstream;
 
 interface
 
-// THIS ONE DOES NOT NEED HTTPSTREAM
-
-uses SysUtils, Classes, Windows, DSoutput, wmfintf, libwma1;
+uses
+  SysUtils,
+  Classes,
+  Windows,
+  DSoutput,
+  wmfintf,
+  libwma1;
 
 type
   TMMS = class(TRadioPlayer)
@@ -17,16 +21,16 @@ type
     procedure prebuffer; override;
   public
     function GetProgress(): Integer; override;
-    procedure GetInfo(out Atitle: string; out Aquality: Cardinal); override;
+    procedure GetInfo(out Atitle, Aquality: string); override;
     function Open(const url: string): LongBool; override;
-    constructor Create(ADevice: TDSoutput);
+    constructor Create();
     destructor Destroy; override;
   end;
 
 implementation
 
 uses
-  main, utils;
+  utils;
 
 { TMP3 }
 
@@ -66,7 +70,7 @@ end;
 
 procedure TMMS.initbuffer;
 begin
-  Fhalfbuffersize := DS.InitializeBuffer(Frate, Fchannels);
+  Fhalfbuffersize := fDS.InitializeBuffer(Frate, Fchannels);
 end;
 
 procedure TMMS.prebuffer;
@@ -77,7 +81,7 @@ begin
     if fhandle.status = WMT_CLOSED then
     begin
       Terminate;
-      NotifyForm(0);
+      Status := rsStoped;
       Exit;
     end;
     if Terminated then Exit;
@@ -87,37 +91,37 @@ end;
 
 procedure TMMS.updatebuffer(const offset: Cardinal);
 var
-  outBuffer: PByteArray;
-  inBuffer: Pointer;
-  outSize, Decoded, done: Cardinal;
+  dsbuf: PByteArray;
+  outbuf: Pointer;
+  dssize, Decoded, done: Cardinal;
 begin
-  DSERROR(DS.SoundBuffer.Lock(offset, Fhalfbuffersize, @outBuffer, @outSize, nil, nil, 0), 'ERRO, locking buffer');
+  DSERROR(fDS.SoundBuffer.Lock(offset, Fhalfbuffersize, @dsbuf, @dssize, nil, nil, 0), 'ERRO, locking buffer');
 
   Decoded := 0;
   repeat
     if Terminated then Exit;
     if (fhandle.BlockList.Count > 0) then
     begin
-      done := outSize - Decoded;
-      lwma_async_reader_get_data(fhandle, inBuffer, done);
+      done := dssize - Decoded;
+      lwma_async_reader_get_data(fHandle, outbuf, done);
       if done = 0 then Continue;
-      Move(inBuffer^, outBuffer[Decoded], done);
+      Move(outbuf^, dsbuf[Decoded], done);
       Inc(Decoded, done);
     end
     else
     begin
       Status := rsRecovering;
-      DS.Stop;
+      fDS.Stop;
       repeat
         Sleep(50);
         if Terminated then Exit;
       until fhandle.BlockList.Count >= 2;
-      DS.Play;
+      fDS.Play;
       Status := rsPlaying;
     end;
-  until (Decoded >= outSize) or (Terminated);
+  until (Decoded >= dssize) or (Terminated);
 
-  DS.SoundBuffer.Unlock(outBuffer, outSize, nil, 0);
+  fDS.SoundBuffer.Unlock(dsbuf, dssize, nil, 0);
 end;
 
 function TMMS.Open(const url: string): LongBool;
@@ -136,11 +140,11 @@ begin
   end;
 end;
 
-procedure TMMS.GetInfo(out Atitle: string; out Aquality: Cardinal);
+procedure TMMS.GetInfo(out Atitle, Aquality: string);
 var
   Title: WideString;
 begin
-  Aquality := Fhandle.Bitrate div 1000;
+  Aquality := IntToStr(Fhandle.Bitrate div 1000) + 'k wma';
   lwma_async_reader_get_title(FHandle, Title);
   Atitle := Title;
 end;
@@ -150,7 +154,7 @@ begin
   Result := 0;
 end;
 
-constructor TMMS.Create(ADevice: TDSoutput);
+constructor TMMS.Create();
 begin
   inherited;
   if not WMInited then

@@ -31,8 +31,18 @@ begin
    {$ENDIF}
   Result.Form.Add2AutoFree( Result.Tray );
       Result.Tray.OnMouseUp := Result.TrayMouseUp;
+
+    Result.treeimagelist := NewImageList( Result.Form );
+    Result.treeimagelist.Colors := ilcColor24;
+      Result.treeimagelist.ImgWidth := 16;
+      Result.treeimagelist.ImgHeight := 16;
+      {$R Form1_treeimagelist.res}
+    Result.treeimagelist.AddMasked( LoadBmp( hInstance, 'FORM1_TREEIMAGELIST', Result.treeimagelist ), clWhite );
+   {$IFDEF USE_NAMES}
+    Result.treeimagelist.SetName( Result.Form, 'treeimagelist' ); 
+   {$ENDIF}
     // Result.lblbuffer.TabOrder = -1
-    Result.lblbuffer := NewLabel( Result.Form, '' ).SetPosition( 553, 112 ).SetSize( 57, 40 );
+    Result.lblbuffer := NewLabel( Result.Form, '' ).SetPosition( 528, 112 ).SetSize( 82, 40 );
    {$IFDEF USE_NAMES}
     Result.lblbuffer.SetName( Result.Form, 'lblbuffer' ); 
    {$ENDIF}
@@ -90,7 +100,7 @@ begin
     Result.lbltrack.Font.FontCharset := 0;
     Result.lbltrack.TextAlign := KOL.taCenter;
     // Result.channeltree.TabOrder = 0
-    Result.channeltree := NewTreeView( Result.Form, [ tvoLinesRoot, tvoNoTooltips, tvoTrackSelect, tvoSingleExpand ], nil, nil ).SetAlign ( caLeft ).SetSize( 231, 0 );
+    Result.channeltree := NewTreeView( Result.Form, [ tvoLinesRoot, tvoTrackSelect, tvoSingleExpand ], Result.treeimagelist, nil ).SetAlign ( caLeft ).SetSize( 231, 0 );
    {$IFDEF USE_NAMES}
     Result.channeltree.SetName( Result.Form, 'channeltree' ); 
    {$ENDIF}

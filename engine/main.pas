@@ -16,8 +16,8 @@ uses
   httpsend;
 
 const
-  APPVERSION = 1880;
-  APPVERSIONSTR = '1.8.8';
+  APPVERSION = 1899;
+  APPVERSIONSTR = '1.9.0 beta';
   INITIALVOL = 80;
 
   // GLOBAL VARS, IF NECESSARY INITIALIZED
@@ -26,13 +26,13 @@ var
   appwinHANDLE: HWND;
 
   //# Core Global Variables
-  DS: TDSoutput;
+  _DS: TDSoutput;
   Chn: TRadioPlayer = nil;
   ChnThread: PThread = nil;
   curProgress: Integer;
   curVolume: Integer = INITIALVOL;
   //
-  curBitrate: Cardinal;
+  curBitrate: string;
   lastTitle, curTitle: string;
   //
   undermouse: Cardinal;
@@ -162,7 +162,7 @@ begin
           Text.Add('Call "' + ParamStr(0) + '"');
           Text.Add('del "' + batpath + '"');
           Text.SaveToFile(batpath);
-          Result := LongBool(WinExec(PChar(batpath), SW_HIDE));
+          Result := WinExec(PChar(batpath), SW_HIDE) > 31;
         end
         else
         begin

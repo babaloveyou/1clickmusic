@@ -16,7 +16,9 @@ const
 
 const
   chn_eletronic: array[0..0] of string = (
+    'Dupstep ( dubstep.fm )',
     'House Funky ( kif )',
+    'Hardcore ( coretime )',
     'Hardcore ( hardcoreradio )',
     'Hardstyle ( hard.fm )',
     'Hardstyle ( hardbase )',
@@ -98,7 +100,9 @@ const
 
 const
   pls_eletronic: array[0..0] of string = (
+    'http://www.dubstep.fm/listen.pls',
     'http://www.kifradio.com/www.kifradio.com.m3u',
+    'http://mp3.coretime.fm/listen.pls',
     'http://www.hardcoreradio.nl/rhr.m3u',
     'http://files.hard.fm/128.pls',
     'http://mp3.hardbase.fm/listen.pls',
@@ -205,6 +209,7 @@ const
     'Lounge ( DI )',
     'Lounge Downtempo ( sky )',
     'Ambient ( DI )',
+    'Ambient Space ( DI )',
     'Chillout ( bluefm )',
     'Chillout ( 181.fm )',
     'Chillout ( psychedelik )'
@@ -236,6 +241,7 @@ const
     'http://www.di.fm/mp3/lounge.pls',
     'http://www.sky.fm/mp3/datempolounge.pls',
     'http://www.di.fm/mp3/ambient.pls',
+    'http://www.di.fm/mp3/spacemusic.pls',
     'http://bluefm.net/listen.pls',
     'http://www.181.fm/winamp.pls?station=181-chilled',
     'http://88.191.38.140:8002/listen.pls'
@@ -281,7 +287,7 @@ const
     'http://www.977music.com/tunein/web/classicrock.asx',
     'http://www.977music.com/tunein/web/mix.asx',
     'http://www.977music.com/tunein/web/rock.asx',
-    'http://edge-radio.net/edgeradio/edge.m3u',
+    'http://edge-radio.net/listen_high.pls',
     'http://64.62.252.134:6670/listen.pls',
     'http://www.chronixradio.com/chronixaggression/listen/listen.pls',
     'http://www.chronixradio.com/cxrmetal/listen/listen.pls',
@@ -437,6 +443,7 @@ const
 
 const
   chn_misc: array[0..0] of string = (
+    'Blues ( bellyup4blues )',
     'Salsa ( La X )',
     'Tango ( tangorosario )',
     'Latino ( romanticafm )',
@@ -445,6 +452,7 @@ const
     'Jazz Nu ( soma )',
     'Country ( soma )',
     'Country ( 977music )',
+    'Jazz Vocal ( 1.fm )',
     'Jazz Smooth ( swissjazz )',
     'Jazz Smooth ( swissgroove )',
     'Jazz Smooth ( 1.fm )',
@@ -484,6 +492,7 @@ const
 
 const
   pls_misc: array[0..0] of string = (
+    'http://www.bellyup4blues.com/files/bu4b/elisten.m3u',
     'http://www.laxestereo.com/20proserv.pls',
     'http://200.69.237.185:8000/listen.pls',
     'http://www.romanticafm.net/winampst128.m3u',
@@ -492,6 +501,7 @@ const
     'http://somafm.com/sonicuniverse.pls',
     'http://somafm.com/bootliquor.pls',
     'http://www.977music.com/tunein/web/country.asx',
+    'http://www.1.fm/ajazz128k.pls',
     'http://www.radioswissjazz.ch/live/mp3.m3u',
     'http://www.swissgroove.ch/listen.m3u',
     'http://www.1.fm/jazz.pls',
@@ -592,7 +602,7 @@ const
     'http://www.crosshost.com.br/cbs/kiss/ouvir.m3u',
     'http://www.redeblitz.com.br/redeblitz.wmx',
     'mms://server09.virgula.com.br/jovempanfm/',
-    'http://radiorox.oi.com.br/listen.m3u',
+    'mms://200.222.115.51/radiorox_radiorox128',
     'mms://wmedia.telium.com.br/transsphits',
     'mms://wmedia.telium.com.br/transsppop64',
     'mms://wmedia.telium.com.br/transsplight',

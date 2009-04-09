@@ -6,11 +6,12 @@ uses
   SysUtils,
   Classes,
   httpsend,
-  DSoutput,
+  DSOutput,
   mmsstream,
-  mp3stream;
+  mp3stream,
+  aacpstream;
 
-function OpenRadio(const url: string; var APlayer: TRadioPlayer; const ADevice: TDSoutput): LongBool;
+function OpenRadio(const url: string; var APlayer: TRadioPlayer): LongBool;
 
 implementation
 
@@ -26,7 +27,7 @@ begin
   begin
     Line := Lines[i];
     a := Pos('<ref', Line);
-    if (a > 0){ and (not MultiPos(['.htm', '.as', '.php', '.cgi'], Line)) }then
+    if (a <> 0) { and (not MultiPos(['.htm', '.as', '.php', '.cgi'], Line)) } then
     begin
       a := PosEx('"', Line, a) + 1;
       b := PosEx('"', Line, a + 5);
@@ -50,7 +51,7 @@ begin
     p := Pos('http://', Line); // can be mms or http
     if p = 0 then p := Pos('mms://', Line);
 
-    if (p > 0) and (Line[1] <> '#') then
+    if (p <> 0) and (Line[1] <> '#') then
     begin
       Lines[i] := Copy(Line, p, Length(Line) - p + 1);
       Inc(i);
@@ -61,9 +62,9 @@ begin
 
 end;
 
-procedure openpls(const url: string; const urls : TStringList);
+procedure openpls(const url: string; const urls: TStringList);
 begin
-  if Pos('mms://', url) > 0 then
+  if Pos('mms://', url) <> 0 then
   begin
     urls.Add(url);
     Exit;
@@ -72,22 +73,22 @@ begin
   // mms is the only we know for sure,
   // otherwise we will test the url for asx, m3u and pls
   HttpGetText(url, urls);
-  if urls.Count < 2 then Exit;
+  if urls.Count = 0 then Exit;
   if urls[0] = '' then urls.Delete(0);
   // lowercase the content for parse
   urls.Text := LowerCase(urls.Text);
 
-  if Pos('asx', urls[0]) > 0 then
+  if Pos('asx', urls[0]) <> 0 then
     ParseASX(urls)
   else
     if MultiPos(['playlist', 'm3u'], urls[0]) or
-     (Pos('.m3u', url) > 0)  then
+      (Pos('.m3u', url) <> 0) then
       ParsePLS(urls)
     else
       urls.Add(url);
 end;
 
-function OpenRadio(const url: string; var APlayer: TRadioPlayer; const ADevice: TDSoutput): LongBool;
+function OpenRadio(const url: string; var APlayer: TRadioPlayer): LongBool;
 var
   urls: TStringList;
   i: Integer;
@@ -99,11 +100,22 @@ begin
   begin
     if MultiPos(['.as', '.wm'], url) or // asp aspx wmx wma
       MultiPos(['mms://', '.wma'], urls[i]) then
-      APlayer := TMMS.Create(ADevice)
+    begin
+      APlayer := TMMS.Create();
+      Result := APlayer.Open(urls[i]);
+    end
     else
-      APlayer := TMP3.Create(ADevice);
+    begin
+      APlayer := TMP3.Create();
+      Result := APlayer.Open(urls[i]);
+      if not Result then
+      begin
+        APlayer.Free;
+        APlayer := TAACP.Create();
+        Result := APlayer.Open(urls[i]);
+      end;
+    end;
 
-    Result := APlayer.Open(urls[i]);
     if Result then
       Break
     else

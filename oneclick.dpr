@@ -3,13 +3,7 @@ program oneclick;
 {$R 'resources.res' 'resources.rc'}//{$APPTYPE CONSOLE}
 uses
 KOL,
-  Unit1 in 'Unit1.pas' {Form1},
-  DSoutput in 'engine\DSoutput.pas',
-  httpstream in 'engine\httpstream.pas',
-  mmsstream in 'engine\mmsstream.pas',
-  mp3stream in 'engine\mp3stream.pas',
-  radioopener in 'engine\radioopener.pas',
-  obj_db in 'engine\obj_db.pas';
+  Unit1 in 'Unit1.pas' {Form1};
 
 {$R *.res}
 

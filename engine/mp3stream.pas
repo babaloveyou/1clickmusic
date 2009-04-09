@@ -13,8 +13,8 @@ uses
 type
   TMP3 = class(TRadioPlayer)
   private
-    Fhandle: Pmpg123_handle;
-    FStream: THTTPSTREAM;
+    fHandle: Pmpg123_handle;
+    fStream: THTTPSTREAM;
   protected
     procedure updatebuffer(const offset: Cardinal); override;
     procedure initbuffer;
@@ -22,9 +22,9 @@ type
   public
     function GetProgress(): Integer; override;
     //function GetTrack(): string; override;
-    procedure GetInfo(out Atitle: string; out Aquality: Cardinal); override;
+    procedure GetInfo(out Atitle, Aquality: string); override;
     function Open(const url: string): LongBool; override;
-    constructor Create(ADevice: TDSoutput);
+    constructor Create();
     destructor Destroy; override;
   end;
 
@@ -40,9 +40,10 @@ begin
   Result := FStream.BuffFilled;
 end;
 
-procedure TMP3.GetInfo(out Atitle: string; out Aquality: Cardinal);
+procedure TMP3.GetInfo(out Atitle, Aquality: string);
 begin
   FStream.GetMetaInfo(Atitle, Aquality);
+  Aquality := Aquality + 'k mp3';
 end;
 
 destructor TMP3.Destroy;
@@ -63,11 +64,11 @@ begin
     FStream.NextBuffer();
   until (r = MPG123_NEW_FORMAT) or (FStream.BuffFilled = 0);
 
-  mpg123_getformat(Fhandle, @Frate, @Fchannels, @Fencoding);
+  mpg123_getformat(Fhandle, @Frate, @Fchannels, nil);
   if Fchannels = 0 then
     RaiseError('discovering audio format');
 
-  Fhalfbuffersize := DS.InitializeBuffer(Frate, Fchannels);
+  fHalfbuffersize := fDS.InitializeBuffer(fRate, fChannels);
 end;
 
 function TMP3.Open(const url: string): LongBool;
@@ -92,10 +93,11 @@ end;
 
 procedure TMP3.updatebuffer(const offset: Cardinal);
 var
-  outbuf: PByteArray;
-  r, outsize, Decoded, done: Integer;
+  dsbuf: PByteArray;
+  dssize, Decoded, done : Cardinal;
+  r: Integer;
 begin
-  DSERROR(DS.SoundBuffer.Lock(offset, Fhalfbuffersize, @outbuf, @outsize, nil, nil, 0), 'locking buffer');
+  DSERROR(fDS.SoundBuffer.Lock(offset, Fhalfbuffersize, @dsbuf, @dssize, nil, nil, 0), 'locking buffer');
 
   Decoded := 0;
   r := MPG123_NEED_MORE;
@@ -104,39 +106,39 @@ begin
     // Repeat code that fills the DS buffer
     if (FStream.BuffFilled > 0) then
     begin
-      r := mpg123_decode(Fhandle, FStream.GetBuffer(), BUFFPACKET, @outbuf[Decoded], outsize - Decoded, @done);
+      r := mpg123_decode(Fhandle, FStream.GetBuffer(), BUFFPACKET, @dsbuf[Decoded], dssize - Decoded, @done);
       FStream.NextBuffer();
       Inc(Decoded, done);
     end
     else
     begin
       Status := rsRecovering;
-      DS.Stop;
+      fDS.Stop;
       repeat
         Sleep(64);
         if Terminated then Exit;
       until FStream.BuffFilled > BUFFRESTORE;
-      DS.Play;
+      fDS.Play;
       Status := rsPlaying;
     end;
   until (r <> MPG123_NEED_MORE);
 
   if (r = MPG123_OK) then
-    DS.SoundBuffer.Unlock(outbuf, outsize, nil, 0)
+    fDS.SoundBuffer.Unlock(dsbuf, dssize, nil, 0)
   else
   begin
-    DS.Stop;
+    fDS.Stop;
     initbuffer();
-    DS.Play;
+    fDS.Play;
   end;
 
 end;
 
-constructor TMP3.Create(ADevice: TDSoutput);
+constructor TMP3.Create();
 begin
   inherited;
-  FStream := THTTPSTREAM.Create;
-  Fhandle := mpg123_new(nil, nil); //i586 :|
+  fStream := THTTPSTREAM.Create('audio/mpeg');
+  fHandle := mpg123_new(nil, nil); //i586 :|
   if Fhandle = nil then
     RaiseError('creating MPEG decoder');
 end;

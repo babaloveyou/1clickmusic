@@ -89,8 +89,8 @@ var
   i: Integer;
 begin
   Result := True;
-  for i := 0 to High(SubStr) do
-    if Pos(SubStr[i], str) > 0 then
+  for i := 0 to Length(SubStr) - 1 do
+    if Pos(SubStr[i], str) <> 0 then
       Exit;
   Result := False;
 end;
