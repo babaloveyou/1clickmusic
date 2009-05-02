@@ -10,7 +10,6 @@ uses
   Messages,
   DSoutput,
   radioopener,
-  mp3stream,
   obj_scrobber,
   obj_list,
   httpsend;

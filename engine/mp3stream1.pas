@@ -1,4 +1,4 @@
-unit mp3stream;
+unit mp3stream1;
 
 interface
 
@@ -13,17 +13,19 @@ uses
 type
   TMP3 = class(TRadioPlayer)
   private
-    Fhandle: TMp3Handle;
+    fHandle: TMp3Handle;
     FStream: THTTPSTREAM;
+    //outBuffer: array[0..4608 - 1] of Byte;
+    //outPos, outFilled: Integer;
   protected
     procedure updatebuffer(const offset: Cardinal); override;
     procedure initbuffer;
     procedure prebuffer; override;
   public
     function GetProgress(): Integer; override;
-    procedure GetInfo(out Atitle: string; out Aquality: Cardinal); override;
+    procedure GetInfo(out Atitle, Aquality: string); override;
     function Open(const url: string): LongBool; override;
-    constructor Create(ADevice: TDSoutput);
+    constructor Create();
     destructor Destroy; override;
   end;
 
@@ -39,16 +41,17 @@ begin
   Result := FStream.BuffFilled;
 end;
 
-procedure TMP3.GetInfo(out Atitle: string; out Aquality: Cardinal);
+procedure TMP3.GetInfo(out Atitle, Aquality: string);
 begin
   FStream.GetMetaInfo(Atitle, Aquality);
+  Aquality := Aquality + 'k mp3';
 end;
 
 destructor TMP3.Destroy;
 begin
   inherited;
   FStream.Free;
-  ExitMp3(Fhandle);
+  ExitMp3(fHandle);
 end;
 
 procedure TMP3.initbuffer;
@@ -62,25 +65,27 @@ var
   done: Integer;
   r: TMp3Result;
 begin
+  ExitMp3(fHandle);
   r := MP3_ERROR;
   repeat
     offset := FindFrame(FStream.GetBuffer(), BUFFPACKET);
-    //Debug('FindFrame = %d', [offset]);
     if offset <> -1 then
     begin
-      InitMp3(FHandle);
+      InitMp3(fHandle);
       done := 0;
-      r := DecodeMp3(FHandle,
-        Pointer(LongInt(FStream.GetBuffer()) + offset),
+      r := decodeMp3(fHandle,
+        @PByteArray(FStream.GetBuffer())[offset],
         BUFFPACKET - offset,
         nil,
         0,
         done);
 
       if r = MP3_ERROR then
-        ExitMp3(Fhandle);
+        ExitMp3(fHandle);
 
-      //Debug('DecodeMp3 on offset %d = lay %d, framesize = %d', [offset, Fhandle.lay, Fhandle.framesize]);
+      //outFilled := done;
+
+      //Debug('DecodeMp3 on offset %d = lay %d, framesize = %d', [offset, fHandle.lay, fHandle.framesize]);
     end;
 
     FStream.NextBuffer();
@@ -89,11 +94,11 @@ begin
   if r = MP3_ERROR then
     RaiseError('Discovering Audio Format');
 
-  Fchannels := Fhandle.stereo;
-  Frate := freqs[Fhandle.sampling_frequency];
+  Fchannels := fHandle.stereo;
+  Frate := freqs[fHandle.sampling_frequency];
 
   //Debug('DS.InitializeBuffer(%d, %d);', [Frate, Fchannels]);
-  Fhalfbuffersize := DS.InitializeBuffer(Frate, Fchannels);
+  Fhalfbuffersize := fDS.InitializeBuffer(Frate, Fchannels);
 end;
 
 function TMP3.Open(const url: string): LongBool;
@@ -118,37 +123,75 @@ end;
 
 procedure TMP3.updatebuffer(const offset: Cardinal);
 var
-  outbuf: PByteArray;
-  outsize : Cardinal;
-  Decoded, done: Integer;
+  inbuf : Pointer;
+  dsbuf: PByteArray;
+  dssize: Cardinal;
+  Decoded: Cardinal;
+  done: Integer;
   r: TMp3Result;
 begin
-  DSERROR(DS.SoundBuffer.Lock(offset, Fhalfbuffersize, @outbuf, @outsize, nil, nil, 0), 'ERRO, locking buffer');
+  DSERROR(fDS.SoundBuffer.Lock(offset, Fhalfbuffersize, @dsbuf, @dssize, nil, nil, 0), 'ERRO, locking buffer');
 
   Decoded := 0;
+  {if outFilled <> 0 then
+  begin
+    Move(outBuffer[outPos], dsbuf[0], outFilled);
+    Inc(Decoded, outFilled);
+    outPos := 0;
+    outFilled := 0;
+  end;}
 
-  r := MP3_OK;
+  r := MP3_NEED_MORE;
   repeat
     // Repeat code that fills the DS buffer
     if (FStream.BuffFilled > 0) then
     begin
       done := 0;
+      {if r = MP3_OK then
+      begin
+        inbuf := nil;
+      end
+      else
+      begin
+        inbuf := FStream.GetBuffer();
+        FStream.NextBuffer();
+      end;
+        
+      if dssize - Decoded < SizeOf(outBuffer) then
+      begin
+        r := decodeMP3(fHandle, inbuf, BUFFPACKET, @outBuffer, SizeOf(outBuffer), done);
+        if done < dssize - Decoded then
+        begin
+          Move(outBuffer, dsbuf[Decoded], done);
+        end
+        else
+        begin
+          outPos := dssize - Decoded;
+          Move(outBuffer, dsbuf[Decoded], outPos);
+          outFilled := done - outPos;
+        end;
+      end
+      else
+      begin
+        r := decodeMP3(fHandle, inbuf, BUFFPACKET, @dsbuf[Decoded], SizeOf(outBuffer), done);
+      end;}
+
+
       if r = MP3_OK then
       begin
-        r := DecodeMp3(Fhandle, nil, 0, @outbuf[Decoded], outsize - Decoded, done);
+        r := DecodeMp3(fHandle, nil, 0, @dsbuf[Decoded], dssize - Decoded, done);
       end
       else //MP3_NEED_MORE
       begin
-        r := DecodeMp3(Fhandle, FStream.GetBuffer(), BUFFPACKET, @outbuf[Decoded], outsize - Decoded, done);
+        r := DecodeMp3(fHandle, FStream.GetBuffer(), BUFFPACKET, @dsbuf[Decoded], dssize - Decoded, done);
         FStream.NextBuffer();
       end;
 
       if r = MP3_ERROR then
       begin
-        DS.Stop();
-        ExitMp3(FHandle);
+        fDS.Stop();
         initbuffer();
-        DS.Play();
+        fDS.Play();
         Exit;
       end;
 
@@ -158,23 +201,23 @@ begin
     else
     begin
       Status := rsRecovering;
-      DS.Stop();
+      fDS.Stop();
       repeat
         Sleep(64);
         if Terminated then Exit;
       until FStream.BuffFilled > BUFFRESTORE;
-      DS.Play();
+      fDS.Play();
       Status := rsPlaying;
     end;
-  until (Decoded >= outsize) or (Terminated);
+  until (Decoded >= dssize) or (Terminated);
 
-  DS.SoundBuffer.Unlock(outbuf, outsize, nil, 0);
+  fDS.SoundBuffer.Unlock(dsbuf, dssize, nil, 0);
 end;
 
-constructor TMP3.Create(ADevice: TDSoutput);
+constructor TMP3.Create();
 begin
   inherited;
-  FStream := THTTPSTREAM.Create;
+  fStream := THTTPSTREAM.Create('audio/mpeg');
 end;
 
 end.

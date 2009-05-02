@@ -29,7 +29,7 @@ type
     copyright: Integer;
     original: Integer;
     emphasis: Integer;
-    dummy: array[1..20000] of Byte;
+    dummy: array[1..23000] of Byte;
   end;
 
   TMp3Result = (MP3_ERROR = -1, MP3_OK = 0, MP3_NEED_MORE = 1);
@@ -37,8 +37,13 @@ type
 var
   InitMp3: function(var mp: TMp3Handle): LongBool; cdecl;
   ExitMp3: procedure(var mp: TMp3Handle); cdecl;
-  DecodeMp3: function(var mp: TMp3Handle; inmem: PByte; insize: LongInt; outmem: PByte; outsize: LongInt; var done: LongInt): TMp3Result; cdecl;
+  decodeMP3: function(var mp: TMp3Handle; inmem: PByte; insize: LongInt; outmem: PByte; outsize: LongInt; var done: LongInt): TMp3Result; cdecl;
 
+
+{function InitMP3(var mp: TMp3Handle): LongBool; cdecl; external 'libmp3.dll';
+procedure ExitMP3(var mp: TMp3Handle); cdecl; external 'libmp3.dll';
+function decodeMP3(var mp: TMp3Handle; inmem: PByte; insize: LongInt; outmem: PByte; outsize: LongInt; var done: LongInt): TMp3Result; cdecl; external 'libmp3.dll';
+}
 
 implementation
 
@@ -88,21 +93,6 @@ initialization
 
 finalization
   memFreeLibrary(mpglibDLL);
-
-{var mpglibDLL: TDLLLoader;
-var DLLData: TPointerStream;
-
-initialization
-  mpglibDLL := TDLLLoader.Create;
-  DLLData := TPointerStream.Create(@mpglibData,mpglibSize);
-  mpglibDLL.Load(DLLData);
-  DLLData.Free;
-  DecodeMp3 := mpglibDll.FindExport('decodeMP3');
-  InitMp3 := mpglibDLL.FindExport('InitMP3');
-  ExitMp3 := mpglibDLL.FindExport('ExitMP3');
-
-finalization
-  mpglibDLL.Free;}
-  
+ 
 end.
 
