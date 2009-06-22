@@ -470,7 +470,7 @@ begin
 end;
 
 initialization
-  Loadmpg123('libmpg123-0.dll');
+  Loadmpg123('libmpg123.dll');
 finalization
   Freempg123;
 

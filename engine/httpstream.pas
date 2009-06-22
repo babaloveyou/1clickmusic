@@ -7,20 +7,21 @@ uses
   Classes,
   Windows,
   synautil,
-  blcksock;
+  blcksock,
+  main;
 
 const // CONFIGURATION
-  BUFFPACKET = 1024;
+  BUFFPACKET = 1024 * 1;
   BUFFPACKETCOUNT = 128; // 28 extra buffers  xD
   BUFFSIZETOTAL = 1024 * BUFFPACKETCOUNT;
 
-  BUFFRESTORE = 55;
+  BUFFRESTORE = 50;
   BUFFPRE = 70;
 
 type
   THTTPSTREAM = class(TThread)
   private
-    fAccept : string;
+    fAccept: string;
     BytesUntilMeta: Integer; // used to manage icy data
     fHTTP: TTCPBlockSocket;
     MetaInterval: Integer;
@@ -40,13 +41,11 @@ type
     procedure NextBuffer();
     //# Open stream
     function Open(const url: string): LongBool;
-    constructor Create(const accept : string);
+    constructor Create(const accept: string);
     destructor Destroy; override;
   end;
 
 implementation
-
-uses main;
 
 procedure SplitValue(var data, value: string);
 var
@@ -125,7 +124,7 @@ begin
   icyheader := Format(ICYHEADERSTUB, [url, host + ':' + port]);
 end;}
 
-function ParseMetaHeader(var meta: string; const accept : string; out MetaInterval : Integer; out MetaBitrate: string): Integer;
+function ParseMetaHeader(var meta: string; const accept: string; out MetaInterval: Integer; out MetaBitrate: string): Integer;
 var
   MetaData: TStringlist;
   field, value: string;
@@ -199,7 +198,7 @@ begin
       metalength := fHTTP.RecvByte(MaxInt);
       if metalength = 0 then Continue;
       ParseMetaData(fHTTP.RecvBufferStr(metalength * 16, MaxInt), MetaTitle);
-      NotifyForm(1);
+      NotifyForm(NOTIFY_NEWINFO, 0);
     end
     else
     begin
@@ -210,16 +209,17 @@ begin
 
       fHTTP.RecvBufferEx(@inbuffer[Feed, bytesreceived], bytestoreceive, MaxInt);
 
-      if (fHTTP.LastError <> 0) and (not Terminated) then
-      begin
-        Terminate;
-        NotifyForm(0);
-        Exit;
-      end;
-
       Dec(BytesUntilMeta, bytestoreceive);
       Inc(bytesreceived, bytestoreceive);
     end;
+
+    if (fHTTP.LastError <> 0) and (not Terminated) then
+    begin
+      Terminate;
+      NotifyForm(NOTIFY_DISCONECT, 0);
+      Exit;
+    end;
+
   until (bytesreceived >= BUFFPACKET);
 
 
@@ -233,7 +233,7 @@ begin
   Inc(BuffFilled);
 end;
 
-constructor THTTPSTREAM.Create(const accept : string);
+constructor THTTPSTREAM.Create(const accept: string);
 begin
   inherited Create(True);
   fHTTP := TTCPBlockSocket.Create;
@@ -272,20 +272,14 @@ var
 begin
   Result := False;
   ParseHeader(url, fAccept, host, port, icyheader);
-  fHTTP.CloseSocket;
-  {if proxy_enabled then
-  begin
-    FHTTP.HTTPTunnelTimeout := 5000;
-    FHTTP.HTTPTunnelIP := proxy_host;
-    FHTTP.HTTPTunnelPort := proxy_port;
-  end;}
+  fHTTP.AbortSocket;
 
   fHTTP.Connect(host, port);
   if fHTTP.LastError <> 0 then
     Exit;
   fHTTP.SendString(icyheader);
 
-  response := fHTTP.RecvTerminated(5000, #13#10#13#10);
+  response := fHTTP.RecvTerminated(3000, #13#10#13#10);
 
   case ParseMetaHeader(response, fAccept, MetaInterval, MetaBitrate) of
     1:
@@ -314,7 +308,6 @@ end;
 procedure THTTPSTREAM.NextBuffer();
 begin
   if Cursor = BUFFPACKETCOUNT - 1 then Cursor := 0 else Inc(Cursor);
-
   Dec(BuffFilled);
 end;
 

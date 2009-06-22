@@ -134,8 +134,8 @@ begin
   sl := TStringList.Create;
   //urldata := EncodeURL(AnsiToUtf8(Format(nowplayparam, [sessioncode, artist, track])));
   //HttpPostText(nowplayurl, urldata, sl);
-  
-  timestamp := IntToStr(DateTimeToUnix(IncHour(Now, 3)));
+
+  timestamp := IntToStr(DateTimeToUnix(GetUTTime()));
   urldata := EncodeURL(AnsiToUtf8(Format(scrobparam, [sessioncode, artist, track, timestamp])));
   HttpPostText(scroburl, urldata, sl);
   sl.Free;

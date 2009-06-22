@@ -50,7 +50,6 @@ type
     procedure ProgressExecute();
     procedure UpdateExecute();
     function LastFMThreadExecute(Sender: PThread): Integer;
-    function ThreadExecute(Sender: PThread): Integer;
     procedure ChangeTrayIcon(const NewIcon: HICON);
     procedure traypopup(const Atitle, Atext: AnsiString; const IconType: Integer);
     procedure PlayChannel;
@@ -198,20 +197,20 @@ begin
     0..40:
       begin
         ChangeTrayIcon(ITrayRed);
-        pgrbuffer.ProgressBkColor := clRed;
+        pgrbuffer.ProgressColor := clRed;
       end;
     41..75:
       begin
         ChangeTrayIcon(ITrayGreen);
-        pgrbuffer.ProgressBkColor := clGreen;
+        pgrbuffer.ProgressColor := clGreen;
       end;
   else
     begin
       ChangeTrayIcon(ITrayBlue);
-      pgrbuffer.ProgressBkColor := $00E39C5A;
+      pgrbuffer.ProgressColor := $00E39C5A;
     end;
   end;
-  pgrbuffer.Progress := 100 - progress;
+  pgrbuffer.Progress := progress;
   curProgress := progress;
   pgrbuffer.EndUpdate;
 end;
@@ -236,7 +235,7 @@ begin
         UpdateMsn(True);
 
       if list_enabled then
-        writeFile(list_file, curTitle);
+        WriteToFile(list_file, curTitle);
 
       if clipboard_enabled then
         Text2Clipboard(curTitle);
@@ -253,54 +252,30 @@ begin
   lbltrack.caption := curTitle;
 
   lblbuffer.Caption := curBitrate + #13#10 + 'vol:' + Int2Str(curVolume) + '%';
-
-  case Chn.Status of
-    rsPlaying: lblstatus.Caption := 'Connected!';
-    rsPrebuffering: lblstatus.Caption := 'Prebufering';
-    rsRecovering: lblstatus.Caption := 'Recovering';
-  end;
-end;
-
-function TForm1.ThreadExecute(Sender: PThread): Integer;
-begin
-  //Debug('entering thread');
-  Result := 1;
-  channeltree.Enabled := False;
-  btplay.Enabled := False;
-
-  StopChannel();
-  traymenu.ItemText[_PlayStop] := 'Stop';
-  btplay.Caption := 'Stop';
-  //# Init timer that refresh the progress bar, 500ms interval
-  SetTimer(appwinHANDLE, 1, 500, nil);
-
-  pgrbuffer.Progress := 100;
-  pgrbuffer.ProgressBkColor := clRed;
-  pgrbuffer.Visible := True;
-
-  lblstatus.Caption := 'Searching...';
-
-  traypopup('Connecting', lblradio.Caption, NIIF_INFO);
-
-  //# Lets Try to play
-  if not OpenRadio(radiolist.getpls(channeltree.TVSelected), Chn) then
-  begin
-    traypopup('Error Connecting', lblradio.Caption, NIIF_ERROR);
-    StopChannel();
-    lblstatus.caption := 'Error Connecting';
-  end;
-  channeltree.Enabled := True;
-  btplay.Enabled := True;
-  //Debug('exiting thread');
-  ChnThread := nil;
 end;
 
 procedure TForm1.PlayChannel;
 begin
   if not channeltree.TVItemHasChildren[channeltree.TVSelected] then
   begin
-    lblradio.Caption := channeltree.TVItemText[channeltree.TVSelected];
-    ChnThread := NewThreadAutoFree(ThreadExecute);
+    StopChannel();
+    
+    curRadio := channeltree.TVSelected;
+    lblradio.Caption := channeltree.TVItemText[curRadio];
+
+    traymenu.ItemText[_PlayStop] := 'Stop';
+    btplay.Caption := 'Stop';
+
+    // init timer
+    SetTimer(appwinHANDLE, 1, 500, nil);
+
+    pgrbuffer.Visible := True;
+
+    lblstatus.Caption := 'Searching...';
+
+    traypopup('Connecting', lblradio.Caption, NIIF_INFO);
+
+    ChnOpener := TRadioOpener.Create(radiolist.getpls(curRadio));
   end;
 end;
 
@@ -308,15 +283,25 @@ procedure TForm1.StopChannel;
 begin
   if msn_enabled then
     UpdateMsn(False);
+
+  if ChnOpener <> nil then
+  begin
+    ChnOpener.Terminate;
+    ChnOpener := nil;
+  end;
+
   if Chn <> nil then
-    FreeAndNil(Chn);
+  begin
+    Chn.Terminate;
+    Chn := nil;
+  end;
 
   KillTimer(appwinHANDLE, 1);
 
   pgrbuffer.Visible := False;
   curProgress := 0;
   curBitrate := '';
-  pgrbuffer.Progress := 100;
+  pgrbuffer.Progress := 0;
   btplay.Caption := 'Play';
   curTitle := '';
   lastTitle := '';
@@ -352,7 +337,10 @@ begin
             StopChannel();
           1004:
             if Chn = nil then
-              PlayChannel();
+            begin
+              channeltree.TVSelected := channeltree.TVRoot;
+              channeltree.TVSelected := curRadio
+            end;
           2001..2012:
             if hotkeys[Msg.wParam - 2001] <> 0 then
             begin
@@ -368,62 +356,35 @@ begin
         Result := True;
       end;
 
-    WM_USER:
-      if Msg.wParam = Integer(Chn) then
-      begin
-        if Msg.lParam <> 0 then // We have something to update!
-          UpdateExecute()
-        else
-          PlayChannel();
+    WM_NOTIFY:
+      case Msg.wParam of
+        NOTIFY_BUFFER:
+          case Msg.lParam of
+            BUFFER_PREBUFFERING:
+              begin
+                ChnOpener := nil;
+                lblstatus.Caption := 'Prebufering';
+                UpdateExecute();
+              end;
+            BUFFER_OK:
+              lblstatus.Caption := 'Connected!';
+            BUFFER_RECOVERING:
+              lblstatus.Caption := 'Recovering';
+          end;
+
+        NOTIFY_NEWINFO: UpdateExecute();
+
+        NOTIFY_DISCONECT: PlayChannel();
+
+        NOTIFY_OPENERROR:
+          begin
+            traypopup('Error Connecting', lblradio.Caption, NIIF_ERROR);
+            StopChannel();
+            lblstatus.caption := 'Error Connecting';
+          end;
       end;
   end;
 end;
-
-{function TreeListWndProc(Sender: PControl; var Msg: TMsg; var Rslt: Integer): Boolean;
-type
-  TNMTVCUSTOMDRAW = packed record
-    nmcd: TNMCustomDraw;
-    clrText: COLORREF;
-    clrTextBk: COLORREF;
-    iLevel: Integer;
-  end;
-  PNMTVCustomDraw = ^TNMTVCustomDraw;
-begin
-  Result := False;
-
-  if (Msg.message = WM_NOTIFY) and (PNMHdr(Msg.lParam).code = NM_CUSTOMDRAW) then
-  begin
-    Result := True;
-
-    case PNMTVCUSTOMDRAW(Msg.lParam).nmcd.dwDrawStage of
-      CDDS_PREPAINT:
-        begin
-          Rslt := CDRF_NOTIFYITEMDRAW;
-        end;
-
-      CDDS_ITEMPREPAINT:
-        begin
-          with PNMTVCUSTOMDRAW(Msg.lParam)^ do
-            if (nmcd.uItemState and CDIS_SELECTED <> 0) and (iLevel = 1) then
-            begin
-              with Sender^, Sender.Canvas^ do
-              begin
-                Brush.Color := clSkyBlue;
-                Font.Color := clBlue;
-                Font.FontWeight := 700; // Canvas.Font.FontStyle := [fsBold];
-                FillRect(nmcd.rc);
-                with TVItemRect[nmcd.dwItemSpec, True] do
-                  TextOut(Left + 2, Top + 1, TVItemText[nmcd.dwItemSpec]);
-              end;
-              Rslt := CDRF_SKIPDEFAULT;
-            end
-            else rslt := CDRF_DODEFAULT;
-        end;
-    else
-      rslt := CDRF_DODEFAULT;
-    end
-  end;
-end;}
 
 procedure TForm1.KOLForm1FormCreate(Sender: PObj);
 var
@@ -482,7 +443,8 @@ begin
   Radiolist := TRadioList.Create;
   //# inicializa os canais e o message handler
   LoadDb(channeltree, radiolist);
-  LoadCustomDb(channeltree, radiolist);
+  LoadCustomDb(channeltree, radiolist, 'userradios.txt');
+  LoadCustomDb(channeltree, radiolist, 'C:\userradios.txt');
   //channeltree.AttachProc(TreeListWndProc);
   //# close the treeview
   channeltree.TVSelected := channeltree.TVRoot;
@@ -662,7 +624,7 @@ end;
 
 procedure TForm1.btplayClick(Sender: PObj);
 begin
-  if Chn = nil then
+  if (Chn = nil) and (ChnOpener = nil) then
     PlayChannel()
   else
     StopChannel();
@@ -696,7 +658,7 @@ begin
     begin
       BalloonTitle := Atitle;
       BalloonText := Atext;
-      ShowBalloon(IconType, 3);
+      ShowBalloon(IconType, 10);
     end;
 end;
 
@@ -709,11 +671,17 @@ begin
   if lastfm_thread <> nil then
     lastfm_thread.Free;
 
-  if ChnThread <> nil then
-    ChnThread.Free; // it's autofree, but whe are exiting NOW!
+  if ChnOpener <> nil then
+  begin
+    ChnOpener.Terminate;
+    WaitForSingleObject(ChnOpener.Handle, 1000);
+  end;
 
   if Chn <> nil then
-    Chn.Free;
+  begin
+    Chn.Terminate;
+    WaitForSingleObject(Chn.Handle, 1000);
+  end;
 
   radiolist.Free;
   _DS.Free;

@@ -2,103 +2,33 @@ unit radioopener;
 
 interface
 
+//{$R decoders.res}
+
 uses
   SysUtils,
   Classes,
   DSOutput,
   mmsstream, {$DEFINE MMS}
-  mp3stream,  {$DEFINE MP3}
-  //aacpstream, {$DEFINE AACP}
-  httpsend;
+  mp3stream, {$DEFINE MP3}
+  aacpstream, {$DEFINE AACP}
+  httpsend,
+  main,
+  utils;
 
-function OpenRadio(const url: string; var APlayer: TRadioPlayer): LongBool;
+// "THIS" retrieves the PLS or M3U or WTF!...
+// and then try to open the linwith avaliable decoders
+
+type
+  TRadioOpener = class(TThread)
+  private
+    fUrl: string;
+  protected
+    procedure Execute(); override;
+  public
+    constructor Create(const url: string);
+  end;
 
 implementation
-
-uses utils;
-
-// taken from fastcode posex
-function PosEx(const SubStr, S: string; Offset: Integer = 1): Integer;
-var
-  len, lenSub: integer;
-  ch: char;
-  p, pSub, pStart, pStop: pchar;
-label
-  Loop0, Loop4,
-  TestT, Test0, Test1, Test2, Test3, Test4,
-  AfterTestT, AfterTest0,
-  Ret, Exit;
-begin;
-  pSub:=pointer(SubStr);
-  p:=pointer(S);
-
-  if (p=nil) or (pSub=nil) or (Offset<1) then begin;
-    Result:=0;
-    goto Exit;
-    end;
-
-  lenSub:=pinteger(pSub-4)^-1;
-  len:=pinteger(p-4)^;
-  if (len<lenSub+Offset) or (lenSub<0) then begin;
-    Result:=0;
-    goto Exit;
-    end;
-
-  pStop:=p+len;
-  p:=p+lenSub;
-  pSub:=pSub+lenSub;
-  pStart:=p;
-  p:=p+Offset+3;
-
-  ch:=pSub[0];
-  lenSub:=-lenSub;
-  if p<pStop then goto Loop4;
-  p:=p-4;
-  goto Loop0;
-
-Loop4:
-  if ch=p[-4] then goto Test4;
-  if ch=p[-3] then goto Test3;
-  if ch=p[-2] then goto Test2;
-  if ch=p[-1] then goto Test1;
-Loop0:
-  if ch=p[0] then goto Test0;
-AfterTest0:
-  if ch=p[1] then goto TestT;
-AfterTestT:
-  p:=p+6;
-  if p<pStop then goto Loop4;
-  p:=p-4;
-  if p<pStop then goto Loop0;
-  Result:=0;
-  goto Exit;
-
-Test3: p:=p-2;
-Test1: p:=p-2;
-TestT: len:=lenSub;
-  if lenSub<>0 then repeat;
-    if (psub[len]<>p[len+1])
-    or (psub[len+1]<>p[len+2]) then goto AfterTestT;
-    len:=len+2;
-    until len>=0;
-  p:=p+2;
-  if p<=pStop then goto Ret;
-  Result:=0;
-  goto Exit;
-
-Test4: p:=p-2;
-Test2: p:=p-2;
-Test0: len:=lenSub;
-  if lenSub<>0 then repeat;
-    if (psub[len]<>p[len])
-    or (psub[len+1]<>p[len+1]) then goto AfterTest0;
-    len:=len+2;
-    until len>=0;
-  inc(p);
-Ret:
-  Result:=p-pStart;
-Exit:
-end;
 
 procedure ParseASX(const Lines: TStrings);
 var
@@ -110,7 +40,7 @@ begin
   begin
     Line := Lines[i];
     a := Pos('<ref', Line);
-    if (a <> 0) { and (not MultiPos(['.htm', '.as', '.php', '.cgi'], Line)) } then
+    if (a <> 0) and (not MultiPos(['.htm', {'.as',} '.php', '.cgi', '<!--'], Line)) then
     begin
       a := PosEx('"', Line, a) + 1;
       b := PosEx('"', Line, a + 5);
@@ -134,7 +64,8 @@ begin
     p := Pos('http://', Line); // can be mms or http
     if p = 0 then p := Pos('mms://', Line);
 
-    if (p <> 0) and (Line[1] <> '#') then
+    if (p = 1) or
+      ((p <> 0) and (Pos('file', Line) = 1)) then
     begin
       Lines[i] := Copy(Line, p, Length(Line) - p + 1);
       Inc(i);
@@ -145,9 +76,9 @@ begin
 
 end;
 
-procedure openpls(const url: string; const urls: TStringList);
+procedure OpenPls(const url: string; const urls: TStringList);
 begin
-  if Pos('mms://', url) <> 0 then
+  if MultiPos(['mms://', 'rtsp://'], url) then
   begin
     urls.Add(url);
     Exit;
@@ -171,40 +102,76 @@ begin
       urls.Add(url);
 end;
 
-function OpenRadio(const url: string; var APlayer: TRadioPlayer): LongBool;
+{ TRadioOpener }
+
+constructor TRadioOpener.Create(const url: string);
+begin
+  fUrl := url;
+  inherited Create(False);
+  FreeOnTerminate := True;
+end;
+
+procedure TRadioOpener.Execute;
+{$IFDEF MMS}
 label
   _WMA_;
+{$ENDIF}
 var
   urls: TStringList;
   i: Integer;
+  Player: TRadioPlayer;
+  r: LongBool;
 begin
-  Result := False;
+  Player := nil;
+  r := False;
   urls := TStringList.Create;
-  openpls(url, urls);
-  for i := 0 to urls.Count - 1 do
+
+  OpenPls(fUrl, urls);
+
+  i := 0;
+  while (not Terminated) and (i < urls.Count) do
   begin
-    if MultiPos(['mms://','.wma'], urls[i]) then goto _WMA_;
-    {$IFDEF MP3}
-    APlayer := TMP3.Create();
-    Result := APlayer.Open(urls[i]);
-    if Result then Break;
-    {$ENDIF}
-    {$IFDEF AACP}
-    APlayer.Free;
-    APlayer := TAACP.Create();
-    Result := APlayer.Open(urls[i]);
-    if Result then Break;
-    {$ENDIF}
-    {$IFDEF MMS}
-    APlayer.Free;
+{$IFDEF MMS}
+    if MultiPos(['mms://', '.wma', '.asf'], urls[i]) then goto _WMA_;
+{$ENDIF}
+{$IFDEF MP3}
+    Player := TMP3.Create();
+    r := Player.Open(urls[i]);
+    if r or Terminated then Break;
+{$ENDIF}
+{$IFDEF AACP}
+    Player := TAACP.Create();
+    r := Player.Open(urls[i]);
+    if r or Terminated then Break;
+{$ENDIF}
+{$IFDEF MMS}
     _WMA_:
-    APlayer := TMMS.Create();
-    Result := APlayer.Open(urls[i]);
-    if Result then Break;
-    {$ENDIF}
-    FreeAndNil(APlayer);
+    Player := TMMS.Create();
+    r := Player.Open(urls[i]);
+{$ENDIF}
+    Inc(i);
   end;
+
   urls.Free;
+
+  if Terminated then
+  begin
+    if r then
+    begin
+      Player.Terminate;
+      Player.Resume;
+    end;
+  end
+  else
+  begin
+    if r then
+    begin
+      Chn := Player;
+      Player.Resume;
+    end
+    else
+      NotifyForm(NOTIFY_OPENERROR, 0);
+  end;
 end;
 
 end.

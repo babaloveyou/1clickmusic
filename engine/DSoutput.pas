@@ -35,23 +35,16 @@ type
   end;
 
 type
-  TRadioStatus = (rsStoped, rsPrebuffering, rsPlaying, rsRecovering);
-
-type
   TRadioPlayer = class(TThread)
-  private
-    procedure SetStatus(const Value: TRadioStatus);
   protected
     fDS : TDSOutput;
     fRate: Integer;
     fChannels: Integer;
     fHalfbuffersize: Cardinal;
-    fStatus: TRadioStatus;
     procedure updatebuffer(const offset: Cardinal); virtual; abstract;
-    procedure prebuffer; virtual; abstract;
+    function prebuffer: LongBool; virtual; abstract;
     procedure Execute; override;
   public
-    property Status: TRadioStatus read FStatus write SetStatus;
     function GetProgress(): Integer; virtual; abstract;
     procedure GetInfo(out Atitle, Aquality: string); virtual; abstract;
     function Open(const url: string): LongBool; virtual; abstract;
@@ -154,7 +147,7 @@ var
   Fswfm: TWAVEFORMATEX;
   Fsdesc: TDSBUFFERDESC;
 begin
-  FSecondary := nil;
+  fSecondary := nil;
 
   //FillChar(Fswfm, SizeOf(TWAVEFORMATEX), 0);
   with Fswfm do
@@ -190,14 +183,14 @@ end;
 
 procedure TDSOutput.Play;
 begin
-  if fSecondary <> nil then
-    fSecondary.Play(0, 0, DSBPLAY_LOOPING);
+  //if fSecondary <> nil then
+  fSecondary.Play(0, 0, DSBPLAY_LOOPING);
 end;
 
 procedure TDSOutput.Stop;
 begin
-  if fSecondary <> nil then
-    fSecondary.Stop;
+  //if fSecondary <> nil then
+  fSecondary.Stop;
 end;
 
 { TRadioPlayer }
@@ -208,31 +201,45 @@ begin
   fDS := _DS;
   inherited Create(True);
   Priority := tpTimeCritical;
-  fStatus := rsStoped;
+  FreeOnTerminate := True;
 end;
 
 destructor TRadioPlayer.Destroy;
 begin
-  fStatus := rsStoped;
-  fDS.Stop;
-  inherited;
-  fDS.SoundBuffer := nil;
+  if fHalfbuffersize <> 0 then
+  begin
+    fDS.Stop;
+    inherited;
+    fDS.SoundBuffer := nil;
+  end
+  else
+    inherited;
 end;
 
 procedure TRadioPlayer.Execute;
 var
+  //a ,b: Int64; {$APPTYPE CONSOLE}
   offset, lastoffset: Cardinal;
+  vfade, vtarget : Integer;
 begin
-  prebuffer();
-  // if terminated while prebuffering Exit
   if Terminated then Exit;
-  // Debug('prebuffered');
-  // Fill buffer at offset 0
+  NotifyForm(NOTIFY_BUFFER, BUFFER_PREBUFFERING);
+  if not prebuffer() then Exit;
+
+  vtarget := fDS.fVolume;
+  if vtarget = 0 then
+    vfade := 0
+  else
+  begin
+    vfade := 2;
+    fDS.Volume(vfade);
+  end;
+
   updatebuffer(0);
-  // Debug('our 1º buffer update');
   lastoffset := 0;
   fDS.Play;
-  Status := rsPlaying;
+  NotifyForm(NOTIFY_BUFFER, BUFFER_OK);
+
   repeat
     if fDS.GetPlayCursorPos() > Fhalfbuffersize then
       offset := 0
@@ -241,17 +248,22 @@ begin
 
     if offset <> lastoffset then
     begin
+      //QueryPerformanceCounter(a);
       UpdateBuffer(offset);
+      //QueryPerformanceCounter(b);
+      //Writeln((b - a),'!');
       lastoffset := offset;
     end;
+    
     Sleep(32);
-  until Terminated;
-end;
 
-procedure TRadioPlayer.SetStatus(const Value: TRadioStatus);
-begin
-  FStatus := Value;
-  NotifyForm(1);
+    if vfade <> 0 then
+      if (vfade >= vtarget) or (fDS.fVolume <> vfade) then
+        vfade := 0
+      else
+        vfade := fDS.Volume(vfade + 2);
+
+  until Terminated;
 end;
 
 end.

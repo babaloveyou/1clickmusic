@@ -83,6 +83,7 @@ type
     BitsPerSample: Integer;
     Bitrate: LongWord;
     duration: QWORD;
+    BytesBuffered : Cardinal;
   end;
   pwma_async_reader = ^wma_async_reader;
 
@@ -217,7 +218,7 @@ begin
   async_reader.StretchFactor := 1.0;
   CoInitialize(nil);
   if WMCreateReader(nil, 1, async_reader.reader) <> S_OK then
-    Exit;
+    async_reader.reader := nil;
 end;
 
 procedure lwma_async_reader_open(var async_reader: wma_async_reader; const URL: WideString);
@@ -459,9 +460,9 @@ begin
       bufsize := 0;
       Exit;
     end;
-    async_reader.CriticalSection.Enter;
+    //async_reader.CriticalSection.Enter;
     SI := PSampleInfo(async_reader.BlockList.First);
-    async_reader.CriticalSection.Leave;
+    //async_reader.CriticalSection.Leave;
     if SI.Offset = SI.Length then
     begin
       async_reader.CriticalSection.Enter;
@@ -482,6 +483,7 @@ begin
         Inc(SI.Offset, bufsize)
     end;
   until buffer <> nil;
+  Dec(async_reader.BytesBuffered, bufsize);
 end;
 
 procedure lwma_async_reader_free(var async_reader: wma_async_reader);
@@ -1390,7 +1392,8 @@ begin
   Result := S_OK;
 end;
 
-function TWMReaderCallback.OnSample;
+function TWMReaderCallback.OnSample(dwOutputNum: LongWord; cnsSampleTime, cnsSampleDuration: Int64;
+      dwFlags: LongWord; pSample: INSSBuffer; pvContext: Pointer): HRESULT; stdcall;
 var
   Buffer: PByte;
   Length: DWord;
@@ -1409,6 +1412,7 @@ begin
     FReader.CriticalSection.Leave;
     FReader.Event.SetEvent;
     FReader.Event.ResetEvent;
+    Inc(FReader.BytesBuffered, Length);
   end;
   Result := S_OK;
 end;

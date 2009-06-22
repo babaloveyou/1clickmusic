@@ -1,6 +1,7 @@
 { KOL MCK } // Do not remove this line!
 program oneclick;
 {$R 'resources.res' 'resources.rc'}//{$APPTYPE CONSOLE}
+{$R 'winxp.res'}
 uses
 KOL,
   Unit1 in 'Unit1.pas' {Form1};

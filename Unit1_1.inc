@@ -8,7 +8,7 @@ begin
   {$ELSE OBJECTS}
   New( Result, Create );
   {$ENDIF KOL CLASSES/OBJECTS}
-  Result.Form := NewForm( AParent, '1ClickMusic' ).SetPosition( 428, 273 );
+  Result.Form := NewForm( AParent, '1ClickMusic' ).SetPosition( 431, 276 );
   Applet :=  Result.Form;
   Result.Form.Add2AutoFree( Result );
 {$IFDEF UNICODE_CTRLS}
@@ -18,10 +18,11 @@ begin
     Result.Form.SetName( Applet, 'Form1' );
    {$ENDIF}
     Result.Form.Style := Result.Form.Style and not WS_MAXIMIZEBOX;
-    Result.Form.SetClientSize( 619, 278 );
+    Result.Form.SetClientSize( 613, 272 );
     Result.Form.IconLoad( hInstance, 'MAINICON' );
     Result.Form.Font.FontName := 'MS Sans Serif';
     Result.Form.Font.FontPitch := fpFixed;
+    Result.Form.Border := 0;
       Result.Form.OnMessage := Result.KOLForm1Message;
       Result.Form.OnDestroy := Result.KOLForm1Destroy;
 
@@ -42,7 +43,7 @@ begin
     Result.treeimagelist.SetName( Result.Form, 'treeimagelist' ); 
    {$ENDIF}
     // Result.lblbuffer.TabOrder = -1
-    Result.lblbuffer := NewLabel( Result.Form, '' ).SetPosition( 528, 112 ).SetSize( 82, 40 );
+    Result.lblbuffer := NewLabel( Result.Form, '' ).SetPosition( 528, 112 ).SetSize( 79, 41 );
    {$IFDEF USE_NAMES}
     Result.lblbuffer.SetName( Result.Form, 'lblbuffer' ); 
    {$ENDIF}
@@ -53,7 +54,7 @@ begin
     Result.lblbuffer.Font.FontCharset := 0;
     Result.lblbuffer.TextAlign := KOL.taRight;
     // Result.lblhelp.TabOrder = -1
-    Result.lblhelp := NewLabel( Result.Form, 'Hotkeys:'+#13+#10+' CTRL + UP  : raise volume'+#13+#10+' CTRL + Down : decrease volume'+#13+#10+' CTRL + END : Stop'+#13+#10+' CTRL + HOME : Play'+#13+#10+' CTRL + (F1..F12) : Hotkey for Channels'+#13+#10+#13+#10+'!! Right click on a channel to bind it for a hotkey'+#13+#10+'!! Left or Right click on TrayIcon to Hide/Show' ).SetPosition( 241, 136 ).SetSize( 272, 137 );
+    Result.lblhelp := NewLabel( Result.Form, 'Hotkeys:'+#13+#10+' CTRL + UP  : raise volume'+#13+#10+' CTRL + Down : decrease volume'+#13+#10+' CTRL + END : Stop'+#13+#10+' CTRL + HOME : Play'+#13+#10+' CTRL + (F1..F12) : Hotkey for Channels'+#13+#10+#13+#10+'Right click trayicon to see options'+#13+#10+'Right click on a channel to bind hotkeys'+#13+#10 ).SetPosition( 241, 136 ).SetSize( 272, 137 );
    {$IFDEF USE_NAMES}
     Result.lblhelp.SetName( Result.Form, 'lblhelp' ); 
    {$ENDIF}
@@ -75,7 +76,7 @@ begin
     Result.lblradio.Font.Color := TColor(clPurple);
     Result.lblradio.Font.FontCharset := 0;
     // Result.lblstatus.TabOrder = -1
-    Result.lblstatus := NewLabel( Result.Form, '' ).SetPosition( 480, 75 ).SetSize( 130, 17 );
+    Result.lblstatus := NewLabel( Result.Form, '' ).SetPosition( 480, 75 ).SetSize( 127, 18 );
    {$IFDEF USE_NAMES}
     Result.lblstatus.SetName( Result.Form, 'lblstatus' ); 
    {$ENDIF}
@@ -107,9 +108,8 @@ begin
    {$IFDEF UNICODE_CTRLS}
    Result.channeltree.SetUnicode(TRUE);
    {$ENDIF UNICODE_CTRLS}
-    Result.channeltree.Font.Color := TColor(clBlack);
     // Result.btplay.TabOrder = 1
-    Result.btplay := NewButton( Result.Form, 'Play' ).SetPosition( 536, 248 ).SetSize( 76, 0 ).LikeSpeedButton;
+    Result.btplay := NewButton( Result.Form, 'Play' ).SetPosition( 534, 247 ).SetSize( 76, 0 ).LikeSpeedButton;
    {$IFDEF USE_NAMES}
     Result.btplay.SetName( Result.Form, 'btplay' ); 
    {$ENDIF}
@@ -117,9 +117,9 @@ begin
    Result.btplay.SetUnicode(TRUE);
    {$ENDIF UNICODE_CTRLS}
     Result.btplay.Font.FontStyle := [ fsBold ];
-    Result.btplay.Style := Result.btplay.Style or BS_FLAT;
+    Result.btplay.EraseBackground := TRUE;
     // Result.pgrbuffer.TabOrder = 2
-    Result.pgrbuffer := NewProgressBarEx( Result.Form, [ pboSmooth ] ).SetPosition( 536, 93 ).SetSize( 74, 18 );
+    Result.pgrbuffer := NewProgressBarEx( Result.Form, [ pboSmooth ] ).SetPosition( 536, 93 ).SetSize( 71, 19 );
    {$IFDEF USE_NAMES}
     Result.pgrbuffer.SetName( Result.Form, 'pgrbuffer' ); 
    {$ENDIF}
@@ -127,8 +127,8 @@ begin
    Result.pgrbuffer.SetUnicode(TRUE);
    {$ENDIF UNICODE_CTRLS}
     Result.pgrbuffer.Visible := False;
-    Result.pgrbuffer.Color := TColor($E39C5A);
-    Result.pgrbuffer.ProgressColor := clBtnFace;
+    Result.pgrbuffer.Color := TColor(clBtnFace);
+    Result.pgrbuffer.ProgressColor := $E39C5A;
       Result.channeltree.OnMouseUp := Result.channeltreeMouseUp;
       Result.channeltree.OnSelChange := Result.channeltreeSelChange;
       Result.channeltree.OnTVSelChanging := Result.channeltreeTVSelChanging;

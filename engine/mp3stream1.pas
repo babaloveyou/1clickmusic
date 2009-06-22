@@ -20,7 +20,7 @@ type
   protected
     procedure updatebuffer(const offset: Cardinal); override;
     procedure initbuffer;
-    procedure prebuffer; override;
+    function prebuffer: LongBool; override;
   public
     function GetProgress(): Integer; override;
     procedure GetInfo(out Atitle, Aquality: string); override;
@@ -111,14 +111,16 @@ begin
   end;
 end;
 
-procedure TMP3.prebuffer;
+function TMP3.prebuffer: LongBool;
 begin
+  Result := False;
   // WAIT TO PREBUFFER!
   repeat
     Sleep(64);
     if Terminated then Exit;
   until FStream.BuffFilled > BUFFPRE;
   initbuffer();
+  Result := True;
 end;
 
 procedure TMP3.updatebuffer(const offset: Cardinal);

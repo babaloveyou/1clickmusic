@@ -8,7 +8,9 @@ uses
   Windows,
   DSoutput,
   wmfintf,
-  libwma1;
+  libwma1,
+  main,
+  utils;
 
 type
   TMMS = class(TRadioPlayer)
@@ -18,7 +20,7 @@ type
   protected
     procedure updatebuffer(const offset: Cardinal); override;
     procedure initbuffer;
-    procedure prebuffer; override;
+     function prebuffer: LongBool; override;
   public
     function GetProgress(): Integer; override;
     procedure GetInfo(out Atitle, Aquality: string); override;
@@ -28,9 +30,6 @@ type
   end;
 
 implementation
-
-uses
-  utils;
 
 { TMP3 }
 
@@ -43,7 +42,6 @@ begin
   with fhandle do
   begin
     if reader = nil then Exit;
-
     reader.Stop;
     reader.Close;
     reader := nil;
@@ -55,16 +53,13 @@ begin
     CriticalSection.Release;
     CriticalSection.Free;
 
-    if BlockList <> nil then
+    for i := 0 to BlockList.Count - 1 do
     begin
-      for i := 0 to BlockList.Count - 1 do
-      begin
-        SI := BlockList.Items[i];
-        Freemem(SI.Data);
-        Freemem(SI);
-      end;
-      BlockList.Free;
+      SI := BlockList.Items[i];
+      Freemem(SI.Data);
+      Freemem(SI);
     end;
+    BlockList.Free;
   end;
 end;
 
@@ -73,20 +68,17 @@ begin
   Fhalfbuffersize := fDS.InitializeBuffer(Frate, Fchannels);
 end;
 
-procedure TMMS.prebuffer;
+function TMMS.prebuffer: LongBool;
 begin
+  Result := False;
   // WAIT TO PREBUFFER!
   repeat
     Sleep(64);
-    if fhandle.status = WMT_CLOSED then
-    begin
-      Terminate;
-      Status := rsStoped;
+    if (fhandle.status = WMT_CLOSED) or Terminated then
       Exit;
-    end;
-    if Terminated then Exit;
-  until fhandle.BlockList.Count >= 4;
+  until GetProgress() >= 110;
   InitBuffer();
+  Result := True;
 end;
 
 procedure TMMS.updatebuffer(const offset: Cardinal);
@@ -99,7 +91,6 @@ begin
 
   Decoded := 0;
   repeat
-    if Terminated then Exit;
     if (fhandle.BlockList.Count > 0) then
     begin
       done := dssize - Decoded;
@@ -110,14 +101,14 @@ begin
     end
     else
     begin
-      Status := rsRecovering;
+      NotifyForm(NOTIFY_BUFFER, BUFFER_RECOVERING);
       fDS.Stop;
       repeat
         Sleep(50);
         if Terminated then Exit;
-      until fhandle.BlockList.Count >= 2;
+      until GetProgress() >= 70;
       fDS.Play;
-      Status := rsPlaying;
+      NotifyForm(NOTIFY_BUFFER, BUFFER_OK);
     end;
   until (Decoded >= dssize) or (Terminated);
 
@@ -126,8 +117,6 @@ end;
 
 function TMMS.Open(const url: string): LongBool;
 begin
-  {if proxy_enabled then
-    lwma_async_reader_set_proxy(fhandle, 'http', proxy_host, StrToInt(proxy_port));}
   fUrl := url;
   lwma_async_reader_open(fhandle, url);
   Result := Fhandle.has_audio;
@@ -135,9 +124,12 @@ begin
   begin
     Fchannels := Fhandle.channels;
     Frate := Fhandle.SampleRate;
-    Status := rsPrebuffering;
+  end
+  else
+  begin
+    Terminate;
     Resume;
-  end;
+  end;  
 end;
 
 procedure TMMS.GetInfo(out Atitle, Aquality: string);
@@ -150,8 +142,17 @@ begin
 end;
 
 function TMMS.GetProgress(): Integer;
+const
+  FULLBUFFERSECONDS = 4;
+var
+  bytespersec : Single;
 begin
-  Result := 0;
+  with fhandle do
+    bytespersec := ((BitsPerSample div 8) * SampleRate * channels);
+  if bytespersec = 0 then
+    Result := 0
+  else
+    Result := Round((100 / FULLBUFFERSECONDS) * (fhandle.BytesBuffered / bytespersec));
 end;
 
 constructor TMMS.Create();
@@ -159,9 +160,9 @@ begin
   inherited;
   if not WMInited then
     RaiseError('WMP engine not found');
-  lwma_async_reader_init(Fhandle);
-  if Fhandle.reader = nil then
-    RaiseError('could not initialize WMP engine');
+  lwma_async_reader_init(fhandle);
+  if fhandle.reader = nil then
+    RaiseError('WMP Error'); 
 end;
 
 end.

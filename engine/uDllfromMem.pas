@@ -163,18 +163,18 @@ begin
 
     pfilentheader := Pointer(Cardinal(filebase) + pfiledosheader^._lfanew);
 
-    ////////////////////////
-    /////////////allozieren/
-    //physbase := VirtualAlloc(Pointer(pfilentheader^.OptionalHeader.ImageBase), pfilentheader^.OptionalHeader.SizeOfImage, MEM_RESERVE, PAGE_READWRITE);
-    //if physbase = nil then begin
-    //  physbase := VirtualAlloc(nil, pfilentheader^.OptionalHeader.SizeOfImage, MEM_RESERVE or MEM_COMMIT, PAGE_READWRITE);
-    //end;
+    //////////////////////
+    ///////////allozieren/
+    {physbase := VirtualAlloc(Pointer(pfilentheader^.OptionalHeader.ImageBase), pfilentheader^.OptionalHeader.SizeOfImage, MEM_RESERVE, PAGE_READWRITE);
+    if physbase = nil then begin
+      physbase := VirtualAlloc(nil, pfilentheader^.OptionalHeader.SizeOfImage, MEM_RESERVE or MEM_COMMIT, PAGE_READWRITE);
+    end;}
 
     // above code does not work, this work
-    physbase := VirtualAlloc(nil, pfilentheader^.OptionalHeader.SizeOfImage, MEM_RESERVE or MEM_COMMIT, PAGE_READWRITE);
+    physbase := VirtualAlloc(Pointer(pfilentheader^.OptionalHeader.ImageBase), pfilentheader^.OptionalHeader.SizeOfImage, MEM_RESERVE or MEM_COMMIT, PAGE_READWRITE);
 
-    /////////////////////////////
-    /////////////header kopieren/
+    ///////////////////////////
+    ///////////header kopieren/
     Move(filebase^, physbase^, pfilentheader^.OptionalHeader.SizeOfHeaders);
 
     //header im memory finden & anpassen
@@ -242,7 +242,7 @@ begin
     relocData := relocbase;
     while (Cardinal(relocdata) - Cardinal(relocbase)) < pphysntheader.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_BASERELOC].Size do
     begin
-      reloccount := trunc((relocdata.SizeOfBlock - 8) / 2);
+      reloccount := ((relocdata.SizeOfBlock - 8) div 2);
       relocitem := Pointer(Cardinal(relocdata) + 8);
       for i := 0 to (reloccount - 1) do begin
         if (relocitem^ shr 12) = IMAGE_REL_BASED_HIGHLOW then begin
@@ -266,7 +266,8 @@ begin
     for i := 0 to (pphysntheader^.FileHeader.NumberOfSections - 1) do
     begin
       VirtualProtect(Pointer(Cardinal(physbase) + pphyssectionheader^.VirtualAddress), pphyssectionheader^.Misc.VirtualSize, GetSectionProtection(pphyssectionheader.Characteristics), nil);
-      pphyssectionheader := Pointer(Cardinal(pphyssectionheader) + SizeOf(TIMAGESECTIONHEADER));
+      Inc(pphyssectionheader);
+      //pphyssectionheader := Pointer(Cardinal(pphyssectionheader) + SizeOf(TIMAGESECTIONHEADER));
     end;
 
 

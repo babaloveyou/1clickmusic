@@ -1,8 +1,8 @@
 object Form1: TForm1
-  Left = 428
-  Top = 273
-  Width = 627
-  Height = 306
+  Left = 431
+  Top = 276
+  Width = 621
+  Height = 300
   HorzScrollBar.Visible = False
   VertScrollBar.Visible = False
   Caption = '1ClickMusic'
@@ -18,10 +18,10 @@ object Form1: TForm1
   TextHeight = 13
   object channeltree: TKOLTreeView
     Tag = 0
-    Left = 2
-    Top = 2
+    Left = 0
+    Top = 0
     Width = 231
-    Height = 274
+    Height = 272
     HelpContext = 0
     IgnoreDefault = False
     AnchorLeft = False
@@ -46,7 +46,7 @@ object Form1: TForm1
     Ctl3D = True
     Color = clBtnFace
     parentColor = True
-    Font.Color = clBlack
+    Font.Color = clWindowText
     Font.FontStyle = []
     Font.FontHeight = 0
     Font.FontWidth = 0
@@ -79,8 +79,8 @@ object Form1: TForm1
     Tag = 0
     Left = 480
     Top = 75
-    Width = 130
-    Height = 17
+    Width = 127
+    Height = 18
     HelpContext = 0
     IgnoreDefault = True
     AnchorLeft = False
@@ -132,8 +132,8 @@ object Form1: TForm1
     Tag = 0
     Left = 528
     Top = 112
-    Width = 82
-    Height = 40
+    Width = 79
+    Height = 41
     HelpContext = 0
     IgnoreDefault = False
     AnchorLeft = False
@@ -264,8 +264,8 @@ object Form1: TForm1
     Caption = 
       'Hotkeys:'#13#10' CTRL + UP  : raise volume'#13#10' CTRL + Down : decrease vo' +
       'lume'#13#10' CTRL + END : Stop'#13#10' CTRL + HOME : Play'#13#10' CTRL + (F1..F12)' +
-      ' : Hotkey for Channels'#13#10#13#10'!! Right click on a channel to bind it' +
-      ' for a hotkey'#13#10'!! Left or Right click on TrayIcon to Hide/Show'
+      ' : Hotkey for Channels'#13#10#13#10'Right click trayicon to see options'#13#10'R' +
+      'ight click on a channel to bind hotkeys'#13#10
     Ctl3D = True
     Color = clBtnFace
     parentColor = True
@@ -347,8 +347,8 @@ object Form1: TForm1
   end
   object btplay: TKOLButton
     Tag = 0
-    Left = 536
-    Top = 248
+    Left = 534
+    Top = 247
     Width = 76
     Height = 22
     HelpContext = 0
@@ -388,7 +388,7 @@ object Form1: TForm1
     Font.FontQuality = fqDefault
     parentFont = False
     OnClick = btplayClick
-    EraseBackground = False
+    EraseBackground = True
     Localizy = loForm
     Border = 2
     TextAlign = taCenter
@@ -398,7 +398,7 @@ object Form1: TForm1
     DefaultBtn = False
     CancelBtn = False
     windowed = True
-    Flat = True
+    Flat = False
     WordWrap = False
     LikeSpeedButton = True
   end
@@ -406,8 +406,8 @@ object Form1: TForm1
     Tag = 0
     Left = 536
     Top = 93
-    Width = 74
-    Height = 18
+    Width = 71
+    Height = 19
     HelpContext = 0
     IgnoreDefault = False
     AnchorLeft = False
@@ -430,7 +430,7 @@ object Form1: TForm1
     Align = caNone
     CenterOnParent = False
     Ctl3D = True
-    Color = 14916698
+    Color = clBtnFace
     parentColor = False
     Font.Color = clWindowText
     Font.FontStyle = []
@@ -448,11 +448,11 @@ object Form1: TForm1
     Transparent = False
     Vertical = False
     Smooth = True
-    ProgressColor = clBtnFace
-    ProgressBkColor = 14916698
+    ProgressColor = 14916698
+    ProgressBkColor = clBtnFace
     Progress = 0
     MaxProgress = 100
-    Brush.Color = 14916698
+    Brush.Color = clBtnFace
     Brush.BrushStyle = bsSolid
   end
   object KOLProject1: TKOLProject
@@ -461,7 +461,7 @@ object Form1: TForm1
     projectName = 'oneclick'
     projectDest = 'oneclick'
     sourcePath = 'C:\Documents and Settings\Administrador\Desktop\1clickmusic\'
-    outdcuPath = 'dcu\'
+    outdcuPath = 'C:\Documents and Settings\Administrador\Desktop\1clickmusic\'
     dprResource = True
     protectFiles = True
     showReport = False
@@ -542,7 +542,7 @@ object Form1: TForm1
     PreventResizeFlicks = False
     Transparent = False
     AlphaBlend = 255
-    Border = 2
+    Border = 0
     MarginLeft = 0
     MarginRight = 0
     MarginTop = 0

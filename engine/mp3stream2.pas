@@ -61,7 +61,7 @@ type
     function FillinFormat(var inFormat: TMPEGLAYER3WAVEFORMAT): LongBool;
     procedure updatebuffer(const offset: Cardinal); override;
     procedure initbuffer;
-    procedure prebuffer; override;
+    function prebuffer(): LongBool; override;
   public
     function GetProgress(): Integer; override;
     //function GetTrack(): string; override;
@@ -175,7 +175,7 @@ begin
         nBlockSize := 576 * nAvgBytesPerSec div nSamplesPerSec;
     end;
     wID := MPEGLAYER3_ID_MPEG;
-    nCodecDelay := $0571;
+    nCodecDelay := 0;//$0571;
     nFramesPerBlock := 1;
     if ((frame shr 9) and 1) <> 0 then
       fdwFlags := MPEGLAYER3_FLAG_PADDING_ON
@@ -223,6 +223,9 @@ begin
   acmStreamPrepareHeader(fHandle, fStreamHeader, 0);
   if r <> 0 then RaiseError(IntToStr(r));
 
+  {acmStreamSize(fHandle,inBufferlen,r, ACM_STREAMSIZEF_SOURCE);
+  Writeln(r);}
+
   Fhalfbuffersize := fDS.InitializeBuffer(outFormat.nSamplesPerSec, outFormat.nChannels);
 end;
 
@@ -236,20 +239,23 @@ begin
   end;
 end;
 
-procedure TMP3.prebuffer;
+function TMP3.prebuffer(): LongBool;
 begin
+  Result := False;
   // WAIT TO PREBUFFER!
   repeat
     Sleep(64);
     if Terminated then Exit;
   until FStream.BuffFilled > BUFFPRE;
   initbuffer();
+  Result := True;
 end;
 
 procedure TMP3.updatebuffer(const offset: Cardinal);
 var
   dsbuf: PByteArray;
   r, done, dssize, Decoded: Cardinal;
+  a : Cardinal;
 begin
   DSERROR(fDS.SoundBuffer.Lock(offset, Fhalfbuffersize, @dsbuf, @dssize, nil, nil, 0), 'locking buffer');
 

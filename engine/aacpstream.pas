@@ -8,7 +8,9 @@ uses
   Classes,
   neaacdec,
   DSoutput,
-  httpstream;
+  httpstream,
+  main,
+  utils;
 
 const
   inBufferlen = BUFFPACKET * 2;
@@ -16,7 +18,7 @@ const
 type
   TAACP = class(TRadioPlayer)
   private
-    Fhandle: PNeAACDecHandle;
+    fHandle: PNeAACDecHandle;
     inBuffer: array[0..inBufferlen - 1] of Byte;
     inPos, inFilled: Cardinal;
     outBuffer: array[0..outBufferlen - 1] of Byte;
@@ -24,8 +26,8 @@ type
     fStream: THTTPSTREAM;
   protected
     procedure updatebuffer(const offset: Cardinal); override;
-    procedure initbuffer;
-    procedure prebuffer; override;
+    function initbuffer: LongBool;
+    function prebuffer: LongBool; override;
   public
     function GetProgress(): Integer; override;
     //function GetTrack(): string; override;
@@ -36,9 +38,6 @@ type
   end;
 
 implementation
-
-uses
-  utils;
 
 { TMP3 }
 
@@ -98,25 +97,25 @@ end;
 destructor TAACP.Destroy;
 begin
   inherited;
-  if Fhandle <> nil then
-    NeAACDecClose(Fhandle);
+  if fHandle <> nil then
+    NeAACDecClose(fHandle);
   fStream.Free;
 end;
 
-procedure TAACP.initbuffer;
+function TAACP.initbuffer: LongBool;
 var
   r, i: Integer;
   c: Byte;
 begin
-  if Fhandle <> nil then
-    NeAACDecClose(Fhandle);
-
-  Fhandle := NeAACDecOpen();
+  Result := False;
+  if fHandle <> nil then
+    NeAACDecClose(fHandle);
+  fHandle := NeAACDecOpen();
 
   r := -1;
   repeat
-    if inFilled = 0 then
-    begin
+    {if inFilled = 0 then
+    begin}
       i := sync(fStream.GetBuffer(), BUFFPACKET);
       if i = -1 then
       begin
@@ -127,7 +126,7 @@ begin
       inPos := 0;
       Move(Pointer(Integer(fStream.GetBuffer()) + i)^, inBuffer, inFilled);
       fStream.NextBuffer();
-    end
+    {end
     else
     begin
       if inPos = 0 then
@@ -145,43 +144,47 @@ begin
       end;
       Inc(inPos, i);
       Dec(inFilled, i);
-    end;
+    end;}
 
-    r := NeAACDecInit(Fhandle, @inBuffer[inPos], inFilled, @fRate, @c);
+    r := NeAACDecInit(fHandle, @inBuffer[inPos], inFilled, @fRate, @c);
     if r < 0 then
     begin
       inFilled := 0;
       Continue;
-    end;  
+    end;
     Dec(inFilled, r);
     Inc(inPos, r);
   until (r >= 0) or (FStream.BuffFilled = 0);
   if (r < 0) then
-    RaiseError('discovering audio format');
+  begin
+    //RaiseError('discovering audio format');
+    Exit;
+  end;
 
   FChannels := c;
-
   FHalfbuffersize := fDS.InitializeBuffer(Frate, Fchannels);
+  Result := True;
 end;
 
 function TAACP.Open(const url: string): LongBool;
 begin
   Result := FStream.open(url);
-  if Result then
+  if not Result then
   begin
-    Status := rsPrebuffering;
+    Terminate;
     Resume;
   end;
 end;
 
-procedure TAACP.prebuffer;
+function TAACP.prebuffer: LongBool;
 begin
+  Result := False;
   // WAIT TO PREBUFFER!
   repeat
     Sleep(64);
     if Terminated then Exit;
   until FStream.BuffFilled > BUFFPRE;
-  initbuffer();
+  Result := initbuffer();
 end;
 
 procedure TAACP.updatebuffer(const offset: Cardinal);
@@ -198,7 +201,7 @@ begin
     Move(outBuffer, dsbuf^, outFilled);
     Inc(Decoded, outFilled);
     outFilled := 0;
-  end;  
+  end;
 
   repeat
     if Terminated then Exit;
@@ -217,13 +220,17 @@ begin
         Inc(inFilled, BUFFPACKET);
       end;
 
-      outbuf := NeAACDecDecode(Fhandle, @frameinf, @inBuffer[inPos], inFilled);
+      outbuf := NeAACDecDecode(fHandle, @frameinf, @inBuffer[inPos], inFilled);
       Dec(inFilled, frameinf.bytesconsumed);
       Inc(inPos, frameinf.bytesconsumed);
       if frameinf.error <> 0 then
       begin
         fDS.Stop;
-        initbuffer();
+        if not initbuffer() then
+        begin
+          Terminate;
+          Exit;
+        end;  
         fDS.Play;
         Exit;
       end;
@@ -245,14 +252,14 @@ begin
     end
     else
     begin
-      Status := rsRecovering;
+      NotifyForm(NOTIFY_BUFFER, BUFFER_RECOVERING);
       fDS.Stop;
       repeat
         Sleep(64);
         if Terminated then Exit;
       until FStream.BuffFilled > BUFFRESTORE;
       fDS.Play;
-      Status := rsPlaying;
+      NotifyForm(NOTIFY_BUFFER, BUFFER_OK);
     end;
   until (Decoded >= dssize);
 

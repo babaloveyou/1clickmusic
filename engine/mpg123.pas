@@ -31,11 +31,11 @@ type
 var
   mpg123_init: function: Longint; cdecl;
 
-  mpg123_new: function(decoder: PChar; Error: Plongint): Pmpg123_handle; cdecl;
-
   mpg123_delete: procedure(mh: Pmpg123_handle); cdecl;
 
 {$IFDEF LOADALL}
+  mpg123_new: function(decoder: PChar; Error: Plongint): Pmpg123_handle; cdecl;
+
   mpg123_exit: procedure; cdecl;
 
 type
@@ -357,6 +357,7 @@ var
   mpg123_id3_: function(mh: Pmpg123_handle; var v1: Pmpg123_id3v1; var v2: Pmpg123_id3v2): Longint; cdecl;
 
   mpg123_icy_: function(mh: Pmpg123_handle; icy_meta: PPchar): Longint; cdecl;
+{$ENDIF}
 
 type
   Pmpg123_pars_struct = ^Tmpg123_pars_struct;
@@ -370,6 +371,7 @@ type
 var
   mpg123_parnew: function(mp: Pmpg123_pars; decoder: PChar; Error: Plongint): Pmpg123_handle; cdecl;
 
+{$IFDEF LOADALL}
   mpg123_new_pars: function(Error: Plongint): Pmpg123_pars; cdecl;
 
   mpg123_delete_pars: procedure(mp: Pmpg123_pars); cdecl;
@@ -409,9 +411,10 @@ initialization
   mpg123_decode := memGetProcAddress(libmpg123DLL, 'mpg123_decode');
   mpg123_getformat := memGetProcAddress(libmpg123DLL, 'mpg123_getformat');
   mpg123_init := memGetProcAddress(libmpg123DLL, 'mpg123_init');
-  mpg123_new := memGetProcAddress(libmpg123DLL, 'mpg123_new');
+  mpg123_parnew := memGetProcAddress(libmpg123DLL, 'mpg123_parnew');
   mpg123_delete := memGetProcAddress(libmpg123DLL, 'mpg123_delete');
 {$IFDEF LOADALL}
+  mpg123_new := memGetProcAddress(libmpg123DLL, 'mpg123_new');
   mpg123_exit := memGetProcAddress(libmpg123DLL, 'mpg123_exit');
   mpg123_close := memGetProcAddress(libmpg123DLL, 'mpg123_close');
   mpg123_copy_string := memGetProcAddress(libmpg123DLL, 'mpg123_copy_string');
@@ -448,7 +451,6 @@ initialization
   mpg123_outblock := memGetProcAddress(libmpg123DLL, 'mpg123_outblock');
   mpg123_par := memGetProcAddress(libmpg123DLL, 'mpg123_par');
   mpg123_param := memGetProcAddress(libmpg123DLL, 'mpg123_param');
-  mpg123_parnew := memGetProcAddress(libmpg123DLL, 'mpg123_parnew');
   mpg123_plain_strerror := memGetProcAddress(libmpg123DLL, 'mpg123_plain_strerror');
   mpg123_position := memGetProcAddress(libmpg123DLL, 'mpg123_position');
   mpg123_rates := memGetProcAddress(libmpg123DLL, 'mpg123_rates');

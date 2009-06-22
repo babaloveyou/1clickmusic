@@ -9,15 +9,14 @@ uses
   Windows,
   Messages,
   DSoutput,
-  radioopener,
-  obj_scrobber,
   obj_list,
   httpsend;
 
 const
-  APPVERSION = 1899;
-  APPVERSIONSTR = '1.9.0 beta';
+  APPVERSION = 1901;
+  APPVERSIONSTR = '1.9.0';
   INITIALVOL = 80;
+  WM_NOTIFY = WM_USER + 1;
 
   // GLOBAL VARS, IF NECESSARY INITIALIZED
 var
@@ -27,7 +26,8 @@ var
   //# Core Global Variables
   _DS: TDSoutput;
   Chn: TRadioPlayer = nil;
-  ChnThread: PThread = nil;
+  ChnOpener : TThread;
+  curRadio : Cardinal = Cardinal(-1);
   curProgress: Integer;
   curVolume: Integer = INITIALVOL;
   //
@@ -60,15 +60,21 @@ var
   lastfm_enabled: LongBool;
   lastfm_user, lastfm_pass: string;
   lastfm_nextscrobb: Cardinal = 0;
-  // proxy
-  {proxy_enabled: LongBool;
-  proxy_host, proxy_port, proxy_pass: string;}
 
 procedure SetAutoRun();
 procedure UpdateMsn(write: LongBool);
 procedure ShowAboutbox();
 function AutoUpdate(): LongBool;
-procedure NotifyForm(lParam: Integer);
+procedure NotifyForm(wParam, lParam: Integer);
+
+const
+  NOTIFY_OPENERROR = -1;
+  NOTIFY_NEWINFO = 11;
+  NOTIFY_DISCONECT = 10;
+  NOTIFY_BUFFER = 9;
+  BUFFER_OK = 0;
+  BUFFER_RECOVERING = 1;
+  BUFFER_PREBUFFERING = 2;
 
 implementation
 
@@ -83,7 +89,7 @@ begin
   if autorun_enabled then
   begin
     RegCreateKey(HKEY_LOCAL_MACHINE, AutoRunRegistryKey, key);
-    RegSetValueEx(key, 'oneclick', 0, REG_SZ, PChar(ParamStr(0) + ' h'), Length(ParamStr(0)) + 3);
+    RegSetValueEx(key, 'oneclick', 0, REG_SZ, PChar(GetCommandLine() + ' h'), Length(ParamStr(0)) + 3);
   end
   else
   begin
@@ -93,9 +99,9 @@ begin
   RegCloseKey(key);
 end;
 
-procedure NotifyForm(lParam: Integer);
+procedure NotifyForm(wParam, lParam: Integer);
 begin
-  PostMessage(appwinHANDLE, WM_USER, Integer(Chn), lParam);
+  PostMessage(appwinHANDLE, WM_NOTIFY , wParam, lParam);
 end;
 
 procedure UpdateMsn(write: LongBool);
@@ -174,12 +180,7 @@ begin
     else
     begin
       Result := False;
-      //MessageBox(0, 'Your version is up-to-date', '1ClickMusic', MB_ICONINFORMATION);
     end;
-  //else
-  //begin
-    //RaiseError('DOWNLOADING THE UPDATE FILE', False);
-  //end;
 
   Text.Free;
 end;
