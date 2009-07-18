@@ -5,6 +5,7 @@ pasw = 704
 dst = []
 
 def crypt(text):
+    text = text.replace("http://", "")
     key = len(text) % 10
     result = ""
     for i in xrange(len(text)):

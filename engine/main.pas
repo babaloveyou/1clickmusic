@@ -13,8 +13,8 @@ uses
   httpsend;
 
 const
-  APPVERSION = 1901;
-  APPVERSIONSTR = '1.9.0';
+  APPVERSION = 1910;
+  APPVERSIONSTR = '1.9.1';
   INITIALVOL = 80;
   WM_NOTIFY = WM_USER + 1;
 
@@ -137,7 +137,7 @@ end;
 
 function AutoUpdate(): LongBool;
 const
-  updateurl = 'http://1clickmusic.net/update/update';
+  updateurl = '1clickmusic.net/update/update';
 var
   Text: TStringList;
   newfile: TFileStream;

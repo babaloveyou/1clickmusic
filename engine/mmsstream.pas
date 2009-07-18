@@ -65,7 +65,7 @@ end;
 
 procedure TMMS.initbuffer;
 begin
-  Fhalfbuffersize := fDS.InitializeBuffer(Frate, Fchannels);
+  Fhalfbuffersize := fDS.InitializeBuffer(fRate, fChannels);
 end;
 
 function TMMS.prebuffer: LongBool;

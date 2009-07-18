@@ -108,8 +108,6 @@ begin
     traypopup_enabled := ValueBoolean('traypopup_enabled', True);
     firstrun_enabled := ValueBoolean('firstrun_enabled', True);
     msn_enabled := ValueBoolean('msn_enabled', False);
-    //msn_iconi := ValueInteger('msn_iconi', 0);
-    //msn_icons := ValueString('msn_icons', 'Music');
     list_enabled := ValueBoolean('list_enabled', False);
     list_file := ValueString('list_file', 'list.txt');
     clipboard_enabled := ValueBoolean('clipboard_enabled', False);
@@ -118,9 +116,6 @@ begin
     lastfm_pass := Crypt(ValueString('lastfm_pass', ''));
     autorun_enabled := ValueBoolean('autorun_enabled', False);
     playonstart_enabled := ValueBoolean('playonstart_enabled', False);
-    {proxy_enabled := ValueBoolean('proxy_enabled', False);
-    proxy_host := ValueString('proxy_host', '');
-    proxy_port := ValueString('proxy_port', '');}
 
     Section := 'hotkeys';
     for i := 0 to 11 do
@@ -162,8 +157,6 @@ begin
     ValueBoolean('traypopup_enabled', traypopup_enabled);
     ValueBoolean('firstrun_enabled', False);
     ValueBoolean('msn_enabled', msn_enabled);
-    //ValueInteger('msn_iconi', msn_iconi);
-    //ValueString('msn_icons', msn_icons);
     ValueBoolean('list_enabled', list_enabled);
     ValueString('list_file', list_file);
     ValueBoolean('clipboard_enabled', clipboard_enabled);
@@ -172,9 +165,6 @@ begin
     ValueString('lastfm_pass', Crypt(lastfm_pass));
     ValueBoolean('autorun_enabled', autorun_enabled);
     ValueBoolean('playonstart_enabled', playonstart_enabled);
-    {ValueBoolean('proxy_enabled', proxy_enabled);
-    ValueString('proxy_host', proxy_host);
-    ValueString('proxy_port', proxy_port); }
 
     Section := 'hotkeys';
     for i := 0 to 11 do
@@ -256,7 +246,8 @@ end;
 
 procedure TForm1.PlayChannel;
 begin
-  if not channeltree.TVItemHasChildren[channeltree.TVSelected] then
+  //if not channeltree.TVItemHasChildren[channeltree.TVSelected] then
+  if radiolist.getpls(channeltree.TVSelected) <> '' then
   begin
     StopChannel();
     
@@ -275,6 +266,8 @@ begin
 
     traypopup('Connecting', lblradio.Caption, NIIF_INFO);
 
+    {TV := channeltree;
+    Radio :=  curRadio;}
     ChnOpener := TRadioOpener.Create(radiolist.getpls(curRadio));
   end;
 end;

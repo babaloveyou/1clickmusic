@@ -1,5 +1,5 @@
 object Form1: TForm1
-  Left = 431
+  Left = 282
   Top = 276
   Width = 621
   Height = 300
@@ -21,7 +21,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 231
-    Height = 272
+    Height = 273
     HelpContext = 0
     IgnoreDefault = False
     AnchorLeft = False
@@ -460,8 +460,10 @@ object Form1: TForm1
     Localizy = False
     projectName = 'oneclick'
     projectDest = 'oneclick'
-    sourcePath = 'C:\Documents and Settings\Administrador\Desktop\1clickmusic\'
-    outdcuPath = 'C:\Documents and Settings\Administrador\Desktop\1clickmusic\'
+    sourcePath = 
+      'C:\Documents and Settings\Administrador\Desktop\PROG\1clickmusic' +
+      '\'
+    outdcuPath = 'dcu\'
     dprResource = True
     protectFiles = True
     showReport = False
@@ -500,7 +502,9 @@ object Form1: TForm1
     AllBtnReturnClick = False
     Tabulate = False
     TabulateEx = False
-    UnitSourcePath = 'C:\Documents and Settings\Administrador\Desktop\1clickmusic\'
+    UnitSourcePath = 
+      'C:\Documents and Settings\Administrador\Desktop\PROG\1clickmusic' +
+      '\'
     Locked = False
     formUnit = 'Unit1'
     formMain = True

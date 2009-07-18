@@ -5,6 +5,8 @@ interface
 //{$R decoders.res}
 
 uses
+  Kol,
+  Windows,
   SysUtils,
   Classes,
   DSOutput,
@@ -28,55 +30,53 @@ type
     constructor Create(const url: string);
   end;
 
+{var
+  TV: PControl;
+  Radio: Cardinal;}
+
 implementation
 
-procedure ParseASX(const Lines: TStrings);
+procedure ParseASX(const src, dst: TStrings);
 var
   i, a, b: Integer;
   Line: string;
 begin
-  i := 0;
-  while i < Lines.Count do
+  for i := 0 to src.Count - 1 do
   begin
-    Line := Lines[i];
+    Line := src[i];
     a := Pos('<ref', Line);
-    if (a <> 0) and (not MultiPos(['.htm', {'.as',} '.php', '.cgi', '<!--'], Line)) then
+    if (a <> 0) and (not MultiPos(['.htm', '.asp', '.php', '.cgi', '<!--'], Line)) then
     begin
       a := PosEx('"', Line, a) + 1;
       b := PosEx('"', Line, a + 5);
-      Lines[i] := Copy(Line, a, b - a);
-      Inc(i);
-    end
-    else
-      Lines.Delete(i);
+      dst.Add(Copy(Line, a, b - a));
+    end;
   end;
 end;
 
-procedure ParsePLS(const Lines: TStrings);
+procedure ParsePLS(const src, dst: TStrings);
 var
   i, p: Integer;
   Line: string;
 begin
-  i := 0;
-  while i < Lines.Count do
+  for i := 0 to src.Count - 1 do
   begin
-    Line := Lines[i];
+    Line := src[i];
     p := Pos('http://', Line); // can be mms or http
     if p = 0 then p := Pos('mms://', Line);
 
     if (p = 1) or
       ((p <> 0) and (Pos('file', Line) = 1)) then
     begin
-      Lines[i] := Copy(Line, p, Length(Line) - p + 1);
-      Inc(i);
-    end
-    else
-      Lines.Delete(i);
+      dst.Add(Copy(Line, p, Length(Line) - p + 1));
+    end;
   end;
 
 end;
 
 procedure OpenPls(const url: string; const urls: TStringList);
+var
+  pls: TStringList;
 begin
   if MultiPos(['mms://', 'rtsp://'], url) then
   begin
@@ -84,22 +84,35 @@ begin
     Exit;
   end;
 
+  pls := TStringList.Create;
   // mms is the only we know for sure,
   // otherwise we will test the url for asx, m3u and pls
-  HttpGetText(url, urls);
-  if urls.Count = 0 then Exit;
-  if urls[0] = '' then urls.Delete(0);
+  HttpGetText(url, pls);
+  if pls.Count = 0 then Exit;
+  if pls[0] = '' then pls.Delete(0);
   // lowercase the content for parse
-  urls.Text := LowerCase(urls.Text);
+  pls.Text := LowerCase(pls.Text);
 
-  if Pos('asx', urls[0]) <> 0 then
-    ParseASX(urls)
-  else
-    if MultiPos(['playlist', 'm3u'], urls[0]) or
-      (Pos('.m3u', url) <> 0) then
-      ParsePLS(urls)
+  {// check for an http page
+  if Pos('<html', pls.Text) <> 0 then
+  begin
+    urls.Add(url);
+  end
+  else}
+    // check for asx playlist
+    if Pos('asx', pls[0]) <> 0 then
+      ParseASX(pls, urls)
     else
-      urls.Add(url);
+      // check for m3u or pls playlist
+      if MultiPos(['playlist', 'm3u'], pls[0]) or
+        (Pos('.m3u', url) <> 0) then
+        ParsePLS(pls, urls)
+      else
+      begin
+        urls.Add(url);
+      end;
+
+  pls.Free;
 end;
 
 { TRadioOpener }
@@ -107,52 +120,57 @@ end;
 constructor TRadioOpener.Create(const url: string);
 begin
   fUrl := url;
-  inherited Create(False);
   FreeOnTerminate := True;
+  inherited Create(False);
 end;
 
 procedure TRadioOpener.Execute;
-{$IFDEF MMS}
-label
-  _WMA_;
-{$ENDIF}
 var
   urls: TStringList;
   i: Integer;
   Player: TRadioPlayer;
   r: LongBool;
+  //res: Cardinal;
 begin
   Player := nil;
   r := False;
-  urls := TStringList.Create;
 
+  urls := TStringList.Create;
   OpenPls(fUrl, urls);
 
-  i := 0;
-  while (not Terminated) and (i < urls.Count) do
+  for i := 0 to urls.Count - 1 do
   begin
 {$IFDEF MMS}
-    if MultiPos(['mms://', '.wma', '.asf'], urls[i]) then goto _WMA_;
+    if MultiPos(['mms://', '.wma', '.asf', 'rtsp://'], urls[i]) then
+    begin
+      Player := TMMS.Create();
+      r := Player.Open(urls[i]);
+      if r or Terminated then Break;
+    end;
 {$ENDIF}
+
 {$IFDEF MP3}
     Player := TMP3.Create();
     r := Player.Open(urls[i]);
     if r or Terminated then Break;
 {$ENDIF}
+
 {$IFDEF AACP}
     Player := TAACP.Create();
     r := Player.Open(urls[i]);
     if r or Terminated then Break;
 {$ENDIF}
-{$IFDEF MMS}
-    _WMA_:
-    Player := TMMS.Create();
-    r := Player.Open(urls[i]);
-{$ENDIF}
-    Inc(i);
-  end;
 
-  urls.Free;
+{$IFDEF MMS}
+    // give a chance for some .aspx urls (ex: 1.fm)
+    if Pos('.aspx', fUrl) <> 0 then
+    begin
+      Player := TMMS.Create();
+      r := Player.Open(urls[i]);
+      if r or Terminated then Break;
+    end;
+{$ENDIF}
+  end;
 
   if Terminated then
   begin
@@ -166,12 +184,32 @@ begin
   begin
     if r then
     begin
+      {res := tv.TVItemChild[Radio];
+      while res <> 0 do
+      begin
+        TV.TVDelete(res);
+        res := tv.TVItemChild[Radio];
+      end;
+
+      if urls.Count > 1 then
+        for i := 0 to urls.Count - 1 do
+        begin
+          radiolist.Add(
+            TV.TVInsert(Radio, TVI_LAST, IntToStr(i)),
+            '',
+            urls[i]
+            );
+        end;}
       Chn := Player;
       Player.Resume;
     end
     else
       NotifyForm(NOTIFY_OPENERROR, 0);
   end;
+
+  urls.Free;
+
+  {Dec(RadioOpenersRunning);}
 end;
 
 end.

@@ -2,7 +2,7 @@ unit obj_list;
 
 interface
 
-uses KOL;
+uses KOL, Windows;
 
 type
   PRadioEntry = ^TRadioEntry;
@@ -62,42 +62,57 @@ end;
 function TRadioList.getname(const Apos: Cardinal): AnsiString;
 var
   i: Integer;
+  item : PPointer;
 begin
+  item := PPointer(fList.DataMemory);
   for i := 0 to fList.Count - 1 do
-    with PRadioEntry(fList.Items[i])^ do
+  begin
+    with PRadioEntry(item^)^ do
       if pos = Apos then
       begin
         Result := Name;
         Exit;
       end;
+    Inc(item);
+  end;
   Result := '';
 end;
 
 function TRadioList.getpls(const Apos: Cardinal): AnsiString;
 var
   i: Integer;
+  item : PPointer;
 begin
+  item := PPointer(fList.DataMemory);
   for i := 0 to fList.Count - 1 do
-    with PRadioEntry(fList.Items[i])^ do
+  begin
+    with PRadioEntry(item^)^ do
       if pos = Apos then
       begin
         Result := pls;
         Exit;
       end;
+    Inc(item);
+  end;
   Result := '';
 end;
 
 function TRadioList.getpos(const AName: AnsiString): Cardinal;
 var
   i: Integer;
+  item : PPointer;
 begin
+  item := PPointer(fList.DataMemory);
   for i := 0 to fList.Count - 1 do
-    with PRadioEntry(fList.Items[i])^ do
+  begin
+    with PRadioEntry(item^)^ do
       if Name = AName then
       begin
         Result := pos;
         Exit;
       end;
+    Inc(item);
+  end;
   Result := 0;
 end;
 

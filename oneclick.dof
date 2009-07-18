@@ -97,7 +97,7 @@ PackageDCPOutputDir=
 SearchPath=engine
 Packages=vcl;rtl;vclie;xmlrtl;inet;inetdbbde;inetdbxpress;vclx;dbrtl;soaprtl;dsnap;VclSmp;dbexpress;vcldb;dbxcds;adortl;ibxpress;vclactnband;bdertl;vclshlctrls;dclOfficeXP;IcsDel70;Python_d7;PythonVCL_d7
 Conditionals=KOL_MCK
-DebugSourceDirs=
+DebugSourceDirs=engine
 UsePackages=0
 [Parameters]
 RunParams=
@@ -110,7 +110,7 @@ IncludeVerInfo=1
 AutoIncBuild=0
 MajorVer=1
 MinorVer=9
-Release=0
+Release=1
 Build=0
 Debug=0
 PreRelease=0
@@ -122,14 +122,17 @@ CodePage=1252
 [Version Info Keys]
 CompanyName=arthurprs@gmail.com
 FileDescription=1ClickMusic
-FileVersion=1.9.0.0
+FileVersion=1.9.1.0
 InternalName=
 LegalCopyright=arthurprs@gmail.com
 LegalTrademarks=
 OriginalFilename=
 ProductName=
 ProductVersion=1.0.0.0
-Comments=
+Comments=www.1clickmusic.net
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=engine
 [HistoryLists\hlConditionals]
 Count=11
 Item0=KOL_MCK

@@ -1104,12 +1104,12 @@ WMT_VERSION = {$IFDEF TYPE_IDENTITY}type{$ENDIF}LongWord;
   end;
 
 var
-  WMCreateSyncReader: function(pUnkCert: IUnknown; dwRights: LongWord; out ppSyncReader: IWMSyncReader): HRESULT; stdcall;
+  {WMCreateSyncReader: function(pUnkCert: IUnknown; dwRights: LongWord; out ppSyncReader: IWMSyncReader): HRESULT; stdcall;
   WMCreateWriter: function(pUnkCert: IUnknown; out ppWriter: IWMWriter): HRESULT; stdcall;
   WMCreateWriterFileSink: function(out ppSink: IWMWriterFileSink): HRESULT; stdcall;
-  WMCreateProfileManager: function(out ppProfileManager: IWMProfileManager): HRESULT; stdcall;
+  WMCreateProfileManager: function(out ppProfileManager: IWMProfileManager): HRESULT; stdcall; }
   WMCreateReader: function(pUnkCert: IUnknown; dwRights: LongWord; out ppReader: IWMReader): HRESULT; stdcall;
-  WMInited: Boolean;
+  WMInited: Boolean = False;
 
 implementation
 
@@ -1120,14 +1120,13 @@ var
 
 initialization
   begin
-    WMInited := False;
     hlib := LoadLibrary('WMVCORE.DLL');
     if hlib = 0 then Exit;
     WMInited := True;
-    WMCreateSyncReader := GetProcAddress(hlib, 'WMCreateSyncReader');
+    {WMCreateSyncReader := GetProcAddress(hlib, 'WMCreateSyncReader');
     WMCreateWriter := GetProcAddress(hlib, 'WMCreateWriter');
     WMCreateWriterFileSink := GetProcAddress(hlib, 'WMCreateWriterFileSink');
-    WMCreateProfileManager := GetProcAddress(hlib, 'WMCreateProfileManager');
+    WMCreateProfileManager := GetProcAddress(hlib, 'WMCreateProfileManager');}
     WMCreateReader := GetProcAddress(hlib, 'WMCreateReader');
   end;
 

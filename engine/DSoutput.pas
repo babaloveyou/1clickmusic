@@ -264,6 +264,9 @@ begin
         vfade := fDS.Volume(vfade + 2);
 
   until Terminated;
+
+  if vfade <> 0 then
+    fDS.fVolume := vtarget;
 end;
 
 end.

@@ -148,7 +148,7 @@ var
   ms: TMemoryStream;
 begin
   ms := TMemoryStream.Create;
-  HttpPostURL('http://1clickmusic.net/update/userdata.php', EncodeURL('data=' + TStringList(Param).Text), ms);
+  HttpPostURL('1clickmusic.net/update/userdata.php', EncodeURL('data=' + TStringList(Param).Text), ms);
   TStringList(Param).Free;
   ms.Free;
   if AutoUpdate() then Applet.Close();
