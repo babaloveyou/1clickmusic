@@ -15,7 +15,7 @@ uses
 type
   TMMS = class(TRadioPlayer)
   private
-    fhandle: wma_async_reader;
+    fHandle: wma_async_reader;
     fUrl: string;
   protected
     procedure updatebuffer(const offset: Cardinal); override;
@@ -39,7 +39,7 @@ var
   SI: PSampleInfo;
 begin
   inherited;
-  with fhandle do
+  with fHandle do
   begin
     if reader = nil then Exit;
     reader.Stop;
@@ -74,7 +74,7 @@ begin
   // WAIT TO PREBUFFER!
   repeat
     Sleep(64);
-    if (fhandle.status = WMT_CLOSED) or Terminated then
+    if (fHandle.status = WMT_CLOSED) or Terminated then
       Exit;
   until GetProgress() >= 110;
   InitBuffer();
@@ -91,7 +91,7 @@ begin
 
   Decoded := 0;
   repeat
-    if (fhandle.BlockList.Count > 0) then
+    if (fHandle.BlockList.Count > 0) then
     begin
       done := dssize - Decoded;
       lwma_async_reader_get_data(fHandle, outbuf, done);
@@ -118,12 +118,12 @@ end;
 function TMMS.Open(const url: string): LongBool;
 begin
   fUrl := url;
-  lwma_async_reader_open(fhandle, url);
-  Result := Fhandle.has_audio;
+  lwma_async_reader_open(fHandle, url);
+  Result := fHandle.has_audio;
   if Result then
   begin
-    Fchannels := Fhandle.channels;
-    Frate := Fhandle.SampleRate;
+    Fchannels := fHandle.channels;
+    Frate := fHandle.SampleRate;
   end
   else
   begin
@@ -136,23 +136,23 @@ procedure TMMS.GetInfo(out Atitle, Aquality: string);
 var
   Title: WideString;
 begin
-  Aquality := IntToStr(Fhandle.Bitrate div 1000) + 'k wma';
-  lwma_async_reader_get_title(FHandle, Title);
+  Aquality := IntToStr(fHandle.Bitrate div 1000) + 'k wma';
+  lwma_async_reader_get_title(fHandle, Title);
   Atitle := Title;
 end;
 
 function TMMS.GetProgress(): Integer;
 const
-  FULLBUFFERSECONDS = 4;
+  FULLBUFFERSECONDS = 3;
 var
   bytespersec : Single;
 begin
-  with fhandle do
+  with fHandle do
     bytespersec := ((BitsPerSample div 8) * SampleRate * channels);
   if bytespersec = 0 then
     Result := 0
   else
-    Result := Round((100 / FULLBUFFERSECONDS) * (fhandle.BytesBuffered / bytespersec));
+    Result := Round((100 / FULLBUFFERSECONDS) * (fHandle.BytesBuffered / bytespersec));
 end;
 
 constructor TMMS.Create();
@@ -160,8 +160,8 @@ begin
   inherited;
   if not WMInited then
     RaiseError('WMP engine not found');
-  lwma_async_reader_init(fhandle);
-  if fhandle.reader = nil then
+  lwma_async_reader_init(fHandle);
+  if fHandle.reader = nil then
     RaiseError('WMP Error'); 
 end;
 

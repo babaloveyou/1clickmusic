@@ -118,7 +118,7 @@ const
 	'http://www.di.fm/mp3/club.pls',
     'http://www.clubnature.de/listen/listen.pls',
 	'http://c895worldwide.com/web/streaming/c895sc128.pls',
-    'http://firewall.blitzradio.fm/listen.pls',
+    'http://redeblitz.com.br/redeblitz.pls',
     'http://www.playdio.se/bredband.pls',
     'http://listen.to.techno4ever.net/dsl/mp3',
     'http://www.pulsradio.com/pls/puls-adsl.m3u',
@@ -605,7 +605,7 @@ const
 const
   pls_brasil: array[0..0] of string = (
 	'http://www.mpbfm.com.br/radinho.asx',
-	'http://www.violaviva.org/violaviva.pls',
+	'http://www.violaviva.org/violaviva(1).pls',
     'http://www.interativafm.net/interativa.m3u',
     'http://www.radiofusion.com.br/listen.m3u',
     'http://www.cyberadiobrasil.com.br/player/ouvir.pls',
@@ -632,7 +632,7 @@ const
     'mms://wmedia.telium.com.br/transsppop64',
     'mms://wmedia.telium.com.br/transsplight',
     'mms://transastream.dyndns.org/transapop',
-    'http://producao.upx.com.br/players/mixfm.wmx',
+    'http://producao.upx.com.br/players/mixfm_64.m3u',
     'http://totalshare.com.br/radio/player-winamp.m3u',
     'http://wmsgr.globo.com/webmedia/ObterPathMidia?usuario=sgr01&tipo=live&path=/sgr_off_98fmrj_live.wma&midiaId=513694&ext.asx&output=ASX',
     'http://wmsgr.globo.com/webmedia/ObterPathMidia?usuario=sgr01&tipo=live&path=/sgr_off_globofmrj_live.wma&midiaId=505114&ext.asx&output=ASX',

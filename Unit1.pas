@@ -207,6 +207,7 @@ end;
 
 procedure TForm1.UpdateExecute();
 begin
+  if Chn = nil then Exit;
   Chn.GetInfo(curTitle, curBitrate);
 
   //# Trow events when track changes

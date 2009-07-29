@@ -15,14 +15,15 @@ type
 type
   TRadioList = class
   private
-    fList: PList;
+    fList: Array of TRadioEntry;
+    fCount: Integer;
+    fCapacity : Integer;
   public
     procedure Add(const Apos: Cardinal; const AName, Apls: AnsiString);
     function getpos(const AName: AnsiString): Cardinal;
     function getname(const Apos: Cardinal): AnsiString;
     function getpls(const Apos: Cardinal): AnsiString;
     constructor Create;
-    destructor Destroy; override;
   end;
 
 implementation
@@ -30,44 +31,38 @@ implementation
 { TRadioList }
 
 procedure TRadioList.Add(const Apos: Cardinal; const AName, Apls: AnsiString);
-var
-  entry: PRadioEntry;
 begin
-  entry := New(PRadioEntry);
-  with entry^ do
+  if fCount >= fCapacity then
+  begin
+    fCapacity := fCapacity + fCapacity div 2;
+    SetLength(fList, fCapacity);
+  end;  
+
+  with fList[fCount] do
   begin
     pos := Apos;
     Name := AName;
     pls := Apls;
   end;
-
-  fList.Add(entry);
+  Inc(fCount);
 end;
 
 constructor TRadioList.Create;
 begin
-  fList := NewList;
-  fList.Capacity := 300;
-end;
-
-destructor TRadioList.Destroy;
-var
-  i : Integer;
-begin
-  for i := 0 to fList.Count - 1 do
-    Dispose(PRadioEntry(fList.Items[i]));
-  fList.Free;
+  fCount := 0;
+  fCapacity := 300;
+  SetLength(fList,fCapacity);
 end;
 
 function TRadioList.getname(const Apos: Cardinal): AnsiString;
 var
   i: Integer;
-  item : PPointer;
+  item : PRadioEntry;
 begin
-  item := PPointer(fList.DataMemory);
-  for i := 0 to fList.Count - 1 do
+  item := @fList[0];
+  for i := 0 to fCount - 1 do
   begin
-    with PRadioEntry(item^)^ do
+    with item^ do
       if pos = Apos then
       begin
         Result := Name;
@@ -81,12 +76,12 @@ end;
 function TRadioList.getpls(const Apos: Cardinal): AnsiString;
 var
   i: Integer;
-  item : PPointer;
+  item : PRadioEntry;
 begin
-  item := PPointer(fList.DataMemory);
-  for i := 0 to fList.Count - 1 do
+  item := @fList[0];
+  for i := 0 to fCount - 1 do
   begin
-    with PRadioEntry(item^)^ do
+    with item^ do
       if pos = Apos then
       begin
         Result := pls;
@@ -100,12 +95,12 @@ end;
 function TRadioList.getpos(const AName: AnsiString): Cardinal;
 var
   i: Integer;
-  item : PPointer;
+  item : PRadioEntry;
 begin
-  item := PPointer(fList.DataMemory);
-  for i := 0 to fList.Count - 1 do
+  item := @fList[0];
+  for i := 0 to fCount - 1 do
   begin
-    with PRadioEntry(item^)^ do
+    with item^ do
       if Name = AName then
       begin
         Result := pos;

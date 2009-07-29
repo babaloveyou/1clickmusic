@@ -36,12 +36,12 @@ implementation
 
 function TMP3.GetProgress(): Integer;
 begin
-  Result := FStream.BuffFilled;
+  Result := fStream.BuffFilled;
 end;
 
 procedure TMP3.GetInfo(out Atitle, Aquality: string);
 begin
-  FStream.GetMetaInfo(Atitle, Aquality);
+  fStream.GetMetaInfo(Atitle, Aquality);
   Aquality := Aquality + 'k mp3';
 end;
 
@@ -59,8 +59,8 @@ begin
   Result := False;
   mpg123_open_feed(fHandle);
   repeat
-    r := mpg123_decode(fHandle, FStream.GetBuffer(), BUFFPACKET, nil, 0, nil);
-    FStream.NextBuffer();
+    r := mpg123_decode(fHandle, fStream.GetBuffer(), BUFFPACKET, nil, 0, nil);
+    fStream.NextBuffer();
   until (r = MPG123_NEW_FORMAT) or (fStream.BuffFilled = 0);
 
   mpg123_getformat(Fhandle, @Frate, @Fchannels, nil);
@@ -92,7 +92,7 @@ begin
   repeat
     Sleep(64);
     if Terminated then Exit;
-  until FStream.BuffFilled > BUFFPRE;
+  until fStream.BuffFilled > BUFFPRE;
   Result := initbuffer();
 end;
 
@@ -114,7 +114,7 @@ begin
       if r = MPG123_NEED_MORE then
       begin
         r := mpg123_decode(Fhandle, fStream.GetBuffer(), BUFFPACKET, @dsbuf[Decoded], dssize - Decoded, @done);
-        FStream.NextBuffer();
+        fStream.NextBuffer();
       end
       else
         r := mpg123_decode(Fhandle, nil, 0, @dsbuf[Decoded], dssize - Decoded, @done);
@@ -127,7 +127,7 @@ begin
       repeat
         Sleep(64);
         if Terminated then Exit;
-      until FStream.BuffFilled > BUFFRESTORE;
+      until fStream.BuffFilled > BUFFRESTORE;
       fDS.Play;
       NotifyForm(NOTIFY_BUFFER, BUFFER_OK);
     end;

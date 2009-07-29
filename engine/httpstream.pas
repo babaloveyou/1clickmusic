@@ -76,54 +76,6 @@ begin
   icyheader := Format(ICYHEADERSTUB, [path, host, port, accept]);
 end;
 
-{procedure ParseHeader(url: string; out host, port, icyheader: string);
-const
-  ICYHEADERSTUB =
-    'GET %s HTTP/1.0' + #13#10 +
-    'Host: %s' + #13#10 +
-    'Accept: */*' + #13#10 +
-    'Icy-MetaData: 1' + #13#10 +
-    'User-Agent: 1ClickMusic' + #13#10 +
-    #13#10;
-var
-  i: Integer;
-begin
-  url := LowerCase(url);
-  if Pos('http://', url) > 0 then
-    Delete(url, 1, 7); // delete http://
-  i := Pos(':', url);
-  if i > 0 then
-  begin // has port
-    host := Copy(url, 1, i - 1);
-    Delete(url, 1, i); // delete host
-    i := Pos('/', url);
-    if i > 0 then // take port
-    begin
-      port := Copy(url, 1, i - 1);
-      Delete(url, 1, i - 1); // delete port
-    end
-    else
-      port := Copy(url, 1, Length(url));
-  end
-  else
-  begin // don't have port, default = 80
-    port := '80';
-    i := Pos('/', url);
-    if i > 0 then // no port, take host
-    begin
-      host := Copy(url, 1, i - 1);
-      Delete(url, 1, i - 1); // delete host
-    end
-    else
-      host := Copy(url, 1, Length(url));
-  end;
-
-  if i = 0 then
-    url := '/';
-
-  icyheader := Format(ICYHEADERSTUB, [url, host + ':' + port]);
-end;}
-
 function ParseMetaHeader(var meta: string; const accept: string; out MetaInterval: Integer; out MetaBitrate: string): Integer;
 var
   MetaData: TStringlist;
@@ -192,6 +144,8 @@ var
 begin
   bytesreceived := 0;
   repeat
+    if Terminated then Exit;
+
     if BytesUntilMeta = 0 then
     begin
       BytesUntilMeta := MetaInterval;
@@ -221,9 +175,6 @@ begin
     end;
 
   until (bytesreceived >= BUFFPACKET);
-
-
-  //a.Read(inbuffer[Feed, 0], BUFFPACKET);
 
   if Feed = BUFFPACKETCOUNT - 1 then
     Feed := 0

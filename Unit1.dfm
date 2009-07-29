@@ -460,10 +460,8 @@ object Form1: TForm1
     Localizy = False
     projectName = 'oneclick'
     projectDest = 'oneclick'
-    sourcePath = 
-      'C:\Documents and Settings\Administrador\Desktop\PROG\1clickmusic' +
-      '\'
-    outdcuPath = 'dcu\'
+    sourcePath = 'C:\Documents and Settings\Administrador\Desktop\1clickmusic\'
+    outdcuPath = 'C:\Documents and Settings\Administrador\Desktop\1clickmusic\'
     dprResource = True
     protectFiles = True
     showReport = False
@@ -502,9 +500,7 @@ object Form1: TForm1
     AllBtnReturnClick = False
     Tabulate = False
     TabulateEx = False
-    UnitSourcePath = 
-      'C:\Documents and Settings\Administrador\Desktop\PROG\1clickmusic' +
-      '\'
+    UnitSourcePath = 'C:\Documents and Settings\Administrador\Desktop\1clickmusic\'
     Locked = False
     formUnit = 'Unit1'
     formMain = True
