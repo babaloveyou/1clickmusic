@@ -90,12 +90,12 @@ begin
     if (sl.Count > 3) and (sl[0] = 'OK') then
     begin
       sessioncode := sl[1]; // SESSION CODE
-    //nowplayurl := sl[2]; // Now Playing URL
+      //nowplayurl := sl[2]; // Now Playing URL
       scroburl := sl[3]; // SCROB URL
     end
     else
     begin
-      ErrorStr := 'Last.FM plugin handshake' + #10#13 + sl.Text;
+      ErrorStr := 'Last.fm plugin Error' + #10#13 + sl.Text;
       Result := False;
     end;
 
@@ -114,7 +114,7 @@ begin
 
   p := Pos(' - ', title);
 
-  if (p = 0) or MultiPos(['www', 'http', '.fm', 'A suivre'], title) then
+  if (p = 0) or MultiPos(['www.', 'http://', 'A suivre'], title) then
     Exit;
 
   artist := Copy(title, 1, p - 1);

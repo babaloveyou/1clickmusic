@@ -30,10 +30,6 @@ type
     constructor Create(const url: string);
   end;
 
-{var
-  TV: PControl;
-  Radio: Cardinal;}
-
 implementation
 
 procedure ParseASX(const src, dst: TStrings);
@@ -184,23 +180,7 @@ begin
   begin
     if r then
     begin
-      {res := tv.TVItemChild[Radio];
-      while res <> 0 do
-      begin
-        TV.TVDelete(res);
-        res := tv.TVItemChild[Radio];
-      end;
-
-      if urls.Count > 1 then
-        for i := 0 to urls.Count - 1 do
-        begin
-          radiolist.Add(
-            TV.TVInsert(Radio, TVI_LAST, IntToStr(i)),
-            '',
-            urls[i]
-            );
-        end;}
-      Chn := Player;
+      NotifyForm(NOTIFY_CONNECTED, Integer(Player));
       Player.Resume;
     end
     else
@@ -208,8 +188,6 @@ begin
   end;
 
   urls.Free;
-
-  {Dec(RadioOpenersRunning);}
 end;
 
 end.

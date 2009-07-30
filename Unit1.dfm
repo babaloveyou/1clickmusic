@@ -66,7 +66,6 @@ object Form1: TForm1
     CurIndex = 0
     TVRightClickSelect = False
     OnSelChange = channeltreeSelChange
-    OnTVSelChanging = channeltreeTVSelChanging
     TVIndent = 0
     HasBorder = True
     TabStop = True
@@ -461,7 +460,7 @@ object Form1: TForm1
     projectName = 'oneclick'
     projectDest = 'oneclick'
     sourcePath = 'C:\Documents and Settings\Administrador\Desktop\1clickmusic\'
-    outdcuPath = 'C:\Documents and Settings\Administrador\Desktop\1clickmusic\'
+    outdcuPath = 'dcu\'
     dprResource = True
     protectFiles = True
     showReport = False

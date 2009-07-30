@@ -2,8 +2,6 @@ unit obj_list;
 
 interface
 
-uses KOL, Windows;
-
 type
   PRadioEntry = ^TRadioEntry;
   TRadioEntry = record

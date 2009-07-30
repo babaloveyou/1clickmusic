@@ -133,7 +133,6 @@ begin
     end;
   until (r <> MPG123_NEED_MORE);
 
-
   if (r = MPG123_OK) then
     fDS.SoundBuffer.Unlock(dsbuf, dssize, nil, 0)
   else

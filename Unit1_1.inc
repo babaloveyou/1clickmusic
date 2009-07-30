@@ -131,7 +131,6 @@ begin
     Result.pgrbuffer.ProgressColor := $E39C5A;
       Result.channeltree.OnMouseUp := Result.channeltreeMouseUp;
       Result.channeltree.OnSelChange := Result.channeltreeSelChange;
-      Result.channeltree.OnTVSelChanging := Result.channeltreeTVSelChanging;
     {$IFDEF OVERRIDE_SCROLLBARS}
     OverrideScrollbars( Result.channeltree);
     {$ENDIF OVERRIDE_SCROLLBARS}

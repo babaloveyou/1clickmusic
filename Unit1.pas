@@ -38,8 +38,6 @@ type
       var Mouse: TMouseEventData);
     procedure TrayMouseUp(Sender: PControl; var Mouse: TMouseEventData);
     procedure btplayClick(Sender: PObj);
-    function channeltreeTVSelChanging(Sender: PControl; oldItem,
-      newItem: Cardinal): Boolean;
     procedure channeltreeSelChange(Sender: PObj);
     procedure KOLForm1Destroy(Sender: PObj);
   private
@@ -76,7 +74,6 @@ uses
   main,
   utils,
   obj_db;
-
 
 {$IFNDEF KOL_MCK}{$R *.DFM}{$ENDIF}
 
@@ -220,7 +217,8 @@ begin
       Form.caption := curTitle;
       lastTitle := curTitle;
 
-      traypopup('Track change', curTitle, NIIF_INFO);
+      if curStatus = stPLAYING then
+        traypopup('Track change', curTitle, NIIF_INFO);
 
       if msn_enabled then
         UpdateMsn(True);
@@ -251,7 +249,7 @@ begin
   if radiolist.getpls(channeltree.TVSelected) <> '' then
   begin
     StopChannel();
-    
+
     curRadio := channeltree.TVSelected;
     lblradio.Caption := channeltree.TVItemText[curRadio];
 
@@ -275,8 +273,7 @@ end;
 
 procedure TForm1.StopChannel;
 begin
-  if msn_enabled then
-    UpdateMsn(False);
+
 
   if ChnOpener <> nil then
   begin
@@ -290,6 +287,8 @@ begin
     Chn := nil;
   end;
 
+  curStatus := stSTOPED;
+  
   KillTimer(appwinHANDLE, 1);
 
   pgrbuffer.Visible := False;
@@ -306,6 +305,8 @@ begin
   Form.Caption := '1ClickMusic';
   traymenu.ItemText[_PlayStop] := 'Play';
   ChangeTrayIcon(ITRAY);
+  if msn_enabled then
+    UpdateMsn(False);
 end;
 
 function TForm1.KOLForm1Message(var Msg: tagMSG;
@@ -333,8 +334,22 @@ begin
             if Chn = nil then
             begin
               channeltree.TVSelected := channeltree.TVRoot;
-              channeltree.TVSelected := curRadio
-            end;
+              channeltree.TVSelected := curRadio;
+            end
+            else
+              if curStatus = stPAUSED then
+              begin
+                curStatus := stPLAYING;
+                _DS.Volume(curVolume);
+                UpdateExecute();
+                traypopup('', 'Resumed', NIIF_NONE);
+              end
+              else
+              begin
+                curStatus := stPAUSED;
+                _DS.Volume(0);
+                traypopup('', 'Paused', NIIF_NONE);
+              end;
           2001..2012:
             if hotkeys[Msg.wParam - 2001] <> 0 then
             begin
@@ -354,16 +369,24 @@ begin
       case Msg.wParam of
         NOTIFY_BUFFER:
           case Msg.lParam of
-            BUFFER_PREBUFFERING:
-              begin
-                ChnOpener := nil;
-                lblstatus.Caption := 'Prebufering';
-                UpdateExecute();
-              end;
             BUFFER_OK:
               lblstatus.Caption := 'Connected!';
             BUFFER_RECOVERING:
               lblstatus.Caption := 'Recovering';
+          end;
+
+        NOTIFY_CONNECTED:
+          begin
+            if Chn <> nil then
+            begin
+              raise Exception.Create('ihh');
+              //StopChannel;
+            end;
+            Chn := TRadioPlayer(Msg.lParam);
+            curStatus := stPLAYING;
+            ChnOpener := nil;
+            lblstatus.Caption := 'Prebufering';
+            UpdateExecute();
           end;
 
         NOTIFY_NEWINFO: UpdateExecute();
@@ -403,18 +426,6 @@ begin
   RegisterHotKey(appwinHANDLE, 1004, MOD_CONTROL, VK_HOME);
   for i := 0 to 11 do
     RegisterHotKey(appwinHANDLE, 2001 + i, MOD_CONTROL, VK_F1 + i);
-  {RegisterHotKey(appwinHANDLE, 2001, MOD_CONTROL, VK_F1);
-  RegisterHotKey(appwinHANDLE, 2002, MOD_CONTROL, VK_F2);
-  RegisterHotKey(appwinHANDLE, 2003, MOD_CONTROL, VK_F3);
-  RegisterHotKey(appwinHANDLE, 2004, MOD_CONTROL, VK_F4);
-  RegisterHotKey(appwinHANDLE, 2005, MOD_CONTROL, VK_F5);
-  RegisterHotKey(appwinHANDLE, 2006, MOD_CONTROL, VK_F6);
-  RegisterHotKey(appwinHANDLE, 2007, MOD_CONTROL, VK_F7);
-  RegisterHotKey(appwinHANDLE, 2008, MOD_CONTROL, VK_F8);
-  RegisterHotKey(appwinHANDLE, 2009, MOD_CONTROL, VK_F9);
-  RegisterHotKey(appwinHANDLE, 2010, MOD_CONTROL, VK_F10);
-  RegisterHotKey(appwinHANDLE, 2011, MOD_CONTROL, VK_F11);
-  RegisterHotKey(appwinHANDLE, 2012, MOD_CONTROL, VK_F12);}
 
   // MENUS!
   NewMenu(Form, 0, [], nil);
@@ -596,7 +607,11 @@ begin
   with TScrobber.Create do
   begin
     if not Execute(lastTitle) then
+    begin
+      traymenu.ItemChecked[_LastFm] := False;
+      lastfm_enabled := False;
       RaiseError(ErrorStr, False);
+    end;
     Free;
   end;
   lastfm_thread := nil;
@@ -628,15 +643,6 @@ procedure TForm1.ChangeTrayIcon(const NewIcon: HICON);
 begin
   if (traycolor_enabled) and (Tray.Icon <> NewIcon) then
     Tray.Icon := NewIcon;
-end;
-
-function TForm1.channeltreeTVSelChanging(Sender: PControl; oldItem,
-  newItem: Cardinal): Boolean;
-begin
-  Result := channeltree.Enabled
-  {Result := channeltree.Enabled and (not channeltree.TVItemHasChildren[newItem]);
-  if channeltree.TVItemHasChildren[newItem] then
-    channeltree.TVExpand(newItem, TVE_TOGGLE);}
 end;
 
 procedure TForm1.channeltreeSelChange(Sender: PObj);

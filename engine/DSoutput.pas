@@ -11,10 +11,6 @@ uses
 
 {$MINENUMSIZE 4}
 
-
-const
-  DSBUFFSIZE = 64 * 1024;
-
 type
   TDSOutput = class
   private
@@ -37,7 +33,7 @@ type
 type
   TRadioPlayer = class(TThread)
   protected
-    fDS : TDSOutput;
+    fDS: TDSOutput;
     fRate: Integer;
     fChannels: Integer;
     fHalfbuffersize: Cardinal;
@@ -171,7 +167,7 @@ begin
       DSBCAPS_CTRLVOLUME or
       DSBCAPS_GLOBALFOCUS;
     lpwfxFormat := @Fswfm;
-    dwBufferBytes := 64 * 1024;
+    dwBufferBytes := Fswfm.nAvgBytesPerSec div 2;
   end;
 
   DSERROR(fDS.CreateSoundBuffer(Fsdesc, fSecondary, nil), 'Creating S buffer');
@@ -220,10 +216,9 @@ procedure TRadioPlayer.Execute;
 var
   //a ,b: Int64; {$APPTYPE CONSOLE}
   offset, lastoffset: Cardinal;
-  vfade, vtarget : Integer;
+  vfade, vtarget: Integer;
 begin
   if Terminated then Exit;
-  NotifyForm(NOTIFY_BUFFER, BUFFER_PREBUFFERING);
   if not prebuffer() then Exit;
 
   vtarget := fDS.fVolume;
@@ -254,7 +249,7 @@ begin
       //Writeln((b - a),'!');
       lastoffset := offset;
     end;
-    
+
     Sleep(32);
 
     if vfade <> 0 then

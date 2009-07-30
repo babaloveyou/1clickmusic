@@ -13,10 +13,13 @@ uses
   httpsend;
 
 const
-  APPVERSION = 1910;
-  APPVERSIONSTR = '1.9.1';
+  APPVERSION = 1920;
+  APPVERSIONSTR = '1.9.2';
   INITIALVOL = 80;
   WM_NOTIFY = WM_USER + 1;
+  stSTOPED = 0;
+  stPLAYING = 1;
+  stPAUSED = 2;
 
   // GLOBAL VARS, IF NECESSARY INITIALIZED
 var
@@ -27,6 +30,7 @@ var
   _DS: TDSoutput;
   Chn: TRadioPlayer = nil;
   ChnOpener : TThread;
+  curStatus : Cardinal = stSTOPED;
   curRadio : Cardinal = Cardinal(-1);
   curProgress: Integer;
   curVolume: Integer = INITIALVOL;
@@ -72,6 +76,7 @@ const
   NOTIFY_NEWINFO = 11;
   NOTIFY_DISCONECT = 10;
   NOTIFY_BUFFER = 9;
+  NOTIFY_CONNECTED = 8;
   BUFFER_OK = 0;
   BUFFER_RECOVERING = 1;
   BUFFER_PREBUFFERING = 2;
