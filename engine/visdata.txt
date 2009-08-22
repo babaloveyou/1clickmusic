@@ -1,0 +1,129 @@
+
+ { TVisData = class
+  private
+    buffer: PByteArray;
+    fBufferSize : Integer;
+    fBytesPerSec: Integer;
+    fChannels, fFreq : Integer;
+    fFeedPos: Integer;
+    fFeedSize: Integer;
+    fCursorPos: Integer;
+  public
+    procedure Config(channels, freq: Integer);
+    procedure AddSamples(data: Pointer; len: Integer);
+    function GetSamples(miliseconds: Integer; data: PPointer; var len: Integer): Integer;
+    destructor Destroy; override;
+  end;
+
+var
+  Vis : TVisData;}
+
+{ TVisData }
+
+{procedure TVisData.AddSamples(data: Pointer; len: Integer);
+begin
+  Move(data^, buffer[fFeedPos], len);
+  Inc(fFeedSize, len);
+  Inc(fFeedPos, len);
+  if fFeedPos >= fBufferSize then
+    fFeedPos := 0;
+end;
+
+procedure TVisData.Config(channels, freq: Integer);
+begin
+  fFeedPos := 0;
+  fFeedSize := 0;
+  fCursorPos := 0;
+  fChannels := channels;
+  fFreq := freq;
+  fBytesPerSec := 2 * freq * channels;
+  fBufferSize := fBytesPerSec div 2;
+  if buffer <> nil then
+    FreeMem(buffer);
+  GetMem(buffer, fBufferSize);
+end;
+
+destructor TVisData.Destroy;
+begin
+  if buffer <> nil then
+    FreeMem(buffer);
+end;
+
+function TVisData.GetSamples(miliseconds: Integer; data: PPointer;
+  var len: Integer): Integer;
+begin
+  len := Round((fBytesPerSec / 1000) * miliseconds);
+  if len > fFeedSize then
+  begin
+    len := 0;
+    Exit;
+  end;  
+
+  data^ := @buffer[fCursorPos];
+
+  Inc(fCursorPos, len);
+  if fCursorPos >= fBufferSize then
+  begin
+    fCursorPos := 0;
+  end;
+
+  Dec(fFeedSize, len);
+    
+  Result := fChannels;
+end;
+
+initialization
+  Vis := TVisData.Create;
+
+finalization
+  Vis.Free;
+
+
+  
+function ClipColor(C: Single): Integer;
+begin
+  if C <= 0 then
+    Result := 0
+  else if C >= 1 then
+    Result := 255
+  else
+    Result := Round(C * 255);
+end;
+
+procedure TForm1.kltmrTimer1Timer(Sender: PObj);
+var
+  i: Integer;
+  len: Integer;
+  sample: SmallInt;
+  data: PSmallInt;
+  left, right: Integer;
+begin
+  left := 0;
+  right := 0;
+
+  Vis.GetSamples(kltmrTimer1.Interval, @data, len);
+
+  len := len div 2;
+
+  for i := 1 to len do
+  begin
+    sample := data^;
+
+    if Odd(i) then
+    begin
+      if sample > left then
+        left := sample;
+    end
+    else if sample > right then
+      right := sample;
+
+    Inc(data);
+  end;
+
+  ind.BeginUpdate;
+
+  ind.PositionL := Round(100 * (left / 32768));
+  ind.PositionR := Round(100 * (right / 32768));
+
+  ind.EndUpdate;
+end;}

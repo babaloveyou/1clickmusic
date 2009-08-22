@@ -18,7 +18,7 @@ begin
     Result.Form.SetName( Applet, 'Form1' );
    {$ENDIF}
     Result.Form.Style := Result.Form.Style and not WS_MAXIMIZEBOX;
-    Result.Form.SetClientSize( 613, 273 );
+    Result.Form.SetClientSize( 613, 272 );
     Result.Form.IconLoad( hInstance, 'MAINICON' );
     Result.Form.Font.FontName := 'MS Sans Serif';
     Result.Form.Font.FontPitch := fpFixed;
@@ -54,7 +54,7 @@ begin
     Result.lblbuffer.Font.FontCharset := 0;
     Result.lblbuffer.TextAlign := KOL.taRight;
     // Result.lblhelp.TabOrder = -1
-    Result.lblhelp := NewLabel( Result.Form, 'Hotkeys:'+#13+#10+' CTRL + UP  : raise volume'+#13+#10+' CTRL + Down : decrease volume'+#13+#10+' CTRL + END : Stop'+#13+#10+' CTRL + HOME : Play'+#13+#10+' CTRL + (F1..F12) : Hotkey for Channels'+#13+#10+#13+#10+'Right click trayicon to see options'+#13+#10+'Right click on a channel to bind hotkeys'+#13+#10 ).SetPosition( 241, 136 ).SetSize( 272, 137 );
+    Result.lblhelp := NewLabel( Result.Form, 'Hotkeys:'+#13+#10+' CTRL + UP  : inc volume'+#13+#10+' CTRL + Down : dec volume'+#13+#10+' CTRL + END : Stop'+#13+#10+' CTRL + HOME : Play/Pause'+#13+#10+#13+#10+'Right click trayicon to see options'+#13+#10+'Right click on channels to bind hotkeys'+#13+#10+'www.1clickmusic.net' ).SetPosition( 241, 136 ).SetSize( 216, 137 );
    {$IFDEF USE_NAMES}
     Result.lblhelp.SetName( Result.Form, 'lblhelp' ); 
    {$ENDIF}
@@ -65,6 +65,7 @@ begin
     Result.lblhelp.Font.FontHeight := 15;
     Result.lblhelp.Font.FontName := 'Arial';
     Result.lblhelp.Font.FontPitch := fpDefault;
+    Result.lblhelp.Cursor := LoadCursor( 0, IDC_HAND );
     // Result.lblradio.TabOrder = -1
     Result.lblradio := NewLabel( Result.Form, '' ).SetPosition( 245, 74 ).SetSize( 212, 0 );
    {$IFDEF USE_NAMES}
@@ -129,6 +130,7 @@ begin
     Result.pgrbuffer.Visible := False;
     Result.pgrbuffer.Color := TColor(clBtnFace);
     Result.pgrbuffer.ProgressColor := $E39C5A;
+      Result.lblhelp.OnClick := Result.lblhelpClick;
       Result.channeltree.OnMouseUp := Result.channeltreeMouseUp;
       Result.channeltree.OnSelChange := Result.channeltreeSelChange;
     {$IFDEF OVERRIDE_SCROLLBARS}
@@ -140,4 +142,5 @@ begin
     Result.KOLForm1FormCreate( Result );
 
 end;
+
 

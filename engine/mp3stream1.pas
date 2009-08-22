@@ -8,7 +8,9 @@ uses
   Classes,
   mpglib,
   DSoutput,
-  httpstream;
+  httpstream,
+  main,
+  utils;
 
 type
   TMP3 = class(TRadioPlayer)
@@ -30,9 +32,6 @@ type
   end;
 
 implementation
-
-uses
-  utils;
 
 { TMP3 }
 
@@ -103,12 +102,12 @@ end;
 
 function TMP3.Open(const url: string): LongBool;
 begin
-  Result := FStream.open(url);
-  if Result then
+  Result := fStream.open(url);
+  if not Result then
   begin
-    Status := rsPrebuffering;
+    Terminate;
     Resume;
-  end;
+  end;  
 end;
 
 function TMP3.prebuffer: LongBool;
@@ -202,14 +201,14 @@ begin
     end
     else
     begin
-      Status := rsRecovering;
+      NotifyForm(NOTIFY_BUFFER, BUFFER_RECOVERING);
       fDS.Stop();
       repeat
         Sleep(64);
         if Terminated then Exit;
       until FStream.BuffFilled > BUFFRESTORE;
       fDS.Play();
-      Status := rsPlaying;
+      NotifyForm(NOTIFY_BUFFER, BUFFER_OK);
     end;
   until (Decoded >= dssize) or (Terminated);
 

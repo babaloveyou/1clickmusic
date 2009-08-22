@@ -9,7 +9,9 @@ uses
   MMSystem,
   msacm,
   DSoutput,
-  httpstream;
+  httpstream,
+  main,
+  utils;
 
 
   // BEGIN OF ACM MP3 STUFF //
@@ -72,9 +74,6 @@ type
   end;
 
 implementation
-
-uses
-  utils;
 
 { TMP3 }
 
@@ -231,12 +230,12 @@ end;
 
 function TMP3.Open(const url: string): LongBool;
 begin
-  Result := FStream.open(url);
-  if Result then
+  Result := fStream.open(url);
+  if not Result then
   begin
-    Status := rsPrebuffering;
+    Terminate;
     Resume;
-  end;
+  end;  
 end;
 
 function TMP3.prebuffer(): LongBool;
@@ -255,7 +254,6 @@ procedure TMP3.updatebuffer(const offset: Cardinal);
 var
   dsbuf: PByteArray;
   r, done, dssize, Decoded: Cardinal;
-  a : Cardinal;
 begin
   DSERROR(fDS.SoundBuffer.Lock(offset, Fhalfbuffersize, @dsbuf, @dssize, nil, nil, 0), 'locking buffer');
 
@@ -264,12 +262,24 @@ begin
 
   if outFilled <> 0 then
   begin
-    Move(outBuffer[outPos], dsbuf[Decoded], outFilled);
-    Inc(Decoded, outFilled);
-    outPos := 0;
-    outFilled := 0;
+    {if outFilled < dssize then
+    begin}
+      Move(outBuffer[outPos], dsbuf[Decoded], outFilled);
+      Inc(Decoded, outFilled);
+      outPos := 0;
+      outFilled := 0;
+    {end
+    else
+    begin
+      Move(outBuffer[outPos], dsbuf[Decoded], dssize);
+      Inc(Decoded, dssize);
+      Inc(outPos, dssize);
+      Dec(outFilled, dssize);
+    end;}  
   end;
 
+  //while decoded < dssize do
+  //begin
   repeat
     if Terminated then Exit;
     // Repeat code that fills the DS buffer
@@ -280,7 +290,8 @@ begin
         Move(inBuffer[inPos], inBuffer, inFilled);
         inPos := 0;
       end;
-      if inFilled < BUFFPACKET then // buffer needs more data
+      //while (inBufferLen - inFilled >= BUFFPACKET) and (fStream.BuffFilled <> 0) do // buffer needs more data
+      if inFilled < BUFFPACKET then
       begin
         Move(fStream.GetBuffer()^, inBuffer[inFilled], BUFFPACKET);
         FStream.NextBuffer();
@@ -303,15 +314,16 @@ begin
     end
     else
     begin
-      Status := rsRecovering;
+      NotifyForm(NOTIFY_BUFFER, BUFFER_RECOVERING);
       fDS.Stop;
       repeat
         Sleep(64);
         if Terminated then Exit;
       until FStream.BuffFilled > BUFFRESTORE;
       fDS.Play;
-      Status := rsPlaying;
+      NotifyForm(NOTIFY_BUFFER, BUFFER_OK);
     end;
+  //end;
   until (Decoded >= dssize);
 
   if (r = 0) then

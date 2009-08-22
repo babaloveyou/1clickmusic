@@ -9,8 +9,6 @@ uses
   MMSystem,
   _DirectSound;
 
-{$MINENUMSIZE 4}
-
 type
   TDSOutput = class
   private
@@ -21,8 +19,8 @@ type
     function GetPlayCursorPos: Cardinal;
   public
     property PlayCursorPos: Cardinal read GetPlayCursorPos;
-    property SoundBuffer: IDirectSoundBuffer read FSecondary write FSecondary;
-    function Volume(value: Integer): Integer;
+    property SoundBuffer: IDirectSoundBuffer read fSecondary write fSecondary;
+    function Volume(value: Integer; store : LongBool = True): Integer;
     procedure Play;
     procedure Stop;
     function InitializeBuffer(const Arate, Achannels: Cardinal): Cardinal;
@@ -112,30 +110,30 @@ begin
   fSecondary.GetCurrentPosition(@Result, nil);
 end;
 
-function TDSOutput.Volume(value: Integer): Integer;
+function TDSOutput.Volume(value: Integer; store : LongBool = True): Integer;
 begin
   if value >= 100 then
   begin
-    fVolume := 100;
+    Result := 100;
     value := DSBVOLUME_MAX;
   end
   else
     if value <= 0 then
     begin
-      fVolume := 0;
+      Result := 0;
       value := DSBVOLUME_MIN;
     end
     else
     begin
-      fVolume := value;
+      Result := value;
       value := (100 - value) * (DSBVOLUME_MIN div 500);
-      //value := -Round(1000 * Log10(1 / (value / 100)));
     end;
 
   if fSecondary <> nil then
     fSecondary.SetVolume(value);
 
-  Result := fVolume;
+  if store then
+    fVolume := Result;
 end;
 
 function TDSOutput.InitializeBuffer(const Arate, Achannels: Cardinal): Cardinal;
@@ -167,7 +165,7 @@ begin
       DSBCAPS_CTRLVOLUME or
       DSBCAPS_GLOBALFOCUS;
     lpwfxFormat := @Fswfm;
-    dwBufferBytes := Fswfm.nAvgBytesPerSec div 2;
+    dwBufferBytes := 64*1024;
   end;
 
   DSERROR(fDS.CreateSoundBuffer(Fsdesc, fSecondary, nil), 'Creating S buffer');
@@ -179,13 +177,11 @@ end;
 
 procedure TDSOutput.Play;
 begin
-  //if fSecondary <> nil then
   fSecondary.Play(0, 0, DSBPLAY_LOOPING);
 end;
 
 procedure TDSOutput.Stop;
 begin
-  //if fSecondary <> nil then
   fSecondary.Stop;
 end;
 
@@ -214,9 +210,9 @@ end;
 
 procedure TRadioPlayer.Execute;
 var
-  //a ,b: Int64; {$APPTYPE CONSOLE}
   offset, lastoffset: Cardinal;
   vfade, vtarget: Integer;
+  //aa , bb : Int64;
 begin
   if Terminated then Exit;
   if not prebuffer() then Exit;
@@ -243,10 +239,10 @@ begin
 
     if offset <> lastoffset then
     begin
-      //QueryPerformanceCounter(a);
+      //QueryPerformanceCounter(aa);
       UpdateBuffer(offset);
-      //QueryPerformanceCounter(b);
-      //Writeln((b - a),'!');
+      //QueryPerformanceCounter(bb);
+      //Writeln(bb-aa);
       lastoffset := offset;
     end;
 

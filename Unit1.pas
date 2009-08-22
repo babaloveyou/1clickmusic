@@ -40,15 +40,16 @@ type
     procedure btplayClick(Sender: PObj);
     procedure channeltreeSelChange(Sender: PObj);
     procedure KOLForm1Destroy(Sender: PObj);
+    procedure lblhelpClick(Sender: PObj);
   private
 
   public
-    ITRAY, ITrayBlue, ITrayGreen, ITrayRed: HICON;
+    ITRAY, ITrayBlue, ITrayGreen, ITrayRed, ITrayPause: HICON;
     treemenu, traymenu: PMenu;
-    procedure ProgressExecute();
+    procedure ProgressExecute(Force: LongBool = False);
     procedure UpdateExecute();
     function LastFMThreadExecute(Sender: PThread): Integer;
-    procedure ChangeTrayIcon(const NewIcon: HICON);
+    procedure ChangeTrayIcon(NewIcon: HICON; Force: LongBool = False);
     procedure traypopup(const Atitle, Atext: AnsiString; const IconType: Integer);
     procedure PlayChannel;
     procedure StopChannel;
@@ -66,6 +67,7 @@ var
 implementation
 
 uses
+  ShellAPI,
   InputQuery,
   DSoutput,
   radioopener,
@@ -101,6 +103,7 @@ begin
   begin
     Mode := ifmRead;
     Section := 'options';
+    curVolume := ValueInteger('volume', INITIALVOL);
     traycolor_enabled := ValueBoolean('traycolor_enabled', True);
     traypopup_enabled := ValueBoolean('traypopup_enabled', True);
     firstrun_enabled := ValueBoolean('firstrun_enabled', True);
@@ -150,6 +153,7 @@ begin
   begin
     Mode := ifmWrite;
     Section := 'options';
+    ValueInteger('volume', curVolume);
     ValueBoolean('traycolor_enabled', traycolor_enabled);
     ValueBoolean('traypopup_enabled', traypopup_enabled);
     ValueBoolean('firstrun_enabled', False);
@@ -171,35 +175,43 @@ begin
   end;
 end;
 
-procedure TForm1.ProgressExecute();
+procedure TForm1.ProgressExecute(Force: LongBool = False);
 var
   progress: Integer;
+  newicon: HICON;
+  newcolor: TColor;
 begin
   // # GET INFO
   progress := Chn.GetProgress();
-  if progress = curProgress then Exit;
+  if (progress = curProgress) and (not Force) then Exit;
 
-  pgrbuffer.BeginUpdate;
   case progress of
     0..40:
       begin
-        ChangeTrayIcon(ITrayRed);
-        pgrbuffer.ProgressColor := clRed;
+        newicon := ITrayRed;
+        newcolor := clRed;
       end;
     41..75:
       begin
-        ChangeTrayIcon(ITrayGreen);
-        pgrbuffer.ProgressColor := clGreen;
+        newicon := ITrayGreen;
+        newcolor := clGreen;
       end;
   else
     begin
-      ChangeTrayIcon(ITrayBlue);
-      pgrbuffer.ProgressColor := $00E39C5A;
+      newicon := ITrayBlue;
+      newcolor := $00E39C5A;
     end;
   end;
+
+  pgrbuffer.BeginUpdate;
   pgrbuffer.Progress := progress;
-  curProgress := progress;
+  pgrbuffer.ProgressColor := newcolor;
   pgrbuffer.EndUpdate;
+
+  if curStatus = stPLAYING then
+    ChangeTrayIcon(newicon);
+
+  curProgress := progress;
 end;
 
 procedure TForm1.UpdateExecute();
@@ -240,13 +252,18 @@ begin
   // # REFRESH GUI INFORMATION
   lbltrack.caption := curTitle;
 
-  lblbuffer.Caption := curBitrate + #13#10 + 'vol:' + Int2Str(curVolume) + '%';
+  if curStatus = stPLAYING then
+    lblbuffer.Caption := curBitrate + #13 + 'vol:' + Int2Str(curVolume) + '%'
+  else
+    lblbuffer.Caption := curBitrate + #13 + 'Paused';
 end;
 
 procedure TForm1.PlayChannel;
+var
+  pls: string;
 begin
-  //if not channeltree.TVItemHasChildren[channeltree.TVSelected] then
-  if radiolist.getpls(channeltree.TVSelected) <> '' then
+  pls := radiolist.getpls(channeltree.TVSelected);
+  if pls <> '' then
   begin
     StopChannel();
 
@@ -265,16 +282,12 @@ begin
 
     traypopup('Connecting', lblradio.Caption, NIIF_INFO);
 
-    {TV := channeltree;
-    Radio :=  curRadio;}
-    ChnOpener := TRadioOpener.Create(radiolist.getpls(curRadio));
+    ChnOpener := TRadioOpener.Create(pls);
   end;
 end;
 
 procedure TForm1.StopChannel;
 begin
-
-
   if ChnOpener <> nil then
   begin
     ChnOpener.Terminate;
@@ -288,7 +301,7 @@ begin
   end;
 
   curStatus := stSTOPED;
-  
+
   KillTimer(appwinHANDLE, 1);
 
   pgrbuffer.Visible := False;
@@ -319,44 +332,50 @@ begin
       if Chn <> nil then ProgressExecute();
 
     WM_HOTKEY:
-      if channeltree.Enabled then
-        case Msg.wParam of
-          -2, 2:
-            if Chn <> nil then
+      case Msg.wParam of
+        -2, 2:
+          begin
+            if curStatus = stPAUSED then
             begin
-              curVolume := _DS.Volume(curVolume + Msg.wParam);
-              UpdateExecute();
-              traypopup('', 'Volume ' + Int2Str(curVolume) + '%', NIIF_NONE);
+              curStatus := stPLAYING;
+              ProgressExecute(True);
             end;
-          1003:
-            StopChannel();
-          1004:
-            if Chn = nil then
+            curVolume := _DS.Volume(curVolume + Msg.wParam);
+            UpdateExecute();
+            traypopup('', 'Volume ' + Int2Str(curVolume) + '%', NIIF_NONE);
+          end;
+        1003:
+          StopChannel();
+        1004:
+          if Chn = nil then
+          begin
+            channeltree.TVSelected := channeltree.TVRoot;
+            channeltree.TVSelected := curRadio;
+          end
+          else
+            if curStatus = stPAUSED then
             begin
-              channeltree.TVSelected := channeltree.TVRoot;
-              channeltree.TVSelected := curRadio;
+              curStatus := stPLAYING;
+              UpdateExecute();
+              ProgressExecute(True);
+              _DS.Volume(curVolume);
+              traypopup('', 'Resumed', NIIF_NONE);
             end
             else
-              if curStatus = stPAUSED then
-              begin
-                curStatus := stPLAYING;
-                _DS.Volume(curVolume);
-                UpdateExecute();
-                traypopup('', 'Resumed', NIIF_NONE);
-              end
-              else
-              begin
-                curStatus := stPAUSED;
-                _DS.Volume(0);
-                traypopup('', 'Paused', NIIF_NONE);
-              end;
-          2001..2012:
-            if hotkeys[Msg.wParam - 2001] <> 0 then
             begin
-              channeltree.TVSelected := channeltree.TVRoot; //# reset selection
-              channeltree.TVSelected := hotkeys[Msg.wParam - 2001];
+              curStatus := stPAUSED;
+              UpdateExecute();
+              ChangeTrayIcon(ITrayPause, True);
+              _DS.Volume(0, False);
+              traypopup('', 'Paused', NIIF_NONE);
             end;
-        end;
+        2001..2012:
+          if hotkeys[Msg.wParam - 2001] <> 0 then
+          begin
+            channeltree.TVSelected := channeltree.TVRoot; //# reset selection
+            channeltree.TVSelected := hotkeys[Msg.wParam - 2001];
+          end;
+      end;
 
     WM_SYSCOMMAND:
       if Msg.wParam = SC_MINIMIZE then
@@ -377,11 +396,6 @@ begin
 
         NOTIFY_CONNECTED:
           begin
-            if Chn <> nil then
-            begin
-              raise Exception.Create('ihh');
-              //StopChannel;
-            end;
             Chn := TRadioPlayer(Msg.lParam);
             curStatus := stPLAYING;
             ChnOpener := nil;
@@ -415,6 +429,7 @@ begin
   ITrayBlue := LoadIcon(HInstance, 'TRAYBLUE');
   ITrayGreen := LoadIcon(HInstance, 'TRAYGREEN');
   ITrayRed := LoadIcon(HInstance, 'TRAYRED');
+  ITrayPause := LoadIcon(HInstance, 'TRAYPAUSE');
 
   Tray.Icon := ITRAY;
   Tray.Active := True;
@@ -457,10 +472,11 @@ begin
 
   //# Load .INI Config
   LoadConfig();
+  _DS.Volume(curVolume);
   //# Show About box if first run or just updated!
   if firstrun_enabled then showaboutbox;
 
-  if ParamCount <> 0 then Form.Hide;
+  if ParamStr(1) = '-h' then Form.Hide;
 
   if playonstart_enabled then channeltree.TVSelected := hotkeys[0];
 end;
@@ -512,7 +528,7 @@ begin
         traycolor_enabled := not traycolor_enabled;
         Sender.ItemChecked[_Traycolor] := traycolor_enabled;
         if not traycolor_enabled then
-          ChangeTrayIcon(ITRAY);
+          ChangeTrayIcon(ITRAY, True);
       end;
 
     _MsnNowplaying:
@@ -639,9 +655,9 @@ begin
     StopChannel();
 end;
 
-procedure TForm1.ChangeTrayIcon(const NewIcon: HICON);
+procedure TForm1.ChangeTrayIcon(NewIcon: HICON; Force: LongBool = False);
 begin
-  if (traycolor_enabled) and (Tray.Icon <> NewIcon) then
+  if (traycolor_enabled or Force) and (Tray.Icon <> NewIcon) then
     Tray.Icon := NewIcon;
 end;
 
@@ -653,7 +669,7 @@ end;
 procedure TForm1.traypopup(const Atitle, Atext: AnsiString;
   const IconType: Integer);
 begin
-  if (traypopup_enabled) then
+  if traypopup_enabled then
     with Tray^ do
     begin
       BalloonTitle := Atitle;
@@ -685,6 +701,11 @@ begin
 
   radiolist.Free;
   _DS.Free;
+end;
+
+procedure TForm1.lblhelpClick(Sender: PObj);
+begin
+  ShellExecute(appwinHANDLE, 'open', 'www.1clickmusic.net', nil, nil, SW_SHOW);
 end;
 
 end.

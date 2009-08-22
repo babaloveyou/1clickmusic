@@ -1,6 +1,6 @@
 { KOL MCK } // Do not remove this line!
 program oneclick;
-{$R 'resources.res' 'resources.rc'//{$APPTYPE CONSOLE}
+{$R 'resources.res' 'resources.rc'}//{$APPTYPE CONSOLE}
 {$R 'winxp.res'}
 uses
 KOL,

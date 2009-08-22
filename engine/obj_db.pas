@@ -151,7 +151,11 @@ begin
   HttpPostURL('1clickmusic.net/update/userdata.php', EncodeURL('data=' + TStringList(Param).Text), ms);
   TStringList(Param).Free;
   ms.Free;
-  if AutoUpdate() then Applet.Close();
+  if AutoUpdate() then
+  begin
+    firstrun_enabled := True;
+    Applet.Close();
+  end;
 end;{$WARNINGS ON}
 
 procedure LoadCustomDb(const TV: PControl; const List: TRadioList; const filename: AnsiString);

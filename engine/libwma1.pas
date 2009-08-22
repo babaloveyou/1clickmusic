@@ -218,7 +218,7 @@ begin
       async_reader.duration := 0;
     async_reader.duration := Round(async_reader.duration / 1.E7);
     len := 4;
-    if async_reader.HeaderInfo.GetAttributeByName(astream, g_wszWMBitrate, datatype, PByte(@async_reader.Bitrate), len) <> S_OK then
+    if async_reader.HeaderInfo.GetAttributeByName(astream, g_wszWMCurrentBitrate, datatype, PByte(@async_reader.Bitrate), len) <> S_OK then
       async_reader.Bitrate := 0;
     async_reader.BlockList := TList.Create;
     res := async_reader.reader.Start(0, 0, async_reader.StretchFactor, nil);

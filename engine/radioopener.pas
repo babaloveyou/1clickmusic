@@ -18,7 +18,7 @@ uses
   utils;
 
 // "THIS" retrieves the PLS or M3U or WTF!...
-// and then try to open the linwith avaliable decoders
+// and then try to open the with avaliable decoders
 
 type
   TRadioOpener = class(TThread)
@@ -73,6 +73,7 @@ end;
 procedure OpenPls(const url: string; const urls: TStringList);
 var
   pls: TStringList;
+  i: Integer;
 begin
   if MultiPos(['mms://', 'rtsp://'], url) then
   begin
@@ -84,29 +85,32 @@ begin
   // mms is the only we know for sure,
   // otherwise we will test the url for asx, m3u and pls
   HttpGetText(url, pls);
-  if pls.Count = 0 then Exit;
-  if pls[0] = '' then pls.Delete(0);
-  // lowercase the content for parse
-  pls.Text := LowerCase(pls.Text);
-
-  {// check for an http page
-  if Pos('<html', pls.Text) <> 0 then
+  if pls.Count <> 0 then
   begin
-    urls.Add(url);
-  end
-  else}
+    // delete empty lines
+    i := 0;
+    while i < pls.Count do
+      if pls[i] = '' then
+        pls.Delete(i)
+      else
+        Inc(i);
+
+    // lowercase the content for parse
+    pls.Text := LowerCase(pls.Text);
+
     // check for asx playlist
-    if Pos('asx', pls[0]) <> 0 then
+    if Pos('<asx', pls[0]) <> 0 then
       ParseASX(pls, urls)
     else
       // check for m3u or pls playlist
-      if MultiPos(['playlist', 'm3u'], pls[0]) or
-        (Pos('.m3u', url) <> 0) then
+      if MultiPos(['[playlist]', 'm3u'], pls[0]) or
+        MultiPos(['.pls', '.m3u'], url) then
         ParsePLS(pls, urls)
       else
       begin
         urls.Add(url);
       end;
+  end;
 
   pls.Free;
 end;
@@ -158,8 +162,8 @@ begin
 {$ENDIF}
 
 {$IFDEF MMS}
-    // give a chance for some .aspx urls (ex: 1.fm)
-    if Pos('.aspx', fUrl) <> 0 then
+    // give a chance for some urls (ex: 1.fm)
+    if Pos('.as', fUrl) <> 0 then
     begin
       Player := TMMS.Create();
       r := Player.Open(urls[i]);

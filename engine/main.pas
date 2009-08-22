@@ -33,7 +33,7 @@ var
   curStatus : Cardinal = stSTOPED;
   curRadio : Cardinal = Cardinal(-1);
   curProgress: Integer;
-  curVolume: Integer = INITIALVOL;
+  curVolume: Integer;
   //
   curBitrate: string;
   lastTitle, curTitle: string;
@@ -51,8 +51,6 @@ var
   firstrun_enabled: LongBool;
   //# MSN NOW PLAYING FEATURE
   msn_enabled: LongBool;
-  //msn_iconi: Integer;
-  //msn_icons: string;
   //# Hotkeys
   hotkeys: array[0..11] of Cardinal;
   //# list
@@ -94,7 +92,7 @@ begin
   if autorun_enabled then
   begin
     RegCreateKey(HKEY_LOCAL_MACHINE, AutoRunRegistryKey, key);
-    RegSetValueEx(key, 'oneclick', 0, REG_SZ, PChar(GetCommandLine() + ' h'), Length(ParamStr(0)) + 3);
+    RegSetValueEx(key, 'oneclick', 0, REG_SZ, PChar('"' + ParamStr(0) + '" -h'), Length(ParamStr(0)) + 3);
   end
   else
   begin
@@ -120,23 +118,24 @@ begin
   msndata.cbData := (Length(buffer) * 2) + 2;
   msndata.lpData := Pointer(buffer);
 
-  msnwindow := FindWindowEx(0, 0, 'MsnMsgrUIManager', nil);
-  while msnwindow <> 0 do
-  begin
-    SendMessage(msnwindow, WM_COPYDATA, 0, Integer(@msndata));
+  msnwindow := 0;
+  repeat
     msnwindow := FindWindowEx(0, msnwindow, 'MsnMsgrUIManager', nil);
-  end;
+    if msnwindow = 0 then Break;
+    SendMessage(msnwindow, WM_COPYDATA, 0, Integer(@msndata));
+  until False;
 end;
 
 procedure ShowAboutbox();
 begin
-  MessageBox(0, '1ClickMusic ' + APPVERSIONSTR + #13#10 +
-    'by arthurprs (arthurprs@gmail.com)' + #13#10#13#10 +
-    'thanks to:' + #13#10 +
-    'freak_insane, Blizzy, Kintoun Rlz, Paperback Writer,' + #13#10 +
-    'kamikazze, BomGaroto, SnowHill, Ricardo, Greel, The_Terminator,' + #13#10 +
-    'jotaeme, Mouse Pad, Lokinhow, Mario Bros, Blurkness, -dnb-,' + #13#10 +
-    'Gouveia_Net, Gilson Junior­ and for all who have encouraged me.',
+  MessageBox(0, '1ClickMusic ' + APPVERSIONSTR + #13 +
+    'www.1clickmusic.net' + #13 +
+    'by arthurprs (arthurprs@gmail.com)' + #13#13 +
+    'thanks to:' + #13 +
+    'freak_insane, Blizzy, Kintoun Rlz, Paperback Writer,' + #13 +
+    'kamikazze, BomGaroto, SnowHill, Ricardo, Greel, The_Terminator,' + #13 +
+    'jotaeme, Mouse Pad, Lokinhow, Mario Bros, Blurkness, -dnb-,' + #13 +
+    'Gouveia_Net, Gilson Junior­, BlueX, Warrior of Shadows and for all who have encouraged me.',
     '1ClickMusic ' + APPVERSIONSTR, MB_OK or MB_ICONINFORMATION or MB_TOPMOST);
 end;
 

@@ -21,7 +21,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 231
-    Height = 273
+    Height = 272
     HelpContext = 0
     IgnoreDefault = False
     AnchorLeft = False
@@ -237,7 +237,7 @@ object Form1: TForm1
     Tag = 0
     Left = 241
     Top = 136
-    Width = 272
+    Width = 216
     Height = 137
     HelpContext = 0
     IgnoreDefault = False
@@ -252,6 +252,7 @@ object Form1: TForm1
     MinHeight = 0
     MaxWidth = 0
     MaxHeight = 0
+    Cursor_ = 'IDC_HAND'
     PlaceDown = False
     PlaceRight = False
     PlaceUnder = False
@@ -261,10 +262,10 @@ object Form1: TForm1
     Align = caNone
     CenterOnParent = False
     Caption = 
-      'Hotkeys:'#13#10' CTRL + UP  : raise volume'#13#10' CTRL + Down : decrease vo' +
-      'lume'#13#10' CTRL + END : Stop'#13#10' CTRL + HOME : Play'#13#10' CTRL + (F1..F12)' +
-      ' : Hotkey for Channels'#13#10#13#10'Right click trayicon to see options'#13#10'R' +
-      'ight click on a channel to bind hotkeys'#13#10
+      'Hotkeys:'#13#10' CTRL + UP  : inc volume'#13#10' CTRL + Down : dec volume'#13#10' ' +
+      'CTRL + END : Stop'#13#10' CTRL + HOME : Play/Pause'#13#10#13#10'Right click tray' +
+      'icon to see options'#13#10'Right click on channels to bind hotkeys'#13#10'ww' +
+      'w.1clickmusic.net'
     Ctl3D = True
     Color = clBtnFace
     parentColor = True
@@ -279,6 +280,7 @@ object Form1: TForm1
     Font.FontPitch = fpDefault
     Font.FontQuality = fqDefault
     parentFont = False
+    OnClick = lblhelpClick
     EraseBackground = False
     Localizy = loForm
     Transparent = False

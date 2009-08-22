@@ -91,11 +91,10 @@ begin
 
   Decoded := 0;
   repeat
-    if (fHandle.BlockList.Count > 0) then
+    if GetProgress() > 0 then
     begin
       done := dssize - Decoded;
       lwma_async_reader_get_data(fHandle, outbuf, done);
-      if done = 0 then Continue;
       Move(outbuf^, dsbuf[Decoded], done);
       Inc(Decoded, done);
     end

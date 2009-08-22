@@ -11,4 +11,5 @@ Mouse Pad : Autoupdate
 Mario Bros.: bugfix (salvar configs no ini)
 Lokinhow : deu dura na galera heuaheuheau
 phelen : botões multimidia do teclado
-blurkness : site e icone
+blurkness : site (antigo) e icone
+bluex : pause e icones aac+,wma,mp3

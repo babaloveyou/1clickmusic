@@ -29,7 +29,7 @@ unit uDllfromMem;
 
 interface
 
-{$DEBUGINFO OFF}
+//{$DEBUGINFO OFF}
 {$WARNINGS OFF}
 {$HINTS OFF}
 
