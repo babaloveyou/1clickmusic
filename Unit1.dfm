@@ -252,7 +252,6 @@ object Form1: TForm1
     MinHeight = 0
     MaxWidth = 0
     MaxHeight = 0
-    Cursor_ = 'IDC_HAND'
     PlaceDown = False
     PlaceRight = False
     PlaceUnder = False
@@ -280,7 +279,6 @@ object Form1: TForm1
     Font.FontPitch = fpDefault
     Font.FontQuality = fqDefault
     parentFont = False
-    OnClick = lblhelpClick
     EraseBackground = False
     Localizy = loForm
     Transparent = False

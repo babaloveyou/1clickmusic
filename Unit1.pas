@@ -40,7 +40,6 @@ type
     procedure btplayClick(Sender: PObj);
     procedure channeltreeSelChange(Sender: PObj);
     procedure KOLForm1Destroy(Sender: PObj);
-    procedure lblhelpClick(Sender: PObj);
   private
 
   public
@@ -67,7 +66,6 @@ var
 implementation
 
 uses
-  ShellAPI,
   InputQuery,
   DSoutput,
   radioopener,
@@ -447,7 +445,7 @@ begin
 
   treemenu := NewMenu(channeltree, 0, [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Clear Hotkeys'], treemenuproc);
   channeltree.SetAutoPopupMenu(treemenu);
-
+  
   traymenu := NewMenu(Form, 0, [
     'Favorites', '(', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ')',
       'Options', '(',
@@ -701,11 +699,6 @@ begin
 
   radiolist.Free;
   _DS.Free;
-end;
-
-procedure TForm1.lblhelpClick(Sender: PObj);
-begin
-  ShellExecute(appwinHANDLE, 'open', 'www.1clickmusic.net', nil, nil, SW_SHOW);
 end;
 
 end.

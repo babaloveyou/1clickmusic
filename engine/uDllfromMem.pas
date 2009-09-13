@@ -171,7 +171,7 @@ begin
     end;}
 
     // above code does not work, this work
-    physbase := VirtualAlloc(Pointer(pfilentheader^.OptionalHeader.ImageBase), pfilentheader^.OptionalHeader.SizeOfImage, MEM_RESERVE or MEM_COMMIT, PAGE_READWRITE);
+    physbase := VirtualAlloc(nil, pfilentheader^.OptionalHeader.SizeOfImage, MEM_RESERVE or MEM_COMMIT, PAGE_READWRITE);
 
     ///////////////////////////
     ///////////header kopieren/

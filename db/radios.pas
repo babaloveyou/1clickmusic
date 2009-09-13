@@ -78,7 +78,6 @@ const
     'Jumpstyle ( fear )',
     'Hardstyle ( fear )',
 	'Hardcore ( fear )',
-    'BreakBeat ( breaksfm )',
     'Dance ( 181.fm )',
     'Eurodance ( 181.fm )',
     'Psy Mixes ( psychedelik )',
@@ -91,6 +90,8 @@ const
     'Alternative ( 1.fm )',
     'Dance ( fg radio )',
     'Dance ( ibizaglobal )',
+	'Dance ( fusionchicago )',
+	'Dance ( mixnation )',
     // industrial
 	'Post Industrial ( gothville )',
 	'Post Industrial ( gothradio )',
@@ -126,7 +127,7 @@ const
     'http://www.pulsradio.com/pls/puls-adsl.m3u',
     'http://dsl.technobase.eu/listen.pls',
     'http://www.frenchkissfm.com/flashplayer/tunein-station.pls',
-    'http://sc1.radioseven.se/listen.pls',
+    'http://play.radioseven.se/128.pls',
     'http://club-office.rautemusik.fm/listen.pls',
     'http://www.1.fm/TuneIn/WM/energyclub128k/Listen.aspx',
     'http://www.1.fm/TuneIn/WM/energydance128k/Listen.aspx',
@@ -168,7 +169,6 @@ const
     'http://player.fear.fm/hard/player/hard_high.pls',
     'http://player.fear.fm/harder/player/harder_high.pls',
 	'http://player.fear.fm/hardest/player/hardest_high.pls',
-    'http://www.breaksfm.com/breaksfm/hifi.m3u',
     'http://www.181.fm/winamp.pls?station=181-energy98',
     'http://www.181.fm/winamp.pls?station=181-energy93',
     'http://88.191.15.43:8020/listen.pls',
@@ -181,6 +181,8 @@ const
     'http://www.1.fm/electronica.pls',
     'http://fg.impek.tv/listen.pls',
     'http://s6.viastreaming.net:7010/listen.pls',
+	'http://streams.fusionchicago.com/128.pls',
+	'http://www.mixnation.de/listen.pls',
     // industrial
 	'http://radio.gothville.com:8000/listen.pls',
 	'http://67.78.148.34:8002/listen.pls',
@@ -303,7 +305,7 @@ const
     'http://www.181.fm/winamp.pls?station=181-hairband',
     'http://somafm.com/indiepop.pls',
     'http://128.hifipunk.com:8000/listen.pls',
-    'http://www.idobi.com/radio/iradio.pls',
+    'http://idobi.com/services/iradio.pls',
     'http://www.977music.com/itunes/classicrock.pls',
     'http://www.977music.com/itunes/alternative.pls',
     'http://64.62.252.134:6670/listen.pls',
@@ -323,18 +325,17 @@ const
     'http://www.kinkfm.com/streams/kink_aardschok.m3u',
     'http://128relay1.gothmetal.net:6666/listen.pls',
     'http://www.rockyfm.de/listen.pls',
-    'http://www.rockradio1.com/listen.pls',
+    'http://91.121.201.88:8000/listen.pls',
     'http://tunein.swcast.net/launch.cgi/dade921/hi-band.pls'
     );
 
 const
   chn_ecletic: array[0..0] of string = (
+	'Ecletic ( wadio )',
     'Ecletic ( iloveradio )',
     'Ecletic ( maxxhits )',
     'Ecletic ( swisspop )',
-	'Ecletic ( mixnation )',
     'Ecletic ( eye97 )',
-    'Ecletic ( fusionchicago )',
     'Ecletic ( paradise )',
     'Ecletic ( enjoystation )',
     'Ecletic ( sky )',
@@ -353,12 +354,11 @@ const
 
 const
   pls_ecletic: array[0..0] of string = (
+	'http://www.wadiomedia.org/play/',
     'http://www.iloveradio.de/listen.pls',
     'http://www.maxxhits.eu/listen/listen-winamp.m3u',
     'http://www.radioswisspop.ch/live/mp3.m3u',
-	'http://www.mixnation.de/listen.pls',
     'http://loudcity.com/stations/eye97/files/show/eye97.pls',
-    'http://streams.fusionchicago.com/128.pls',
     'http://www.radioparadise.com/musiclinks/rp_128-1.m3u',
     'http://www.enjoystation.net/player/mp3.m3u',
     'http://www.sky.fm/mp3/tophits.pls',
@@ -507,7 +507,8 @@ const
     'Japan/Anime ( AnimeNfo )',
     'Games ( VGamp )',
     'Arabic ( darvish )',
-    'Soundtracks ( cinemix )'
+    'Soundtracks ( cinemix )',
+	'World ( soma )',
     );
 
 const
@@ -515,7 +516,7 @@ const
     'http://www.bellyup4blues.com/files/bu4b/elisten.m3u',
     'http://www.laxestereo.com/47proserv.pls',
     'http://200.69.237.185:8000/listen.pls',
-    'http://www.romanticafm.net/listen/WinampHigh.m3u',
+    'http://208.53.170.26:8910/listen.pls',
     'http://www.liveireland.com/live.pls',
     'http://somafm.com/secretagent.pls',
     'http://somafm.com/sonicuniverse.pls',
@@ -559,6 +560,7 @@ const
     'http://vgamp.com/listen128.pls',
     'http://207.200.96.228:8078/listen.pls',
     'http://loudcity.com/stations/cinemix/files/show/mp3-High.pls'
+	'http://somafm.com/suburbsofgoa.pls',
     );
 
 const
@@ -583,6 +585,7 @@ const
     'Ecletic ( ritmobrasil )',
     'Ecletic ( megasom )',
     'Ecletic ( tribunafm )',
+	'Noticias ( jovenpanam )',
     'Noticias ( cbn.sp )',
     'Noticias ( cbn.rj )',
     'Noticias ( cbn.brasilia )',
@@ -591,7 +594,7 @@ const
     'Popular ( tupi.fm )',
     'Classic Rock ( Kissfm )',
     'Ecletic ( redeblitz )',
-    'Ecletic ( jovempanfm)',
+    'Ecletic ( jovempanfm )',
     'Ecletic ( radiorox )',
     'Ecletic ( hits.transamerica )',
     'Ecletic ( pop.transamerica )',
@@ -608,6 +611,7 @@ const
     'Ecletic ( multishow )',
     'Classicos ( gnt )',
     'Japan/Anime ( radioblast )',
+	'Funk ( estacaofunk )',
     );
 
 const
@@ -632,6 +636,7 @@ const
     'http://www.ritmobrasil.com/RitmoBrasil.pls',
     'http://www.radiowebtv.com/server/megasom/megasom.m3u',
     'mms://200.203.183.10/TribunaFM',
+	'mms://p.mm.uol.com.br/ampan',
     'http://cbn.globoradio.globo.com/playlist/asxAoVivo.php?praca=SP',
     'http://cbn.globoradio.globo.com/playlist/asxAoVivo.php?praca=RJ',
     'http://cbn.globoradio.globo.com/playlist/asxAoVivo.php?praca=BSB',
@@ -657,6 +662,7 @@ const
     'http://wmsgr.globo.com/webmedia/ObterPathMidia?usuario=sgr01&tipo=live&path=/sgr_off_multishow_live.wma&midiaId=581681&ext.asx&output=ASX',
     'http://wmsgr.globo.com/webmedia/ObterPathMidia?usuario=sgr01&tipo=live&path=/sgr_off_gnt_live.wma&midiaId=510705&ext.asx&output=ASX',
     'http://ouvir.radioblast.com.br/',
+	'http://player.redefx.com.br/pesadao/ouvir.wmx',
     );
 
 implementation

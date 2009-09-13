@@ -114,8 +114,8 @@ begin
   Dialog.ShowModal;
   if Dialog.ModalResult = idOK then
   begin
-    Value := Trim(Edit.Text);
-    Result := True and (Value <> '');
+    Value := Edit.Text;
+    Result := Value <> '';
   end;
 
   Dialog.Free;

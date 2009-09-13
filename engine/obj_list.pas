@@ -13,9 +13,9 @@ type
 type
   TRadioList = class
   private
-    fList: Array of TRadioEntry;
+    fList: array of TRadioEntry;
     fCount: Integer;
-    fCapacity : Integer;
+    fCapacity: Integer;
   public
     procedure Add(const Apos: Cardinal; const AName, Apls: AnsiString);
     function getpos(const AName: AnsiString): Cardinal;
@@ -34,7 +34,7 @@ begin
   begin
     fCapacity := fCapacity + fCapacity div 2;
     SetLength(fList, fCapacity);
-  end;  
+  end;
 
   with fList[fCount] do
   begin
@@ -49,13 +49,13 @@ constructor TRadioList.Create;
 begin
   fCount := 0;
   fCapacity := 300;
-  SetLength(fList,fCapacity);
+  SetLength(fList, fCapacity);
 end;
 
 function TRadioList.getname(const Apos: Cardinal): AnsiString;
 var
   i: Integer;
-  item : PRadioEntry;
+  item: PRadioEntry;
 begin
   item := @fList[0];
   for i := 0 to fCount - 1 do
@@ -74,7 +74,7 @@ end;
 function TRadioList.getpls(const Apos: Cardinal): AnsiString;
 var
   i: Integer;
-  item : PRadioEntry;
+  item: PRadioEntry;
 begin
   item := @fList[0];
   for i := 0 to fCount - 1 do
@@ -93,7 +93,7 @@ end;
 function TRadioList.getpos(const AName: AnsiString): Cardinal;
 var
   i: Integer;
-  item : PRadioEntry;
+  item: PRadioEntry;
 begin
   item := @fList[0];
   for i := 0 to fCount - 1 do

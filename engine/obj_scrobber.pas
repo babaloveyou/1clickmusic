@@ -82,7 +82,7 @@ var
 begin
   ///////////// http://www.last.fm/api/submissions
   Result := True;
-  timestamp := IntToStr(DateTimeToUnix(IncHour(Now, 3)));
+  timestamp := IntToStr(DateTimeToUnix(GetUTTime()));
   authMD5 := StrToHex(MD5(StrToHex(MD5(password)) + timestamp));
 
   sl := TStringList.Create;
@@ -95,7 +95,7 @@ begin
     end
     else
     begin
-      ErrorStr := 'Last.fm plugin Error' + #10#13 + sl.Text;
+      ErrorStr := 'Last.fm plugin Error' + #13 + sl.Text;
       Result := False;
     end;
 

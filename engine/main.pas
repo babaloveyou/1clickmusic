@@ -13,8 +13,8 @@ uses
   httpsend;
 
 const
-  APPVERSION = 1920;
-  APPVERSIONSTR = '1.9.2';
+  APPVERSION = 1928;
+  APPVERSIONSTR = '1.9.3';
   INITIALVOL = 80;
   WM_NOTIFY = WM_USER + 1;
   stSTOPED = 0;

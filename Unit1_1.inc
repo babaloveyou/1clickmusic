@@ -65,7 +65,6 @@ begin
     Result.lblhelp.Font.FontHeight := 15;
     Result.lblhelp.Font.FontName := 'Arial';
     Result.lblhelp.Font.FontPitch := fpDefault;
-    Result.lblhelp.Cursor := LoadCursor( 0, IDC_HAND );
     // Result.lblradio.TabOrder = -1
     Result.lblradio := NewLabel( Result.Form, '' ).SetPosition( 245, 74 ).SetSize( 212, 0 );
    {$IFDEF USE_NAMES}
@@ -130,7 +129,6 @@ begin
     Result.pgrbuffer.Visible := False;
     Result.pgrbuffer.Color := TColor(clBtnFace);
     Result.pgrbuffer.ProgressColor := $E39C5A;
-      Result.lblhelp.OnClick := Result.lblhelpClick;
       Result.channeltree.OnMouseUp := Result.channeltreeMouseUp;
       Result.channeltree.OnSelChange := Result.channeltreeSelChange;
     {$IFDEF OVERRIDE_SCROLLBARS}
@@ -142,5 +140,4 @@ begin
     Result.KOLForm1FormCreate( Result );
 
 end;
-
 

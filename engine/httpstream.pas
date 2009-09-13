@@ -12,7 +12,7 @@ uses
 
 const // CONFIGURATION
   BUFFPACKET = 1024 * 1;
-  BUFFPACKETCOUNT = 128; // 28 extra buffers  xD
+  BUFFPACKETCOUNT = 150; // 50 extra buffers  xD
   BUFFSIZETOTAL = 1024 * BUFFPACKETCOUNT;
 
   BUFFRESTORE = 50;
@@ -151,7 +151,7 @@ begin
       BytesUntilMeta := MetaInterval;
       metalength := fHTTP.RecvByte(MaxInt);
       if metalength = 0 then Continue;
-      ParseMetaData(fHTTP.RecvBufferStr(metalength * 16, MaxInt), MetaTitle);
+      ParseMetaData(fHTTP.RecvBufferStr(metalength * 16, 15000), MetaTitle);
       NotifyForm(NOTIFY_NEWINFO, 0);
     end
     else
@@ -161,7 +161,7 @@ begin
         bytestoreceive := BytesUntilMeta;
 
 
-      fHTTP.RecvBufferEx(@inbuffer[Feed, bytesreceived], bytestoreceive, MaxInt);
+      fHTTP.RecvBufferEx(@inbuffer[Feed, bytesreceived], bytestoreceive, 15000);
 
       Dec(BytesUntilMeta, bytestoreceive);
       Inc(bytesreceived, bytestoreceive);

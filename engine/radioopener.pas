@@ -163,7 +163,7 @@ begin
 
 {$IFDEF MMS}
     // give a chance for some urls (ex: 1.fm)
-    if Pos('.as', fUrl) <> 0 then
+    if MultiPos(['.as', '.wm'], fUrl) then
     begin
       Player := TMMS.Create();
       r := Player.Open(urls[i]);
