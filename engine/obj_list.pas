@@ -48,7 +48,7 @@ end;
 constructor TRadioList.Create;
 begin
   fCount := 0;
-  fCapacity := 300;
+  fCapacity := 310;
   SetLength(fList, fCapacity);
 end;
 

@@ -20,7 +20,7 @@ type
     procedure Scrobb(const artist, track: string);
   public
     ErrorStr: string;
-    function Execute(title: string): LongBool;
+    function Execute(title: string): Integer;
   end;
 
 implementation
@@ -102,25 +102,25 @@ begin
   sl.Free;
 end;
 
-function TScrobber.Execute(title: string): LongBool;
+function TScrobber.Execute(title: string): Integer;
 var
   artist, track: string;
   p: Integer;
 begin
-  Result := HandShake(lastfm_user, lastfm_pass);
-  if not Result then Exit;
+  Result := 0;
+  if not HandShake(lastfm_user, lastfm_pass) then Exit;
 
+  Result := -1;
   fixTrackname(title);
-
   p := Pos(' - ', title);
-
-  if (p = 0) or MultiPos(['www.', 'http://', 'A suivre'], title) then
+  if (p = 0) or MultiPos(['www.', 'http://', 'A suivre', '.fm', '.com'], title) then
     Exit;
 
   artist := Copy(title, 1, p - 1);
   track := Copy(title, p + 3, MaxInt);
 
   Scrobb(artist, track);
+  Result := 1;
 end;
 
 procedure TScrobber.Scrobb(const artist, track: string);

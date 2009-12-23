@@ -18,7 +18,7 @@ begin
     Result.Form.SetName( Applet, 'Form1' );
    {$ENDIF}
     Result.Form.Style := Result.Form.Style and not WS_MAXIMIZEBOX;
-    Result.Form.SetClientSize( 613, 272 );
+    Result.Form.SetClientSize( 613, 266 );
     Result.Form.IconLoad( hInstance, 'MAINICON' );
     Result.Form.Font.FontName := 'MS Sans Serif';
     Result.Form.Font.FontPitch := fpFixed;
@@ -54,7 +54,7 @@ begin
     Result.lblbuffer.Font.FontCharset := 0;
     Result.lblbuffer.TextAlign := KOL.taRight;
     // Result.lblhelp.TabOrder = -1
-    Result.lblhelp := NewLabel( Result.Form, 'Hotkeys:'+#13+#10+' CTRL + UP  : inc volume'+#13+#10+' CTRL + Down : dec volume'+#13+#10+' CTRL + END : Stop'+#13+#10+' CTRL + HOME : Play/Pause'+#13+#10+#13+#10+'Right click trayicon to see options'+#13+#10+'Right click on channels to bind hotkeys'+#13+#10+'www.1clickmusic.net' ).SetPosition( 241, 136 ).SetSize( 216, 137 );
+    Result.lblhelp := NewLabel( Result.Form, 'Hotkeys:'+#13+#10+' CTRL + UP  : inc volume'+#13+#10+' CTRL + Down : dec volume'+#13+#10+' CTRL + END : Stop'+#13+#10+' CTRL + HOME : Play/Pause'+#13+#10+#13+#10+'Right click trayicon to see options'+#13+#10+'Right click on channels to bind hotkeys'+#13+#10+'www.1clickmusic.net' ).SetPosition( 241, 128 ).SetSize( 216, 137 );
    {$IFDEF USE_NAMES}
     Result.lblhelp.SetName( Result.Form, 'lblhelp' ); 
    {$ENDIF}
@@ -109,7 +109,7 @@ begin
    Result.channeltree.SetUnicode(TRUE);
    {$ENDIF UNICODE_CTRLS}
     // Result.btplay.TabOrder = 1
-    Result.btplay := NewButton( Result.Form, 'Play' ).SetPosition( 534, 247 ).SetSize( 76, 0 ).LikeSpeedButton;
+    Result.btplay := NewButton( Result.Form, 'Play' ).SetPosition( 534, 239 ).SetSize( 76, 0 ).LikeSpeedButton;
    {$IFDEF USE_NAMES}
     Result.btplay.SetName( Result.Form, 'btplay' ); 
    {$ENDIF}

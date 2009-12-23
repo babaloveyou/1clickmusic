@@ -21,7 +21,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 231
-    Height = 272
+    Height = 266
     HelpContext = 0
     IgnoreDefault = False
     AnchorLeft = False
@@ -236,7 +236,7 @@ object Form1: TForm1
   object lblhelp: TKOLLabel
     Tag = 0
     Left = 241
-    Top = 136
+    Top = 128
     Width = 216
     Height = 137
     HelpContext = 0
@@ -347,7 +347,7 @@ object Form1: TForm1
   object btplay: TKOLButton
     Tag = 0
     Left = 534
-    Top = 247
+    Top = 239
     Width = 76
     Height = 22
     HelpContext = 0

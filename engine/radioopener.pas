@@ -75,7 +75,7 @@ var
   pls: TStringList;
   i: Integer;
 begin
-  if MultiPos(['mms://', 'rtsp://'], url) then
+  if MultiPos(['mms://', 'rtsp://', 'groovera'], url) then
   begin
     urls.Add(url);
     Exit;

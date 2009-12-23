@@ -239,12 +239,8 @@ begin
       if clipboard_enabled then
         Text2Clipboard(curTitle);
 
-      if (lastfm_enabled) and // ENSURE 60sec interval
-        (GetTickCount() >= lastfm_nextscrobb) then
-      begin
-        lastfm_nextscrobb := GetTickCount() + 60000;
+      if lastfm_enabled and (GetTickCount() >= lastfm_nextscrobb)  then
         lastfm_thread := NewThreadAutoFree(LastFMThreadExecute);
-      end;
     end;
 
   // # REFRESH GUI INFORMATION
@@ -412,6 +408,13 @@ begin
             lblstatus.caption := 'Error Connecting';
           end;
       end;
+
+  else
+    if (Msg.message = WM_UNIQUEINSTANCE) and (Msg.wParam = WM_NOTIFY) and (msg.lParam = WM_NOTIFY) then
+    begin
+      Form.Show;
+      Result := True;
+    end;
   end;
 end;
 
@@ -445,7 +448,7 @@ begin
 
   treemenu := NewMenu(channeltree, 0, [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Clear Hotkeys'], treemenuproc);
   channeltree.SetAutoPopupMenu(treemenu);
-  
+
   traymenu := NewMenu(Form, 0, [
     'Favorites', '(', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ')',
       'Options', '(',
@@ -620,12 +623,19 @@ begin
   Result := 0;
   with TScrobber.Create do
   begin
-    if not Execute(lastTitle) then
-    begin
-      traymenu.ItemChecked[_LastFm] := False;
-      lastfm_enabled := False;
-      RaiseError(ErrorStr, False);
+    case Execute(lastTitle) of
+      0:
+        begin
+          traymenu.ItemChecked[_LastFm] := False;
+          lastfm_enabled := False;
+          RaiseError(ErrorStr, False);
+        end;
+      -1:
+        begin
+          lastfm_nextscrobb := GetTickCount() + 60000;
+        end;
     end;
+
     Free;
   end;
   lastfm_thread := nil;
@@ -638,10 +648,7 @@ begin
     if Form.Visible then
       Form.Hide
     else
-    begin
       Form.Show;
-      Form.Focused := True;
-    end;
   end;
 end;
 

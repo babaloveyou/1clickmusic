@@ -13,8 +13,8 @@ uses
   httpsend;
 
 const
-  APPVERSION = 1928;
-  APPVERSIONSTR = '1.9.3';
+  APPVERSION = 1933;
+  APPVERSIONSTR = '1.9.3d';
   INITIALVOL = 80;
   WM_NOTIFY = WM_USER + 1;
   stSTOPED = 0;
@@ -23,6 +23,7 @@ const
 
   // GLOBAL VARS, IF NECESSARY INITIALIZED
 var
+  WM_UNIQUEINSTANCE : DWORD;
   //# needed cuz of the KOL windows is Free with no control..
   appwinHANDLE: HWND;
 
@@ -188,6 +189,19 @@ begin
 
   Text.Free;
 end;
+
+procedure UniqueInstance();
+begin
+  WM_UNIQUEINSTANCE := RegisterWindowMessage('1ClickMusic');
+  if (CreateMutex(nil, True, '1ClickMusic') <> 0) and (GetLastError() = ERROR_ALREADY_EXISTS) then
+  begin
+    SendMessage(HWND_BROADCAST, WM_UNIQUEINSTANCE, WM_NOTIFY, WM_NOTIFY);
+    Halt;
+  end;
+end;
+
+initialization
+  UniqueInstance();
 
 end.
 

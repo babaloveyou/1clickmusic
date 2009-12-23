@@ -64,10 +64,11 @@ procedure ParseHeader(const url, accept: string; out host, port, icyheader: stri
 const
   ICYHEADERSTUB =
     'GET %s HTTP/1.0' + #13#10 +
-    'Host:%s:%s' + #13#10 +
-    'Accept:%s' + #13#10 +
+    'Host: %s:%s' + #13#10 +
+    'Accept: %s' + #13#10 +
     'Icy-MetaData:1' + #13#10 +
-    'User-Agent:1ClickMusic' + #13#10 +
+    'User-Agent: 1ClickMusic' + #13#10 +
+   // 'Connection: close' + #13#10 +
     #13#10;
 var
   prot, user, pass, path, para: string;
@@ -230,7 +231,7 @@ begin
     Exit;
   fHTTP.SendString(icyheader);
 
-  response := fHTTP.RecvTerminated(3000, #13#10#13#10);
+  response := fHTTP.RecvTerminated(5000, #13#10#13#10);
 
   case ParseMetaHeader(response, fAccept, MetaInterval, MetaBitrate) of
     1:
