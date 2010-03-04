@@ -13,8 +13,8 @@ uses
   httpsend;
 
 const
-  APPVERSION = 1933;
-  APPVERSIONSTR = '1.9.3d';
+  APPVERSION = 1943;
+  APPVERSIONSTR = '1.9.4d';
   INITIALVOL = 80;
   WM_NOTIFY = WM_USER + 1;
   stSTOPED = 0;
@@ -23,16 +23,17 @@ const
 
   // GLOBAL VARS, IF NECESSARY INITIALIZED
 var
-  WM_UNIQUEINSTANCE : DWORD;
+  WM_UNIQUEINSTANCE: DWORD;
+  
   //# needed cuz of the KOL windows is Free with no control..
   appwinHANDLE: HWND;
 
   //# Core Global Variables
   _DS: TDSoutput;
   Chn: TRadioPlayer = nil;
-  ChnOpener : TThread;
-  curStatus : Cardinal = stSTOPED;
-  curRadio : Cardinal = Cardinal(-1);
+  ChnOpener: TThread;
+  curStatus: Cardinal = stSTOPED;
+  curRadio: Cardinal = Cardinal(-1);
   curProgress: Integer;
   curVolume: Integer;
   //
@@ -89,11 +90,13 @@ const
   AutoRunRegistryKey = 'SOFTWARE\Microsoft\Windows\CurrentVersion\Run';
 var
   key: HKEY;
+  autorunpath: string;
 begin
   if autorun_enabled then
   begin
     RegCreateKey(HKEY_LOCAL_MACHINE, AutoRunRegistryKey, key);
-    RegSetValueEx(key, 'oneclick', 0, REG_SZ, PChar('"' + ParamStr(0) + '" -h'), Length(ParamStr(0)) + 3);
+    autorunpath := '"' + ParamStr(0) + '" -h';
+    RegSetValueEx(key, 'oneclick', 0, REG_SZ, PChar(autorunpath), Length(autorunpath));
   end
   else
   begin
@@ -105,7 +108,7 @@ end;
 
 procedure NotifyForm(wParam, lParam: Integer);
 begin
-  PostMessage(appwinHANDLE, WM_NOTIFY , wParam, lParam);
+  PostMessage(appwinHANDLE, WM_NOTIFY, wParam, lParam);
 end;
 
 procedure UpdateMsn(write: LongBool);
@@ -144,9 +147,9 @@ function AutoUpdate(): LongBool;
 const
   updateurl = '1clickmusic.net/update/update';
 var
+  updatefile: TFileStream;
+  apppath, updatepath, backuppath: string;
   Text: TStringList;
-  newfile: TFileStream;
-  batpath, tempfilepath: string;
 begin
   Text := TStringList.Create;
   Result := HttpGetText(updateurl, Text);
@@ -157,22 +160,17 @@ begin
         PChar(Format('Version %s is avaliable, download and update?', [Text[1]])),
         '1ClickMusic update avaliable', MB_YESNO + MB_ICONQUESTION) = IDYES then
       begin
-        tempfilepath := GetTempDir + 'oneclick.exe';
-        newfile := TFileStream.Create(tempfilepath, fmCreate);
-        Result := HttpGetBinary(Text[2], newfile);
-        newfile.Free;
+        apppath := ParamStr(0);
+        updatepath := GetTempDir() + 'oneclick.exe';
+        backuppath := GetTempDir() + 'oneclick.bak';
+        updatefile := TFileStream.Create(updatepath, fmCreate);
+        Result := HttpGetBinary(Text[2], updatefile);
+        updatefile.Free;
         if Result then
         begin
-          batpath := GetTempDir + 'oneclick.bat';
-          Text.Clear;
-          Text.Add(':Label1');
-          Text.Add('del "' + ParamStr(0) + '"');
-          Text.Add('if Exist "' + ParamStr(0) + '" goto Label1');
-          Text.Add('Move "' + tempfilepath + '" "' + ParamStr(0) + '"');
-          Text.Add('Call "' + ParamStr(0) + '"');
-          Text.Add('del "' + batpath + '"');
-          Text.SaveToFile(batpath);
-          Result := WinExec(PChar(batpath), SW_HIDE) > 31;
+          MoveFileEx(PChar(apppath), PChar(backuppath), MOVEFILE_REPLACE_EXISTING or MOVEFILE_COPY_ALLOWED or MOVEFILE_WRITE_THROUGH);
+          MoveFileEx(PChar(updatepath), PChar(apppath), MOVEFILE_COPY_ALLOWED or MOVEFILE_WRITE_THROUGH);
+          Result := WinExec(PChar('"' + apppath + '" -u'), SW_NORMAL) > 32;
         end
         else
         begin
@@ -192,10 +190,11 @@ end;
 
 procedure UniqueInstance();
 begin
+  if ParamStr(1) = '-u' then Exit; // update
   WM_UNIQUEINSTANCE := RegisterWindowMessage('1ClickMusic');
   if (CreateMutex(nil, True, '1ClickMusic') <> 0) and (GetLastError() = ERROR_ALREADY_EXISTS) then
   begin
-    SendMessage(HWND_BROADCAST, WM_UNIQUEINSTANCE, WM_NOTIFY, WM_NOTIFY);
+    SendMessage(HWND_BROADCAST, WM_UNIQUEINSTANCE, 0, 0);
     Halt;
   end;
 end;

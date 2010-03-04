@@ -239,7 +239,7 @@ begin
       if clipboard_enabled then
         Text2Clipboard(curTitle);
 
-      if lastfm_enabled and (GetTickCount() >= lastfm_nextscrobb)  then
+      if lastfm_enabled and (GetTickCount() >= lastfm_nextscrobb) then
         lastfm_thread := NewThreadAutoFree(LastFMThreadExecute);
     end;
 
@@ -318,6 +318,8 @@ end;
 
 function TForm1.KOLForm1Message(var Msg: tagMSG;
   var Rslt: Integer): Boolean;
+var
+  n : Cardinal;
 begin
   Result := False;
 
@@ -363,6 +365,15 @@ begin
               _DS.Volume(0, False);
               traypopup('', 'Paused', NIIF_NONE);
             end;
+        1005,1006:
+          begin
+            if Msg.wParam = 1005 then
+              n := channeltree.TVItemNext[curRadio]
+            else
+              n := channeltree.TVItemPrevious[curRadio];
+            if n <> 0 then
+              channeltree.TVSelected := n;
+          end;
         2001..2012:
           if hotkeys[Msg.wParam - 2001] <> 0 then
           begin
@@ -410,9 +421,9 @@ begin
       end;
 
   else
-    if (Msg.message = WM_UNIQUEINSTANCE) and (Msg.wParam = WM_NOTIFY) and (msg.lParam = WM_NOTIFY) then
+    if Msg.message = WM_UNIQUEINSTANCE then
     begin
-      Form.Show;
+      Form.Show();
       Result := True;
     end;
   end;
@@ -440,6 +451,8 @@ begin
   RegisterHotKey(appwinHANDLE, -2, MOD_CONTROL, VK_DOWN);
   RegisterHotKey(appwinHANDLE, 1003, MOD_CONTROL, VK_END);
   RegisterHotKey(appwinHANDLE, 1004, MOD_CONTROL, VK_HOME);
+  RegisterHotKey(appwinHANDLE, 1005, MOD_CONTROL, VK_PAGE_DOWN);
+  RegisterHotKey(appwinHANDLE, 1006, MOD_CONTROL, VK_PAGE_UP);
   for i := 0 to 11 do
     RegisterHotKey(appwinHANDLE, 2001 + i, MOD_CONTROL, VK_F1 + i);
 
@@ -477,7 +490,7 @@ begin
   //# Show About box if first run or just updated!
   if firstrun_enabled then showaboutbox;
 
-  if ParamStr(1) = '-h' then Form.Hide;
+  if ParamStr(1) = '-h' then Form.Hide();
 
   if playonstart_enabled then channeltree.TVSelected := hotkeys[0];
 end;
@@ -601,7 +614,7 @@ begin
 
     _Exit:
       begin
-        Form.Close;
+        Form.Close();
       end;
   end;
 
@@ -646,9 +659,9 @@ begin
   if (Mouse.Button = mbLeft) then
   begin
     if Form.Visible then
-      Form.Hide
+      Form.Hide()
     else
-      Form.Show;
+      Form.Show();
   end;
 end;
 

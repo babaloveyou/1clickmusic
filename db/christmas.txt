@@ -1,6 +1,6 @@
-    
+
 const
-   chn_christmas: array[0..11] of string = (
+  chn_christmas: array[0..0] of string = (
     'Christmas ( sky )',
     'Christmas ( 1.fm )',
     'Christmas Lounge ( soma )',
@@ -14,19 +14,19 @@ const
     'Christmas Rock ( 181.fm )',
     'Christmas Jazz ( 181.fm )',
     );
-    
+
 const
-   pls_christmas: array[0..11] of string = (
+  pls_christmas: array[0..0] of string = (
     'http://www.sky.fm/mp3/christmas.pls',
     'http://www.1.fm/christmas.pls',
     'http://somafm.com/christmas.pls',
     'http://somafm.com/xmasinfrisko.pls',
     'http://www.xmasmelody.com/128.pls',
     'http://christmas-high.rautemusik.fm/listen.pls',
-    'http://www.181.fm/winamp.pls?station=181-xkkountry&style=&description=Christmas%20Kountry',
-    'http://www.181.fm/winamp.pls?station=181-xpower&style=&description=Christmas%20Power',
-    'http://www.181.fm/winamp.pls?station=181-xmix&style=&description=Christmas%20Mix',
-    'http://www.181.fm/winamp.pls?station=181-xtrue&style=&description=Christmas%20R&B',
-    'http://www.181.fm/winamp.pls?station=181-xrock&style=&description=Christmas%20Rock',
-    'http://www.181.fm/winamp.pls?station=181-xsmooth&style=&description=Christmas%20Smooth%20Jazz',
+    'http://www.181.fm/winamp.pls?station=181-xkkountry',
+    'http://www.181.fm/winamp.pls?station=181-xpower',
+    'http://www.181.fm/winamp.pls?station=181-xmix',
+    'http://www.181.fm/winamp.pls?station=181-xtrue',
+    'http://www.181.fm/winamp.pls?station=181-xrock',
+    'http://www.181.fm/winamp.pls?station=181-xsmooth',
     );

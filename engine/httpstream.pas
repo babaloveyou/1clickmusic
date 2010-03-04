@@ -16,7 +16,7 @@ const // CONFIGURATION
   BUFFSIZETOTAL = 1024 * BUFFPACKETCOUNT;
 
   BUFFRESTORE = 50;
-  BUFFPRE = 70;
+  BUFFPRE = 60;
 
 type
   THTTPSTREAM = class(TThread)
@@ -47,15 +47,15 @@ type
 
 implementation
 
-procedure SplitValue(var data, value: string);
+procedure SplitValue(const data : string; var field, value: string);
 var
   p: Integer;
 begin
   p := Pos(':', data);
   if p > 0 then
   begin
+    field := Copy(data, 1, p - 1);
     value := Trim(Copy(data, p + 1, MaxInt));
-    data := Trim(Copy(data, 1, p - 1));
   end;
 end;
 
@@ -68,7 +68,6 @@ const
     'Accept: %s' + #13#10 +
     'Icy-MetaData:1' + #13#10 +
     'User-Agent: 1ClickMusic' + #13#10 +
-   // 'Connection: close' + #13#10 +
     #13#10;
 var
   prot, user, pass, path, para: string;
@@ -95,8 +94,7 @@ begin
   begin
     for i := 1 to MetaData.Count - 1 do
     begin
-      field := MetaData[i];
-      SplitValue(field, value);
+      SplitValue(MetaData[i], field, value);
       if (field = 'icy-metaint') then MetaInterval := StrToInt(value)
       else if (field = 'icy-br') then MetaBitrate := value
       else if (field = 'content-type') and (value <> accept) then goto _exit_;
@@ -114,8 +112,7 @@ begin
     begin
       for i := 1 to MetaData.Count - 1 do
       begin
-        field := MetaData[i];
-        SplitValue(field, value);
+        SplitValue(MetaData[i], field, value);
         if field = 'location' then
         begin
           Result := -1;
