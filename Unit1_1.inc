@@ -8,7 +8,7 @@ begin
   {$ELSE OBJECTS}
   New( Result, Create );
   {$ENDIF KOL CLASSES/OBJECTS}
-  Result.Form := NewForm( AParent, '1ClickMusic' ).SetPosition( 377, 334 );
+  Result.Form := NewForm( AParent, '1ClickMusic' ).SetPosition( 462, 369 );
   Applet :=  Result.Form;
   Result.Form.Add2AutoFree( Result );
 {$IFDEF UNICODE_CTRLS}

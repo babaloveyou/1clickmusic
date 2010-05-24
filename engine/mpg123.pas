@@ -3,7 +3,8 @@ unit mpg123;
 interface
 
 uses
-  Types;
+  Types,
+  uDllfromMem;
 
 {.$DEFINE LOADALL}
 
@@ -397,9 +398,6 @@ var
 
 implementation
 
-uses
-  utils, uDllfromMem;
-
 {$I mpg123.inc}
 
 var
@@ -477,5 +475,6 @@ initialization
 {$ENDIF}
 finalization
   memFreeLibrary(libmpg123DLL);
+
 end.
 

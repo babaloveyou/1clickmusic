@@ -177,7 +177,6 @@ procedure TForm1.ProgressExecute(Force: LongBool = False);
 var
   progress: Integer;
   newicon: HICON;
-  newcolor: TColor;
 begin
   // # GET INFO
   progress := Chn.GetProgress();
@@ -187,24 +186,19 @@ begin
     0..40:
       begin
         newicon := ITrayRed;
-        newcolor := clRed;
       end;
     41..75:
       begin
         newicon := ITrayGreen;
-        newcolor := clGreen;
       end;
   else
     begin
       newicon := ITrayBlue;
-      newcolor := $00E39C5A;
     end;
   end;
 
-  pgrbuffer.BeginUpdate;
+  
   pgrbuffer.Progress := progress;
-  pgrbuffer.ProgressColor := newcolor;
-  pgrbuffer.EndUpdate;
 
   if curStatus = stPLAYING then
     ChangeTrayIcon(newicon);
@@ -319,7 +313,7 @@ end;
 function TForm1.KOLForm1Message(var Msg: tagMSG;
   var Rslt: Integer): Boolean;
 var
-  n : Cardinal;
+  n: Cardinal;
 begin
   Result := False;
 
@@ -365,7 +359,7 @@ begin
               _DS.Volume(0, False);
               traypopup('', 'Paused', NIIF_NONE);
             end;
-        1005,1006:
+        1005, 1006:
           begin
             if Msg.wParam = 1005 then
               n := channeltree.TVItemNext[curRadio]
