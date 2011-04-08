@@ -5,7 +5,7 @@ pendingurls = []
 
 def ex(line):
     if "http://" in line: #and (".pls" in line.lower() or ".m3u" in line.lower()):
-        url = line.split("'")[1]
+        url = line.split("'")[1].replace("''", "")
         pendingurls.append(url)
 
 
@@ -17,9 +17,10 @@ class Worker(threading.Thread):
                 url = pendingurls.pop()
                 target = urllib.urlopen(url)
                 if target.getcode() == 200:
+                    ok = True
                     for line in target:
-                        if ("://" in line):
-                            ok = True;
+                        if ("<html" in line.lower()):
+                            ok = False
                             break
                 if not ok:
                     print "-------------------"

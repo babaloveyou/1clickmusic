@@ -41,7 +41,7 @@ begin
   begin
     Line := src[i];
     a := Pos('<ref', Line);
-    if (a <> 0) and (not MultiPos(['.htm', '.asp', '.php', '.cgi', '<!--'], Line)) then
+    if (a <> 0) and (not MultiPos(['.htm', '.asp', '.php', '.cgi', '<!--', '/ads/a'], Line)) then
     begin
       a := PosEx('"', Line, a) + 1;
       b := PosEx('"', Line, a + 5);
@@ -75,7 +75,7 @@ var
   pls: TStringList;
   i: Integer;
 begin
-  if MultiPos(['mms://', 'rtsp://', 'groovera'], url) then
+  if MultiPos(['mms://', 'rtsp://'], url) then
   begin
     urls.Add(url);
     Exit;
@@ -141,11 +141,12 @@ begin
   for i := 0 to urls.Count - 1 do
   begin
 {$IFDEF MMS}
-    if MultiPos(['mms://', '.wma', '.asf', 'rtsp://'], urls[i]) then
+    if MultiPos(['mms://', '.wma', '.asf', 'rtsp://'], urls[i]) or MultiPos(['.as', '.wm'], fUrl) then
     begin
       Player := TMMS.Create();
       r := Player.Open(urls[i]);
-      if r or Terminated then Break;
+      //if r or Terminated then Break;
+      Break;
     end;
 {$ENDIF}
 
@@ -159,16 +160,6 @@ begin
     Player := TAACP.Create();
     r := Player.Open(urls[i]);
     if r or Terminated then Break;
-{$ENDIF}
-
-{$IFDEF MMS}
-    // give a chance for some urls (ex: 1.fm)
-    if MultiPos(['.as', '.wm'], fUrl) then
-    begin
-      Player := TMMS.Create();
-      r := Player.Open(urls[i]);
-      if r or Terminated then Break;
-    end;
 {$ENDIF}
   end;
 

@@ -1,4 +1,4 @@
-unit obj_scrobber;
+unit obj_scrobbler;
 
 interface
 
@@ -11,7 +11,7 @@ uses
   httpsend;
 
 type
-  TScrobber = class
+  TScrobbler = class
   private
     //nowplayurl : string
     scroburl: string;
@@ -72,7 +72,7 @@ begin
   //
 end;
 
-function TScrobber.HandShake(const UserName, password: string): LongBool;
+function TScrobbler.HandShake(const UserName, password: string): LongBool;
 const
   handshakeurl = 'http://post.audioscrobbler.com/?hs=true&p=1.2.1&c=1cm&v=1.2&u=%s&t=%s&a=%s';
 var
@@ -102,7 +102,7 @@ begin
   sl.Free;
 end;
 
-function TScrobber.Execute(title: string): Integer;
+function TScrobbler.Execute(title: string): Integer;
 var
   artist, track: string;
   p: Integer;
@@ -123,7 +123,7 @@ begin
   Result := 1;
 end;
 
-procedure TScrobber.Scrobb(const artist, track: string);
+procedure TScrobbler.Scrobb(const artist, track: string);
 const
   //nowplayparam = 's=%s&a=%s&t=%s&b=&l=&n=&m=';
   scrobparam = 's=%s&a[0]=%s&t[0]=%s&i[0]=%s&o[0]=P&r[0]=L&l[0]=320&b[0]=&n[0]=&m[0]=';

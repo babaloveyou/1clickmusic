@@ -31,7 +31,7 @@ type
   public
     function GetProgress(): Integer; override;
     //function GetTrack(): string; override;
-    procedure GetInfo(out Atitle, Aquality: string); override;
+    procedure GetInfo(var Atitle, Aquality: string); override;
     function Open(const url: string): LongBool; override;
     constructor Create();
     destructor Destroy; override;
@@ -88,7 +88,7 @@ begin
   Result := fStream.BuffFilled;
 end;
 
-procedure TAACP.GetInfo(out Atitle, Aquality: string);
+procedure TAACP.GetInfo(var Atitle, Aquality: string);
 begin
   fStream.GetMetaInfo(Atitle, Aquality);
   Aquality := Aquality + 'k aac+';

@@ -17,7 +17,7 @@ const
 
 const
   pls_christmas: array[0..0] of string = (
-    'http://www.sky.fm/mp3/christmas.pls',
+    'http://www.sky.fm/aacplus/christmas.pls',
     'http://www.1.fm/christmas.pls',
     'http://somafm.com/christmas.pls',
     'http://somafm.com/xmasinfrisko.pls',

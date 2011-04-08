@@ -40,7 +40,7 @@ type
     procedure Execute; override;
   public
     function GetProgress(): Integer; virtual; abstract;
-    procedure GetInfo(out Atitle, Aquality: string); virtual; abstract;
+    procedure GetInfo(var Atitle, Aquality: string); virtual; abstract;
     function Open(const url: string): LongBool; virtual; abstract;
     constructor Create();
     destructor Destroy; override;
@@ -128,6 +128,7 @@ begin
       Result := value;
       //value := (40 * value) - 4000;
       value := -25 * (100 - value);
+      //value := 50 * value - 5000;
       //value := Round(1085.73 * Ln(Value)) - 5000;
     end;
 

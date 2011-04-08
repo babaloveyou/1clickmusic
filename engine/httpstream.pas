@@ -35,7 +35,7 @@ type
     //# n buff packets filled
     BuffFilled: Integer;
     //# Get ShoutCast info
-    procedure GetMetaInfo(out Atitle, Aquality: string);
+    procedure GetMetaInfo(var Atitle, Aquality: string);
     //# Read the Buffer
     function GetBuffer(): PByte;
     procedure NextBuffer();
@@ -54,13 +54,13 @@ begin
   p := Pos(':', data);
   if p > 0 then
   begin
-    field := Copy(data, 1, p - 1);
+    field := LowerCase(Copy(data, 1, p - 1));
     value := Trim(Copy(data, p + 1, MaxInt));
   end;
 end;
 
 
-procedure ParseHeader(const url, accept: string; out host, port, icyheader: string);
+procedure ParseHeader(const url, accept: string; var host, port, icyheader: string);
 const
   ICYHEADERSTUB =
     'GET %s HTTP/1.0' + #13#10 +
@@ -76,7 +76,7 @@ begin
   icyheader := Format(ICYHEADERSTUB, [path, host, port, accept]);
 end;
 
-function ParseMetaHeader(var meta: string; const accept: string; out MetaInterval: Integer; out MetaBitrate: string): Integer;
+function ParseMetaHeader(var meta: string; const accept: string; var MetaInterval: Integer; var MetaBitrate: string): Integer;
 var
   MetaData: TStringlist;
   field, value: string;
@@ -88,7 +88,7 @@ begin
   if meta = '' then Exit;
 
   MetaData := TStringlist.Create;
-  MetaData.Text := Lowercase(meta);
+  MetaData.Text := meta;
 
   if Pos('200', MetaData[0]) > 0 then
   begin
@@ -126,11 +126,11 @@ begin
   MetaData.Free;
 end;
 
-procedure ParseMetaData(const meta: string; out MetaTitle: string);
+function ParseMetaData(const meta: string): string;
 const
   field = 'StreamTitle=''';
 begin
-  MetaTitle := Copy(meta, Length(field) + 1, Pos(''';', meta) - (Length(field) + 1));
+  Result := Copy(meta, Length(field) + 1, Pos(''';', meta) - (Length(field) + 1));
 end;
 
 { THTTPSTREAM }
@@ -147,9 +147,9 @@ begin
     if BytesUntilMeta = 0 then
     begin
       BytesUntilMeta := MetaInterval;
-      metalength := fHTTP.RecvByte(MaxInt);
+      metalength := fHTTP.RecvByte(30000);
       if metalength = 0 then Continue;
-      ParseMetaData(fHTTP.RecvBufferStr(metalength * 16, 15000), MetaTitle);
+      MetaTitle := ParseMetaData(fHTTP.RecvBufferStr(metalength * 16, 15000));
       NotifyForm(NOTIFY_NEWINFO, 0);
     end
     else
@@ -159,7 +159,7 @@ begin
         bytestoreceive := BytesUntilMeta;
 
 
-      fHTTP.RecvBufferEx(@inbuffer[Feed, bytesreceived], bytestoreceive, 15000);
+      fHTTP.RecvBufferEx(@inbuffer[Feed, bytesreceived], bytestoreceive, 30000);
 
       Dec(BytesUntilMeta, bytestoreceive);
       Inc(bytesreceived, bytestoreceive);
@@ -243,7 +243,7 @@ begin
 
 end;
 
-procedure THTTPSTREAM.GetMetaInfo(out Atitle, Aquality: string);
+procedure THTTPSTREAM.GetMetaInfo(var Atitle, Aquality: string);
 begin
   Atitle := MetaTitle;
   Aquality := MetaBitrate;

@@ -23,7 +23,7 @@ type
      function prebuffer: LongBool; override;
   public
     function GetProgress(): Integer; override;
-    procedure GetInfo(out Atitle, Aquality: string); override;
+    procedure GetInfo(var Atitle, Aquality: string); override;
     function Open(const url: string): LongBool; override;
     constructor Create();
     destructor Destroy; override;
@@ -131,7 +131,7 @@ begin
   end;  
 end;
 
-procedure TMMS.GetInfo(out Atitle, Aquality: string);
+procedure TMMS.GetInfo(var Atitle, Aquality: string);
 var
   Title: WideString;
 begin
@@ -161,7 +161,8 @@ begin
     RaiseError('WMP engine not found');
   lwma_async_reader_init(fHandle);
   if fHandle.reader = nil then
-    RaiseError('WMP Error'); 
+    RaiseError('WMP Error');
+  fHandle.BufferingTime := 10000000;
 end;
 
 end.

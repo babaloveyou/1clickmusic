@@ -431,13 +431,12 @@ end;
 
 function TWMReaderCallback.OnStatus;
 begin
-
   FReader.status := Status;
   if Status = WMT_Opened then
-    FReader.Event.SetEvent;
-  if hr <> S_OK then
+    FReader.Event.SetEvent()
+  else if hr <> S_OK then
     FReader.status := WMT_CLOSED;
-       //raise EAuException.Create(IntToHex(hr, 8));
+
   Result := S_OK;
 end;
 

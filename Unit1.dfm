@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 462
-  Top = 369
-  Width = 621
+  Left = 406
+  Top = 291
+  Width = 629
   Height = 300
   HorzScrollBar.Visible = False
   VertScrollBar.Visible = False
@@ -21,7 +21,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 231
-    Height = 266
+    Height = 262
     HelpContext = 0
     IgnoreDefault = False
     AnchorLeft = False
@@ -48,10 +48,10 @@ object Form1: TForm1
     parentColor = True
     Font.Color = clWindowText
     Font.FontStyle = []
-    Font.FontHeight = 0
+    Font.FontHeight = 15
     Font.FontWidth = 0
     Font.FontWeight = 0
-    Font.FontName = 'MS Sans Serif'
+    Font.FontName = 'Arial'
     Font.FontOrientation = 0
     Font.FontCharset = 1
     Font.FontPitch = fpFixed
@@ -71,7 +71,6 @@ object Form1: TForm1
     TabStop = True
     Brush.Color = clBtnFace
     Brush.BrushStyle = bsSolid
-    Unicode = False
     OverrideScrollbars = True
   end
   object lblstatus: TKOLLabel
@@ -106,12 +105,12 @@ object Form1: TForm1
     parentColor = True
     Font.Color = clDefault
     Font.FontStyle = []
-    Font.FontHeight = 0
+    Font.FontHeight = 15
     Font.FontWidth = 0
     Font.FontWeight = 0
-    Font.FontName = 'MS Sans Serif'
+    Font.FontName = 'Arial'
     Font.FontOrientation = 0
-    Font.FontCharset = 0
+    Font.FontCharset = 1
     Font.FontPitch = fpFixed
     Font.FontQuality = fqDefault
     parentFont = False
@@ -159,12 +158,12 @@ object Form1: TForm1
     parentColor = True
     Font.Color = clBlue
     Font.FontStyle = []
-    Font.FontHeight = 0
+    Font.FontHeight = 15
     Font.FontWidth = 0
     Font.FontWeight = 0
-    Font.FontName = 'MS Sans Serif'
+    Font.FontName = 'Arial'
     Font.FontOrientation = 0
-    Font.FontCharset = 0
+    Font.FontCharset = 1
     Font.FontPitch = fpFixed
     Font.FontQuality = fqDefault
     parentFont = False
@@ -212,12 +211,12 @@ object Form1: TForm1
     parentColor = True
     Font.Color = clTeal
     Font.FontStyle = [fsBold]
-    Font.FontHeight = 0
+    Font.FontHeight = 17
     Font.FontWidth = 0
     Font.FontWeight = 0
-    Font.FontName = 'Times New Roman'
+    Font.FontName = 'Arial'
     Font.FontOrientation = 0
-    Font.FontCharset = 0
+    Font.FontCharset = 1
     Font.FontPitch = fpFixed
     Font.FontQuality = fqDefault
     parentFont = False
@@ -236,7 +235,7 @@ object Form1: TForm1
   object lblhelp: TKOLLabel
     Tag = 0
     Left = 241
-    Top = 128
+    Top = 124
     Width = 216
     Height = 137
     HelpContext = 0
@@ -276,7 +275,7 @@ object Form1: TForm1
     Font.FontName = 'Arial'
     Font.FontOrientation = 0
     Font.FontCharset = 1
-    Font.FontPitch = fpDefault
+    Font.FontPitch = fpFixed
     Font.FontQuality = fqDefault
     parentFont = False
     EraseBackground = False
@@ -323,12 +322,12 @@ object Form1: TForm1
     parentColor = True
     Font.Color = clPurple
     Font.FontStyle = []
-    Font.FontHeight = 0
+    Font.FontHeight = 15
     Font.FontWidth = 0
     Font.FontWeight = 0
-    Font.FontName = 'MS Sans Serif'
+    Font.FontName = 'Arial'
     Font.FontOrientation = 0
-    Font.FontCharset = 0
+    Font.FontCharset = 1
     Font.FontPitch = fpFixed
     Font.FontQuality = fqDefault
     parentFont = False
@@ -377,10 +376,10 @@ object Form1: TForm1
     parentColor = False
     Font.Color = clWindowText
     Font.FontStyle = [fsBold]
-    Font.FontHeight = 0
+    Font.FontHeight = 15
     Font.FontWidth = 0
     Font.FontWeight = 0
-    Font.FontName = 'MS Sans Serif'
+    Font.FontName = 'Arial'
     Font.FontOrientation = 0
     Font.FontCharset = 1
     Font.FontPitch = fpFixed
@@ -433,10 +432,10 @@ object Form1: TForm1
     parentColor = False
     Font.Color = clWindowText
     Font.FontStyle = []
-    Font.FontHeight = 0
+    Font.FontHeight = 15
     Font.FontWidth = 0
     Font.FontWeight = 0
-    Font.FontName = 'MS Sans Serif'
+    Font.FontName = 'Arial'
     Font.FontOrientation = 0
     Font.FontCharset = 1
     Font.FontPitch = fpFixed
@@ -447,7 +446,7 @@ object Form1: TForm1
     Transparent = False
     Vertical = False
     Smooth = True
-    ProgressColor = 14916698
+    ProgressColor = clHighlight
     ProgressBkColor = clBtnFace
     Progress = 0
     MaxProgress = 100
@@ -459,8 +458,8 @@ object Form1: TForm1
     Localizy = False
     projectName = 'oneclick'
     projectDest = 'oneclick'
-    sourcePath = 'C:\Documents and Settings\Administrador\Desktop\1clickmusic\'
-    outdcuPath = 'dcu\'
+    sourcePath = 'C:\projetos\1clickmusic\'
+    outdcuPath = 'C:\projetos\1clickmusic\'
     dprResource = True
     protectFiles = True
     showReport = False
@@ -499,7 +498,7 @@ object Form1: TForm1
     AllBtnReturnClick = False
     Tabulate = False
     TabulateEx = False
-    UnitSourcePath = 'C:\Documents and Settings\Administrador\Desktop\1clickmusic\'
+    UnitSourcePath = 'C:\projetos\1clickmusic\'
     Locked = False
     formUnit = 'Unit1'
     formMain = True
@@ -526,10 +525,10 @@ object Form1: TForm1
     Color = clBtnFace
     Font.Color = clWindowText
     Font.FontStyle = []
-    Font.FontHeight = 0
+    Font.FontHeight = 15
     Font.FontWidth = 0
     Font.FontWeight = 0
-    Font.FontName = 'MS Sans Serif'
+    Font.FontName = 'Arial'
     Font.FontOrientation = 0
     Font.FontCharset = 1
     Font.FontPitch = fpFixed
@@ -556,6 +555,10 @@ object Form1: TForm1
     OnFormCreate = KOLForm1FormCreate
     EraseBackground = False
     supportMnemonics = False
+    FormCompact = False
+    GenerateCtlNames = False
+    Unicode = False
+    OverrideScrollbars = False
     Left = 48
     Top = 16
   end
@@ -573,7 +576,7 @@ object Form1: TForm1
     Count = 3
     bitmap.Data = {
       36090000424D3609000000000000360000002800000030000000100000000100
-      1800000000000009000000000000000000000000000000000000FFFFFFFFFFFF
+      18000000000000090000120B0000120B00000000000000000000FFFFFFFFFFFF
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
@@ -650,7 +653,9 @@ object Form1: TForm1
     systemimagelist = False
     Colors = ilcColor24
     Masked = True
-    BkColor = clNone
+    BkColor = clBlack
+    AllowCompression = False
+    Force32bit = False
     Left = 16
     Top = 16
   end

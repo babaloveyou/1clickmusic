@@ -26,18 +26,18 @@ implementation
 {$IFDEF DEBUG}
 var
   ok: LongBool = False;
+  f: TextFile;
 
 procedure Debug(const s: string);
 begin
   if not ok then
   begin
     ok := True;
-    //AssignFile(f, 'f.txt');
-    //Reset(f);
+    AssignFile(f, 'log.txt');
+    Rewrite(f);
   end;
-  Writeln(s);
-  //Writeln(f, s);
-  //Flush(f);
+  Writeln(f, DateTimeToStr(Now) + ': ' + s);
+  Flush(f);
 end;
 
 procedure Debug(const s: string; a: array of const);
@@ -45,12 +45,11 @@ begin
   if not ok then
   begin
     ok := True;
-    //AssignFile(f, 'f.txt');
-    //Reset(f);
+    AssignFile(f, 'f.txt');
+    Reset(f);
   end;
-  Writeln(Format(s, a));
-  //Writeln(f,Format(s, a));
-  //Flush(f);
+  Writeln(f,Format(s, a));
+  Flush(f);
 end;
 {$ENDIF}
 
@@ -97,7 +96,7 @@ begin
     Append(myfile)
   else
     Rewrite(myfile);
-  DateTimeToString(timeprefix, '[dd/mm/yy hh:nn:ss] ', Now);
+  DateTimeToString(timeprefix, '[ddddd tt] ', Now);
   Writeln(myfile, timeprefix, Text);
   CloseFile(myfile);
 {$I+}

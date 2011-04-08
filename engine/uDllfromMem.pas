@@ -202,6 +202,30 @@ begin
       // same as above
       //pphyssectionheader := Pointer(Cardinal(pphyssectionheader) + SizeOf(TIMAGESECTIONHEADER));
     end;
+	
+	
+	/////////////////////
+    /////////////relocs/
+    relocbase := Pointer(Cardinal(physbase) + pphysntheader.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_BASERELOC].VirtualAddress);
+    relocData := relocbase;
+    while (Cardinal(relocdata) - Cardinal(relocbase)) < pphysntheader.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_BASERELOC].Size do
+    begin
+      reloccount := ((relocdata.SizeOfBlock - 8) div 2);
+      relocitem := Pointer(Cardinal(relocdata) + 8);
+      for i := 0 to (reloccount - 1) do begin
+        if (relocitem^ shr 12) = IMAGE_REL_BASED_HIGHLOW then begin
+          Inc(PDWord(Cardinal(physbase) + relocdata.VirtualAddress + (relocitem^ and $FFF))^, (Cardinal(physbase) - pfilentheader.OptionalHeader.ImageBase));
+        end;
+        Inc(relocitem);
+      //relocitem := Pointer(Cardinal(relocitem) + SizeOf(WORD));
+      end;
+
+
+      Inc(PByte(relocdata), relocdata.SizeOfBlock);
+    // same as above
+    //next one please
+    //relocdata := Pointer(Cardinal(relocdata) + relocdata.SizeOfBlock);
+    end;
 
 
   //////////////////////
@@ -233,30 +257,6 @@ begin
     //next one, please
     // same as above
     //importDesc := Pointer(Cardinal(importDesc) + sizeOf(TIMAGEIMPORTDESCRIPTOR));
-    end;
-
-
-    /////////////////////
-    /////////////relocs/
-    relocbase := Pointer(Cardinal(physbase) + pphysntheader.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_BASERELOC].VirtualAddress);
-    relocData := relocbase;
-    while (Cardinal(relocdata) - Cardinal(relocbase)) < pphysntheader.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_BASERELOC].Size do
-    begin
-      reloccount := ((relocdata.SizeOfBlock - 8) div 2);
-      relocitem := Pointer(Cardinal(relocdata) + 8);
-      for i := 0 to (reloccount - 1) do begin
-        if (relocitem^ shr 12) = IMAGE_REL_BASED_HIGHLOW then begin
-          Inc(PDWord(Cardinal(physbase) + relocdata.VirtualAddress + (relocitem^ and $FFF))^, (Cardinal(physbase) - pfilentheader.OptionalHeader.ImageBase));
-        end;
-        Inc(relocitem);
-      //relocitem := Pointer(Cardinal(relocitem) + SizeOf(WORD));
-      end;
-
-
-      Inc(PByte(relocdata), relocdata.SizeOfBlock);
-    // same as above
-    //next one please
-    //relocdata := Pointer(Cardinal(relocdata) + relocdata.SizeOfBlock);
     end;
 
 

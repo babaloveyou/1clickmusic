@@ -24,7 +24,7 @@ type
   public
     function GetProgress(): Integer; override;
     //function GetTrack(): string; override;
-    procedure GetInfo(out Atitle, Aquality: string); override;
+    procedure GetInfo(var Atitle, Aquality: string); override;
     function Open(const url: string): LongBool; override;
     constructor Create();
     destructor Destroy; override;
@@ -39,7 +39,7 @@ begin
   Result := fStream.BuffFilled;
 end;
 
-procedure TMP3.GetInfo(out Atitle, Aquality: string);
+procedure TMP3.GetInfo(var Atitle, Aquality: string);
 begin
   fStream.GetMetaInfo(Atitle, Aquality);
   Aquality := Aquality + 'k mp3';
@@ -154,7 +154,13 @@ begin
 end;
 
 initialization
+  {$IFDEF DEBUG}
+  Debug('mp3 init');
+  {$ENDIF}
   mpg123_init();
+  {$IFDEF DEBUG}
+  Debug('mp3 init ok');
+  {$ENDIF}
 
 //finalization
 //  mpg123_exit();

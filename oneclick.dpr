@@ -4,8 +4,7 @@ program oneclick;
 {$R 'winxp.res'}
 uses
 KOL,
-  Unit1 in 'Unit1.pas' {Form1},
-  obj_tweet in 'engine\obj_tweet.pas';
+  Unit1 in 'Unit1.pas' {Form1};
 
 {$R *.res}
 

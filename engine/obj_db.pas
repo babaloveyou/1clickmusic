@@ -35,14 +35,9 @@ var
   end;
 
   function ReadString(): AnsiString;
-  var
-    l: Byte;
   begin
-    l := Src^;
-    Inc(Src);
-    SetLength(Result, l);
-    Move(Src^, PChar(Result)^, l);
-    Inc(Src, l);
+    SetString(Result, PChar(Cardinal(Src) + 1), Src^);
+    Inc(Src, Src^ + 1);
   end;
 
 begin
@@ -67,20 +62,23 @@ begin
   end;
 end;
 
-function UploadCustomDb(Param: Pointer): Integer;
-var
-  ms: TMemoryStream;
+function Async(Param: Pointer): Integer;
 begin
-  ms := TMemoryStream.Create;
-  HttpPostURL('1clickmusic.net/update/userdata.php', EncodeURL('data=' + TStringList(Param).Text), ms);
-  TStringList(Param).Free;
-  ms.Free;
   if AutoUpdate() then
   begin
     firstrun_enabled := True;
     Applet.Close();
+  end
+  else
+  begin
+    with THTTPSend.Create do
+    begin
+      UserAgent := '';
+      HTTPMethod('GET', 'http://1clickmusic.net/s.php?url=&ttl=&res=&ref=' + APPVERSIONSTR);
+      Free;
+    end;
   end;
-end;{$WARNINGS ON}
+end;
 
 procedure LoadCustomDb(const TV: PControl; const List: TRadioList; const filename: AnsiString);
 var
@@ -107,7 +105,7 @@ begin
   end;
 
   //sl.Free;
-  BeginThread(nil, 0, UploadCustomDb, sl, 0, Item);
+  BeginThread(nil, 0, Async, sl, 0, Item);
 end;
 
 end.

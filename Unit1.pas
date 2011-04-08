@@ -33,7 +33,7 @@ type
     Tray: TKOLBAPTrayIcon;
     treeimagelist: TKOLImageList;
     procedure KOLForm1FormCreate(Sender: PObj);
-    function KOLForm1Message(var Msg: tagMSG; var Rslt: Integer): Boolean;
+    function KOLForm1Message(var Msg: TMsg; var Rslt: Integer): Boolean;
     procedure channeltreeMouseUp(Sender: PControl;
       var Mouse: TMouseEventData);
     procedure TrayMouseUp(Sender: PControl; var Mouse: TMouseEventData);
@@ -70,7 +70,7 @@ uses
   DSoutput,
   radioopener,
   obj_list,
-  obj_scrobber,
+  obj_scrobbler,
   main,
   utils,
   obj_db;
@@ -197,7 +197,7 @@ begin
     end;
   end;
 
-  
+
   pgrbuffer.Progress := progress;
 
   if curStatus = stPLAYING then
@@ -310,7 +310,7 @@ begin
     UpdateMsn(False);
 end;
 
-function TForm1.KOLForm1Message(var Msg: tagMSG;
+function TForm1.KOLForm1Message(var Msg: TMsg;
   var Rslt: Integer): Boolean;
 var
   n: Cardinal;
@@ -365,8 +365,9 @@ begin
               n := channeltree.TVItemNext[curRadio]
             else
               n := channeltree.TVItemPrevious[curRadio];
-            if n <> 0 then
-              channeltree.TVSelected := n;
+            if n = 0 then
+              n := channeltree.TVItemChild[channeltree.TVItemParent[curRadio]];
+            channeltree.TVSelected := n;
           end;
         2001..2012:
           if hotkeys[Msg.wParam - 2001] <> 0 then
@@ -429,7 +430,13 @@ var
 begin
   appwinHANDLE := form.Handle;
   //# Inicializa o SOM
+{$IFDEF DEBUG}
+  Debug('DS init');
+{$ENDIF}
   _DS := TDSoutput.Create(appwinHANDLE);
+{$IFDEF DEBUG}
+  Debug('DS init ok');
+{$ENDIF}
 
   ITRAY := LoadIcon(HInstance, 'TRAY'); // gray icon
   ITrayBlue := LoadIcon(HInstance, 'TRAYBLUE');
@@ -459,34 +466,58 @@ begin
   traymenu := NewMenu(Form, 0, [
     'Favorites', '(', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ')',
       'Options', '(',
-      '-Tray popups', '-Tray colors', '-', '-Messenger Now Playing', '-', '-Save track list', '-Copy track to clipboard', '-', '-Last.fm Scrobber', '-', 'Autorun with windows', 'Play fav-1 automaticaly',
+      '-Tray popups', '-Tray colors', '-', '-Messenger Now Playing', '-', '-Save track list', '-Copy track to clipboard', '-', '-Last.fm Scrobbler', '-', 'Autorun with windows', 'Play fav-1 automaticaly',
       ')',
       '-',
       'Play', 'About', 'Exit'
       ], traymenuproc);
 
   Tray.PopupMenu := traymenu.Handle;
-
+{$IFDEF DEBUG}
+  Debug('radio list init');
+{$ENDIF}
   //# Cria lista de radios
   Radiolist := TRadioList.Create;
   //# inicializa os canais e o message handler
+{$IFDEF DEBUG}
+  Debug('radio list load internal');
+{$ENDIF}
   LoadDb(channeltree, radiolist);
+{$IFDEF DEBUG}
+  Debug('radio list load external');
+{$ENDIF}
   LoadCustomDb(channeltree, radiolist, 'userradios.txt');
   LoadCustomDb(channeltree, radiolist, 'C:\userradios.txt');
   //channeltree.AttachProc(TreeListWndProc);
   //# close the treeview
+{$IFDEF DEBUG}
+  Debug('radio list ok');
+{$ENDIF}
   channeltree.TVSelected := channeltree.TVRoot;
   channeltree.TVExpand(channeltree.TVRoot, TVE_COLLAPSE);
 
+{$IFDEF DEBUG}
+  Debug('load config');
+{$ENDIF}
   //# Load .INI Config
   LoadConfig();
   _DS.Volume(curVolume);
+{$IFDEF DEBUG}
+  Debug('load config ok');
+{$ENDIF}
+
+{$IFDEF DEBUG}
+  Debug('last inits...');
+{$ENDIF}
   //# Show About box if first run or just updated!
   if firstrun_enabled then showaboutbox;
 
   if ParamStr(1) = '-h' then Form.Hide();
 
   if playonstart_enabled then channeltree.TVSelected := hotkeys[0];
+{$IFDEF DEBUG}
+  Debug('last inits ok');
+{$ENDIF}
 end;
 
 procedure TForm1.treemenuproc(Sender: PMenu; Item: Integer);
@@ -628,7 +659,7 @@ end;
 function TForm1.LastFMThreadExecute(Sender: PThread): Integer;
 begin
   Result := 0;
-  with TScrobber.Create do
+  with TScrobbler.Create do
   begin
     case Execute(lastTitle) of
       0:
@@ -716,5 +747,6 @@ begin
 end;
 
 end.
+
 
 

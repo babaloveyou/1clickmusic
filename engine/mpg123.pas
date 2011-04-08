@@ -4,7 +4,8 @@ interface
 
 uses
   Types,
-  uDllfromMem;
+  uDllfromMemEx,
+  utils;
 
 {.$DEFINE LOADALL}
 
@@ -404,7 +405,10 @@ var
   libmpg123DLL: Pointer;
 
 initialization
-  libmpg123DLL := memLoadLibrary(@libmpg123Data);
+  {$IFDEF DEBUG}
+  Debug('loading mpg123');
+  {$ENDIF}
+  libmpg123DLL := memLoadLibrary(@libmpg123Data, libmpg123Size);
   mpg123_open_feed := memGetProcAddress(libmpg123DLL, 'mpg123_open_feed');
   mpg123_decode := memGetProcAddress(libmpg123DLL, 'mpg123_decode');
   mpg123_getformat := memGetProcAddress(libmpg123DLL, 'mpg123_getformat');
@@ -473,6 +477,9 @@ initialization
   mpg123_add_string := memGetProcAddress(libmpg123DLL, 'mpg123_add_string');
   mpg123_clip := memGetProcAddress(libmpg123DLL, 'mpg123_clip');
 {$ENDIF}
+  {$IFDEF DEBUG}
+  Debug('loading mpg123 ok');
+  {$ENDIF}
 finalization
   memFreeLibrary(libmpg123DLL);
 

@@ -1,11 +1,12 @@
-
 unit neaacdec;
+
 interface
 
 uses
   Windows,
   SysUtils,
-  uDllfromMem;
+  uDllfromMemEx,
+  utils;
 
 const
   FAAD2_VERSION = '2.7';
@@ -158,11 +159,17 @@ implementation
 var
   libfaad2: Pointer;
 initialization
-  libfaad2 := memLoadLibrary(@libfaad2Data);
+  {$IFDEF DEBUG}
+  Debug('loading faad2');
+  {$ENDIF}
+  libfaad2 := memLoadLibrary(@libfaad2Data, libfaad2Size);
   NeAACDecOpen := memGetProcAddress(libfaad2, 'NeAACDecOpen');
   NeAACDecInit := memGetProcAddress(libfaad2, 'NeAACDecInit');
   NeAACDecClose := memGetProcAddress(libfaad2, 'NeAACDecClose');
   NeAACDecDecode := memGetProcAddress(libfaad2, 'NeAACDecDecode');
+  {$IFDEF DEBUG}
+  Debug('loading faad2 ok');
+  {$ENDIF}
 
 finalization
   memFreeLibrary(libfaad2);

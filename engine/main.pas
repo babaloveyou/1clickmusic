@@ -13,8 +13,8 @@ uses
   httpsend;
 
 const
-  APPVERSION = 1945;
-  APPVERSIONSTR = '1.9.4f';
+  APPVERSION = 1967;
+  APPVERSIONSTR = '1.9.6h';
   INITIALVOL = 80;
   WM_NOTIFY = WM_USER + 1;
   stSTOPED = 0;
@@ -136,7 +136,7 @@ begin
     'www.1clickmusic.net' + #13 +
     'by arthurprs (arthurprs@gmail.com)' + #13#13 +
     'thanks to:' + #13 +
-    'freak_insane, Blizzy, Kintoun Rlz, Paperback Writer,' + #13 +
+    'Jon, freak_insane, Blizzy, Kintoun Rlz, Paperback Writer,' + #13 +
     'kamikazze, BomGaroto, SnowHill, Ricardo, Greel, The_Terminator,' + #13 +
     'jotaeme, Mouse Pad, Lokinhow, Mario Bros, Blurkness, -dnb-,' + #13 +
     'Gouveia_Net, Gilson Junior­, BlueX, Warrior of Shadows and for all who have encouraged me.',
@@ -200,7 +200,13 @@ begin
 end;
 
 initialization
+  {$IFDEF DEBUG}
+  Debug('unique instance');
+  {$ENDIF}
   UniqueInstance();
+  {$IFDEF DEBUG}
+  Debug('unique instance ok');
+  {$ENDIF}
 
 end.
 
