@@ -7,8 +7,7 @@ uses
   DateUtils,
   Classes,
   synautil,
-  synacode,
-  httpsend;
+  synacode;
 
 type
   TScrobber = class
@@ -32,25 +31,6 @@ uses
 
 { TScrober }
 
-function HttpPostText(const URL, URLdata: string; Response: TStrings): LongBool;
-var
-  HTTP: THTTPSend;
-begin
-  HTTP := THTTPSend.Create;
-  HTTP.MimeType := 'application/x-www-form-urlencoded';
-  HTTP.Document.Write(PChar(URLdata)^, Length(URLdata));
-  try
-    Result := HTTP.HTTPMethod('POST', URL);
-    if Result then
-    begin
-      Result := HTTP.ResultCode = 200;
-      Response.LoadFromStream(HTTP.Document);
-    end;
-  finally
-    HTTP.Free;
-  end;
-end;
-
 procedure fixTrackName(var Title: string);
 var
   p: Integer;
@@ -58,7 +38,7 @@ begin
   // POG!!!
   // get rid of 1.fm ad!
   p := Pos('(1.FM', Title);
-  if p = 0 then p := Pos('(WWW',Title);
+  if p = 0 then p := Pos('(WWW', Title);
   if p > 0 then
     Delete(Title, p, MaxInt);
   // get rid of | album:
@@ -79,7 +59,7 @@ begin
   passMD5 := StrToHex(MD5(password));
   lines := TStringlist.Create;
   
-  if HttpGetText(Format(handshakeurl, [user]), lines) then
+  if HttpGetTextEx(Format(handshakeurl, [user]), lines) then
     if lines[0] = 'UPTODATE' then
     begin
       Result := True;

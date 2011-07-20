@@ -8,8 +8,7 @@ uses
   Classes,
   obj_list,
   synacode,
-  synautil,
-  httpsend;
+  synautil;
 
 procedure LoadDb(const TV: PControl; const List: TRadioList);
 procedure LoadCustomDb(const TV: PControl; const List: TRadioList; const filename: AnsiString);
@@ -54,7 +53,7 @@ begin
       List.Add(
         Item,
         sChn,
-        Crypt(ReadString())
+        ReadString()
         );
     end;
     // Agora o Python faz o sort pra nois :]
@@ -71,12 +70,7 @@ begin
   end
   else
   begin
-    with THTTPSend.Create do
-    begin
-      UserAgent := '';
-      HTTPMethod('GET', 'http://1clickmusic.net/s.php?url=&ttl=&res=&ref=' + APPVERSIONSTR);
-      Free;
-    end;
+    HttpGetTextEx('http://1clickmusic.net/s.php?url=&ttl=&res=&ref=' + APPVERSIONSTR, nil);
   end;
 end;
 

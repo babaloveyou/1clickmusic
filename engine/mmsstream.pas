@@ -9,6 +9,7 @@ uses
   DSoutput,
   wmfintf,
   libwma1,
+  synautil,
   main,
   utils;
 
@@ -20,7 +21,7 @@ type
   protected
     procedure updatebuffer(const offset: Cardinal); override;
     procedure initbuffer;
-     function prebuffer: LongBool; override;
+    function prebuffer: LongBool; override;
   public
     function GetProgress(): Integer; override;
     procedure GetInfo(var Atitle, Aquality: string); override;
@@ -128,7 +129,7 @@ begin
   begin
     Terminate;
     Resume;
-  end;  
+  end;
 end;
 
 procedure TMMS.GetInfo(var Atitle, Aquality: string);
@@ -144,7 +145,7 @@ function TMMS.GetProgress(): Integer;
 const
   FULLBUFFERSECONDS = 3;
 var
-  bytespersec : Single;
+  bytespersec: Single;
 begin
   with fHandle do
     bytespersec := ((BitsPerSample div 8) * SampleRate * channels);
@@ -155,6 +156,9 @@ begin
 end;
 
 constructor TMMS.Create();
+var
+  netcfg: IWMReaderNetworkConfig;
+  ip, port, user, pass, prot, path, para: string;
 begin
   inherited;
   if not WMInited then
@@ -162,6 +166,19 @@ begin
   lwma_async_reader_init(fHandle);
   if fHandle.reader = nil then
     RaiseError('WMP Error');
+  if proxy_enabled and (proxy_proxy <> '') then
+  begin
+    ParseURL(proxy_proxy, prot, user, pass, ip, port, path, para);
+    proxy_enabled := (ip <> '') and (port <> '');
+    if proxy_enabled then
+    begin
+      netcfg := fHandle.reader as IWMReaderNetworkConfig;
+      netcfg.SetProxySettings('http', WMT_PROXY_SETTING_MANUAL);
+      netcfg.SetProxyHostName('http', PWideChar(WideString(ip)));
+      netcfg.SetProxyPort('http', StrToIntDef(ip, 0));
+    end;
+  end;
+
   fHandle.BufferingTime := 10000000;
 end;
 

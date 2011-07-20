@@ -7,8 +7,7 @@ uses
   DateUtils,
   Classes,
   synautil,
-  synacode,
-  httpsend;
+  synacode;
 
 type
   TScrobbler = class
@@ -16,7 +15,7 @@ type
     //nowplayurl : string
     scroburl: string;
     sessioncode: string;
-    function HandShake(const UserName, password: string): LongBool;
+    function HandShake(const UserName, passwordmd5: string): LongBool;
     procedure Scrobb(const artist, track: string);
   public
     ErrorStr: string;
@@ -29,25 +28,6 @@ uses
   utils, main;
 
 { TScrober }
-
-function HttpPostText(const URL, URLdata: string; Response: TStringList): Boolean;
-var
-  HTTP: THTTPSend;
-begin
-  HTTP := THTTPSend.Create;
-  HTTP.MimeType := 'application/x-www-form-urlencoded';
-  HTTP.Document.Write(PChar(URLdata)^, Length(URLdata));
-  try
-    Result := HTTP.HTTPMethod('POST', URL);
-    if Result then
-    begin
-      Result := HTTP.ResultCode = 200;
-      Response.LoadFromStream(HTTP.Document);
-    end;
-  finally
-    HTTP.Free;
-  end;
-end;
 
 
 procedure fixTrackName(var Title: string);
@@ -72,7 +52,7 @@ begin
   //
 end;
 
-function TScrobbler.HandShake(const UserName, password: string): LongBool;
+function TScrobbler.HandShake(const UserName, passwordmd5: string): LongBool;
 const
   handshakeurl = 'http://post.audioscrobbler.com/?hs=true&p=1.2.1&c=1cm&v=1.2&u=%s&t=%s&a=%s';
 var
@@ -83,10 +63,10 @@ begin
   ///////////// http://www.last.fm/api/submissions
   Result := True;
   timestamp := IntToStr(DateTimeToUnix(GetUTTime()));
-  authMD5 := StrToHex(MD5(StrToHex(MD5(password)) + timestamp));
+  authMD5 := StrToHex(MD5(passwordmd5 + timestamp));
 
   sl := TStringList.Create;
-  if HttpGetText(Format(handshakeurl, [username, timestamp, authMD5]), sl) then
+  if HttpGetTextEx(Format(handshakeurl, [username, timestamp, authMD5]), sl) then
     if (sl.Count > 3) and (sl[0] = 'OK') then
     begin
       sessioncode := sl[1]; // SESSION CODE
@@ -137,7 +117,7 @@ begin
 
   timestamp := IntToStr(DateTimeToUnix(GetUTTime()));
   urldata := EncodeURL(AnsiToUtf8(Format(scrobparam, [sessioncode, artist, track, timestamp])));
-  HttpPostText(scroburl, urldata, sl);
+  HttpPostTextEx(scroburl, urldata, sl);
   sl.Free;
 end;
 

@@ -8,7 +8,7 @@ begin
   {$ELSE OBJECTS}
   New( Result, Create );
   {$ENDIF KOL CLASSES/OBJECTS}
-  Result.Form := NewForm( AParent, '1ClickMusic' ).SetPosition( 406, 291 );
+  Result.Form := NewForm( AParent, '1ClickMusic' ).SetPosition( 371, 162 );
   Applet :=  Result.Form;
   Result.Form.Add2AutoFree( Result );
     Result.Form.Style := Result.Form.Style and not WS_MAXIMIZEBOX;
@@ -59,7 +59,9 @@ begin
     {$IFDEF OVERRIDE_SCROLLBARS}
     OverrideScrollbars( Result.channeltree);
     {$ENDIF OVERRIDE_SCROLLBARS}
+    Result.channeltree.TabOrder := 0;
       Result.btplay.OnClick := Result.btplayClick;
+    Result.btplay.TabOrder := 1;
     Result.Form.CenterOnParent.CanResize := False;
     Result.Form.Perform( WM_INITMENU, 0, 0 );
     Result.KOLForm1FormCreate( Result );
