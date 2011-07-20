@@ -13,7 +13,7 @@ uses
   mmsstream, {$DEFINE MMS}
   mp3stream, {$DEFINE MP3}
   aacpstream, {$DEFINE AACP}
-  httpsend,
+  synautil,
   main,
   utils;
 
@@ -84,7 +84,8 @@ begin
   pls := TStringList.Create;
   // mms is the only we know for sure,
   // otherwise we will test the url for asx, m3u and pls
-  HttpGetText(url, pls);
+  HttpGetTextEx(url, pls);
+
   if pls.Count <> 0 then
   begin
     // delete empty lines

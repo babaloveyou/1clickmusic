@@ -126,8 +126,8 @@ begin
     else
     begin
       Result := value;
-      //value := (40 * value) - 4000;
-      value := -25 * (100 - value);
+      value := (40 * value) - 4000;
+      //value := -25 * (100 - value);
       //value := 50 * value - 5000;
       //value := Round(1085.73 * Ln(Value)) - 5000;
     end;

@@ -47,18 +47,7 @@ type
 
 implementation
 
-procedure SplitValue(const data : string; var field, value: string);
-var
-  p: Integer;
-begin
-  p := Pos(':', data);
-  if p > 0 then
-  begin
-    field := LowerCase(Copy(data, 1, p - 1));
-    value := Trim(Copy(data, p + 1, MaxInt));
-  end;
-end;
-
+uses utils;
 
 procedure ParseHeader(const url, accept: string; var host, port, icyheader: string);
 const
@@ -90,39 +79,38 @@ begin
   MetaData := TStringlist.Create;
   MetaData.Text := meta;
 
-  if Pos('200', MetaData[0]) > 0 then
+  if Pos('200', MetaData[0]) <> 0 then
   begin
     for i := 1 to MetaData.Count - 1 do
     begin
       SplitValue(MetaData[i], field, value);
-      if (field = 'icy-metaint') then MetaInterval := StrToInt(value)
-      else if (field = 'icy-br') then MetaBitrate := value
-      else if (field = 'content-type') and (value <> accept) then goto _exit_;
-        //else if field='icy-description' then StreamInfo.Desc:=Value
-        //else if field='icy-genre' then StreamInfo.Genre:=Value
-        //else if field= 'icy-name' then StreamInfo.Name := value
-        //else if field='icy-pub' then StreamInfo.Pub:=Value
-        //else if field='icy-url' then StreamInfo.URL:=Value
-    end;
-    Result := Ord(MetaInterval <> 0);
-  end
-  else
-  // 302, 303, 301
-    if Pos('30', MetaData[0]) > 0 then
-    begin
-      for i := 1 to MetaData.Count - 1 do
-      begin
-        SplitValue(MetaData[i], field, value);
-        if field = 'location' then
-        begin
-          Result := -1;
-          meta := value;
-          Break;
-        end;
-      end;
-    end;
 
-  _exit_:
+      if field = 'location' then
+      begin
+        meta := value;
+        Result := -1;
+        Break;
+      end;
+
+      if (field = 'content-type') and (value <> accept) then
+      begin
+        Result := 0;
+        Break;
+      end;
+
+      if field = 'icy-metaint' then
+      begin
+        MetaInterval := StrToInt(value);
+        Result := 1;
+      end
+      else
+        if field = 'icy-br' then
+        begin
+          MetaBitrate := value;
+        end;
+    end;
+  end;
+
   MetaData.Free;
 end;
 
@@ -183,9 +171,19 @@ begin
 end;
 
 constructor THTTPSTREAM.Create(const accept: string);
+var
+  pip, pport, puser, ppass, _: string;
 begin
   inherited Create(True);
   fHTTP := TTCPBlockSocket.Create;
+  if proxy_enabled and (proxy_proxy <> '') then
+  begin
+    ParseURL(proxy_proxy, _, puser, ppass, pip, pport, _, _);
+    fHTTP.HTTPTunnelIP := pip;
+    fHTTP.HTTPTunnelPort := pport;
+    fHTTP.HTTPTunnelUser := puser;
+    fHTTP.HTTPTunnelPass := ppass;
+  end;
   Priority := tpTimeCritical;
 
   fAccept := accept;

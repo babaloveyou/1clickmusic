@@ -10,11 +10,12 @@ uses
   Messages,
   DSoutput,
   obj_list,
-  httpsend;
+  httpsend,
+  synautil;
 
 const
-  APPVERSION = 1967;
-  APPVERSIONSTR = '1.9.6h';
+  APPVERSION = 1970;
+  APPVERSIONSTR = '1.9.7';
   INITIALVOL = 80;
   WM_NOTIFY = WM_USER + 1;
   stSTOPED = 0;
@@ -24,7 +25,7 @@ const
   // GLOBAL VARS, IF NECESSARY INITIALIZED
 var
   WM_UNIQUEINSTANCE: DWORD;
-  
+
   //# needed cuz of the KOL windows is Free with no control..
   appwinHANDLE: HWND;
 
@@ -44,6 +45,9 @@ var
   radiolist: TRadioList;
 
   //# OPTIONS
+  //# Proxy
+  proxy_enabled: LongBool;
+  proxy_proxy: string;
   //# autorun
   autorun_enabled: LongBool;
   playonstart_enabled: LongBool;
@@ -65,6 +69,8 @@ var
   lastfm_user, lastfm_pass: string;
   lastfm_nextscrobb: Cardinal = 0;
 
+function HttpPostTextEx(const URL, URLdata: string; Response: TStrings): LongBool;
+function HttpGetTextEx(const URL: string; const Response: TStrings): Boolean;
 procedure SetAutoRun();
 procedure UpdateMsn(write: LongBool);
 procedure ShowAboutbox();
@@ -84,6 +90,68 @@ const
 implementation
 
 uses utils;
+
+function HttpPostTextEx(const URL, URLdata: string; Response: TStrings): LongBool;
+var
+  HTTP: THTTPSend;
+  pip, pport, puser, ppass, _: string;
+begin
+  HTTP := THTTPSend.Create;
+  HTTP.MimeType := 'application/x-www-form-urlencoded';
+  WriteStrToStream(HTTP.Document, URLdata);
+  try
+    if proxy_enabled then
+    begin
+      ParseURL(proxy_proxy, _, puser, ppass, pip, pport, _, _);
+      HTTP.ProxyHost := pip;
+      HTTP.ProxyPort := pport;
+      HTTP.ProxyUser := puser;
+      HTTP.ProxyPass := ppass;
+    end;
+    Result := HTTP.HTTPMethod('POST', URL);
+    if Result and (Response <> nil) then
+      Response.LoadFromStream(HTTP.Document);
+  finally
+    HTTP.Free;
+  end;
+end;
+
+function HttpGetTextEx(const URL: string; const Response: TStrings): Boolean;
+var
+  newlocation: string;
+  HTTP: THTTPSend;
+  pip, pport, puser, ppass, _: string;
+begin
+  HTTP := THTTPSend.Create;
+  try
+    if proxy_enabled then
+    begin
+      ParseURL(proxy_proxy, _, puser, ppass, pip, pport, _, _);
+      HTTP.ProxyHost := pip;
+      HTTP.ProxyPort := pport;
+      HTTP.ProxyUser := puser;
+      HTTP.ProxyPass := ppass;
+    end;
+    Result := HTTP.HTTPMethod('GET', URL);
+    if Result then
+    begin
+      if Pos('30', IntToStr(HTTP.ResultCode)) <> 0 then
+      begin
+        SetLength(newlocation, 256);
+        Result := sscanf(strstr(PChar(HTTP.Headers.Text), PChar('Location:')), 'Location: %255[^'#13#10']', PChar(newlocation)) = 1;
+        if Result then
+          Result := HttpGetTextEx(PChar(newlocation), Response);
+      end
+      else
+      begin
+        if Response <> nil then
+          Response.LoadFromStream(HTTP.Document);
+      end;
+    end;
+  finally
+    HTTP.Free;
+  end;
+end;
 
 procedure SetAutoRun();
 const
@@ -152,7 +220,7 @@ var
   Text: TStringList;
 begin
   Text := TStringList.Create;
-  Result := HttpGetText(updateurl, Text);
+  Result := HttpGetTextEx(updateurl, Text);
   if Result then
     if StrToIntDef(Text[0], 0) > APPVERSION then
     begin
@@ -200,13 +268,13 @@ begin
 end;
 
 initialization
-  {$IFDEF DEBUG}
+{$IFDEF DEBUG}
   Debug('unique instance');
-  {$ENDIF}
+{$ENDIF}
   UniqueInstance();
-  {$IFDEF DEBUG}
+{$IFDEF DEBUG}
   Debug('unique instance ok');
-  {$ENDIF}
+{$ENDIF}
 
 end.
 

@@ -6,11 +6,12 @@ dst = []
 
 def crypt(text):
     text = text.replace("http://", "")
-    key = len(text) % 10
-    result = ""
-    for i in xrange(len(text)):
-        result += chr( ( ord(text[i]) ^ ( (pasw * (i+1)) + key ) ) % 256)
-    return result
+    return text
+    #key = len(text) % 10
+    #result = ""
+    #for i in xrange(len(text)):
+    #    result += chr( ( ord(text[i]) ^ ( (pasw * (i+1)) + key ) ) % 256)
+    #return result
 
 def writeint8(num):
     data = struct.pack("B",num)

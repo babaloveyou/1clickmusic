@@ -65,6 +65,7 @@ const
     'Trance Vocal ( DI )',
     'Eurodance ( DI )',
     'Eurodance Classic ( DI )',
+	'House Latin ( DI )',
     'House ( DI )',
     'House Classic ( DI )',
     'House Disco ( DI )',
@@ -165,6 +166,7 @@ const
     'http://listen.di.fm/public3/vocaltrance.pls',
     'http://listen.di.fm/public3/eurodance.pls',
     'http://listen.di.fm/public3/classiceurodance.pls',
+	'http://listen.di.fm/public3/latinhouse.pls',
     'http://listen.di.fm/public3/house.pls',
     'http://listen.di.fm/public3/oldschoolhouse.pls',
     'http://listen.di.fm/public3/discohouse.pls',
@@ -185,9 +187,9 @@ const
     'http://listen.di.fm/public3/breaks.pls',
     'http://listen.di.fm/public3/futuresynthpop.pls',
     'http://listen.di.fm/public3/gabber.pls',
-    'http://www.fear.fm/streamrelay/1/hard.pls',
-    'http://www.fear.fm/streamrelay/2/harder.pls',
-    'http://www.fear.fm/streamrelay/3/hardest.pls',
+    'http://www.fear.fm/streamrelay/playlist/hard.pls',
+    'http://www.fear.fm/streamrelay/playlist/harder.pls',
+    'http://www.fear.fm/streamrelay/playlist/hardest.pls',
     'http://www.181.fm/winamp.pls?station=181-energy98',
     'http://www.181.fm/winamp.pls?station=181-energy93',
     'http://www.psychedelik.com/tunein-lives_mixes.pls',
@@ -237,6 +239,7 @@ const
     'Chillout ( psyradio )',
     'Minimal ( psyradio )',
     'New Age ( sky )',
+	'New Age Vocal ( sky )',
     'Minimal ( DI )',
     'Chillout ( DI )',
     'Lounge ( DI )',
@@ -249,6 +252,7 @@ const
 	'Chillout ( buzzoutroom )',
     'PsyChill ( DI )',
     'Chillout Beats ( DI )',
+	'Ambient Space ( DI )',
     'Chillout Beats ( entranced.fm )',
     'Chillout Beats ( sky )',
     );
@@ -275,6 +279,7 @@ const
     'http://streamer.psyradio.org:8020/listen.pls',
     'http://streamer.psyradio.org:8040/listen.pls',
     'http://listen.sky.fm/public1/newage.pls',
+	'http://listen.sky.fm/public1/vocalnewage.pls',
     'http://listen.di.fm/public3/minimal.pls',
     'http://listen.di.fm/public3/chillout.pls',
     'http://listen.di.fm/public3/lounge.pls',
@@ -287,6 +292,7 @@ const
 	'http://www.buzzoutroom.com/listen.pls',
     'http://listen.di.fm/public3/psychill.pls',
     'http://listen.di.fm/public3/chilloutdreams.pls',
+	'http://listen.di.fm/public3/spacemusic.pls',
     'http://loudcity.com/stations/entranced-fm/files/show/aacplus-hi.pls',
     'http://listen.sky.fm/public1/dreamscapes.pls',
     );
@@ -317,7 +323,6 @@ const
     'Rock Metal ( hv.1.fm )',
     'Rock Metal ( metalonly )',
     'Rock Metal ( kinkfm )',
-    'Rock Metal ( gothmetal )',
     'Rock Metal ( rocky )',
     'Classic Rock ( rock radio1 )',
     'Classic Rock ( rock&rollfm )'
@@ -349,7 +354,6 @@ const
     'http://www.1.fm/hv.pls',
     'http://metal-only.de/listen.pls',
     'http://www.kinkfm.com/streams/kink_aardschok.m3u',
-    'http://new.gothmetal.net/128pool1.m3u',
     'http://www.rockyfm.de/listen.pls',
     'http://91.121.201.88:8000/listen.pls',
     'http://tunein.swcast.net/launch.cgi/dade921/hi-band.pls'
@@ -380,7 +384,7 @@ const
 
 const
   pls_ecletic: array[0..0] of string = (
-    'http://www.wadiomedia.org/play/',
+    'http://wad.io/listen/everywhere',
     'http://www.iloveradio.de/listen.pls',
     'http://www.maxxhits.eu/listen/listen-winamp.m3u',
     'http://loudcity.com/stations/eye97/files/show/eye97.pls',
@@ -495,6 +499,8 @@ const
 
 const
   chn_misc: array[0..0] of string = (
+  	'Nature ( sky )',
+	'Relaxation ( sky )',
     'Blues ( bellyup4blues )',
     'Salsa ( La X )',
     'Tango ( tangorosario )',
@@ -506,7 +512,6 @@ const
     'Country ( 977music )',
     'Jazz Vocal ( 1.fm )',
     'Jazz Smooth ( 977music )',
-    'Jazz Smooth ( swissjazz )',
     'Jazz Smooth ( swissgroove )',
     'Jazz Smooth ( 1.fm )',
     'Jazz Smooth ( smoothjazz )',
@@ -530,6 +535,7 @@ const
     'Piano Trio ( sky )',
     'Piano Solo ( sky )',
     'World ( sky )',
+	'Jazz Smooth 24''7  ( sky )',
     'Jazz Piano ( sky )',
     'Bossanova ( sky )',
     'Soundtracks ( sky )',
@@ -553,6 +559,8 @@ const
 
 const
   pls_misc: array[0..0] of string = (
+  	'http://listen.sky.fm/public1/nature.pls',
+	'http://listen.sky.fm/public1/relaxation.pls',
     'http://64.62.252.134:5100/listen.pls',
     'http://laxestereo.com/proserv1.pls',
     'http://200.69.237.185:8000/listen.pls',
@@ -564,7 +572,6 @@ const
     'http://www.977music.com/977hicountry.pls',
     'http://www.1.fm/ajazz128k.pls',
     'http://www.977music.com/itunes/jazz.pls',
-    'http://www.radioswissjazz.ch/live/mp3.m3u',
     'http://www.swissgroove.ch/listen.m3u',
     'http://www.1.fm/jazz.pls',
     'http://smoothjazz.com/streams/smoothjazz_128.pls',
@@ -588,6 +595,7 @@ const
     'http://listen.sky.fm/public1/classicalpianotrios.pls',
     'http://listen.sky.fm/public1/solopiano.pls',
     'http://listen.sky.fm/public1/world.pls',
+	'http://listen.sky.fm/public1/smoothjazz247.pls',
     'http://listen.sky.fm/public1/pianojazz.pls',
     'http://listen.sky.fm/public1/bossanova.pls',
     'http://listen.sky.fm/public1/soundtracks.pls',
@@ -611,6 +619,7 @@ const
 
 const
   chn_brasil: array[0..0] of string = (
+    'Popular ( gaucha )',
     'Mpb ( novabrasil )',
     'Popular ( bandeirantes )',
     'Ecletic ( metropolitana )',
@@ -667,16 +676,17 @@ const
 
 const
   pls_brasil: array[0..0] of string = (
+    'mms://gruporbs-gaucha-fm-rs.wm.llnwd.net/gruporbs_Gaucha_FM_RS?channel=232',
     'http://cdn.upx.net.br/listen/00086_1.wmx',
     'mms://servidor25.crossdigital.com.br:8000/bandeirantesam',
-    'http://metropolitanafm.uol.com.br/ao-vivo/sao-paulo.asx',
+    'http://metropolitanafm.uol.com.br/ao-vivo/sao-paulo01.asx',
     'mms://200.222.115.52/OiFM_JBFM',
     'mms://200.222.115.50/CidadeWebRock_JBSmoothJazz',
     'mms://200.222.115.52/CidadeWebRock_ClassicRock',
     'mms://200.222.115.52/CidadeWebRock_RockBrasil',
     'mms://200.222.115.52/CidadeWebRock_Metal',
     'http://www.mpbfm.com.br/radinho.asx',
-    'http://www.violaviva.org/violaviva(1).pls',
+    'http://base2.streamingbrasil.com.br:8116/listen.pls',
     'http://www.interativafm.net/interativa.m3u',
     'http://www.radiofusion.com.br/listen.m3u',
     'http://www.radiozone.com.br/player/winamp.m3u',

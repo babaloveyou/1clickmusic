@@ -49,7 +49,7 @@ begin
   Dialog.Visible := False; // Hide until everything is not created
   Dialog.CreateWindow; // Until not created, access to canvas is not possible
 
-  Dialog.Font.FontHeight := 8;
+  //Dialog.Font.FontHeight := 8;
   DialogUnits := GetAveCharSize(Dialog.Canvas.Handle);
   Dialog.Icon := LoadIcon(0, IDI_INFORMATION);
   Dialog.Style := Dialog.Style and not (WS_MINIMIZEBOX or WS_MAXIMIZEBOX);
